@@ -1,5 +1,7 @@
-//types used in request
+import { BannerItem } from "../banner/types";
+import { LayoutItem } from "../layout/types";
 
+//types used in request
 export interface CreateDiscountPayload {
   title: string;
   description: string;
@@ -23,30 +25,55 @@ export interface UpdateDiscountPayload {
 }
 
 // types that are used in response
-export interface Tag {
+interface ApplicableBranch {
   id: number;
   name: string;
+  city: string;
+  district: string;
+  address: string;
+  location_link: string;
+  latitude: number;
+  longitude: number;
+  distance_km: number;
 }
-export interface DiscountItem {
+
+interface Banner {
   id: number;
-  // store: Store;
-  tags: Tag[];
-  title: string;
+  name: string;
+  web_image: string;
+  mobile_image: string;
+  layout: number;
+  store: number;
+}
+
+interface Layout {
+  id: number;
+  name: string;
+  array: null;
+}
+
+interface DiscountItem {
+  id: number;
+  is_currently_active: boolean;
+  applicable_branches: ApplicableBranch[];
+  banner: BannerItem;
+  layout: LayoutItem;
+  name: string;
   description: string;
+  terms_conditions: string;
   start_date: string;
   end_date: string;
-  terms_conditions: string;
-  status: "pending" | "active" | "expired";
-  is_active: boolean;
+  status: 'active' | string;
+  discount_type: 'PERCENTAGE' | 'FIXED' | 'BOGO';
+  value: number;
+  buy_quantity: number;
+  get_quantity: number;
+  min_spend_amount: number;
+  apply_to_all_branches: boolean;
   created_at: string;
   updated_at: string;
-  discount_type: string;
-  discount_percent: string | number;
-  main_category: number;
-  sub_category: number;
-  banner: number;
-  layout: number;
-  product: number[];
+  store: number;
+  created_by: number;
 }
 
 export interface GetDiscountResponse {

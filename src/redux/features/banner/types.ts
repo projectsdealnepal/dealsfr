@@ -19,14 +19,10 @@ export default interface BannerPayload {
 
 export interface BannerItem {
   id: number;
-  banner_type: string;
-  web_banner_image: string;
-  mobile_banner_image: string;
-  banner_name: string;
-  banner_content: string | null;
-  selected_banner_id: number;
-  theme_id: number;
-  created_by_id: number;
+  name: string;
+  web_image: string;
+  mobile_image: string;
+  layout: number;
   store: number;
 }
 

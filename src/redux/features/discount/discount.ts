@@ -10,11 +10,11 @@ import { AxiosResponse } from "axios";
 
 export const getDiscount = createAsyncThunk<
   GetDiscountResponse[],
-  void,
+  number,
   { rejectValue: string }
->("userData/discount/get", async (_, thunkAPI) => {
+>("userData/discount/get", async (s_id, thunkAPI) => {
   try {
-    const response = await api.get("/api/discounts/");
+    const response = await api.get(`/products/${s_id}/discount/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -26,7 +26,7 @@ export const getDiscount = createAsyncThunk<
 });
 
 export const createDiscount = createAsyncThunk<
-  AxiosResponse<DiscountItem>,
+  DiscountItem,
   CreateDiscountPayload,
   { rejectValue: string }
 >("userData/discount/create", async (discountData, thunkAPI) => {

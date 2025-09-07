@@ -2,6 +2,9 @@
 
 import { DashboardNav } from "@/app/_components/dashboardComp/dashboard-nav";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getBanner } from "@/redux/features/banner/banner";
+import { getDiscount } from "@/redux/features/discount/discount";
+import { getLayout } from "@/redux/features/layout/layout";
 import { getBranchesList, getSocialMediaList, getStoreDetail, getStoreDocumentsList } from "@/redux/features/store/store";
 import { getUser } from "@/redux/features/user/user";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -26,10 +29,14 @@ export default function DashboardLayout({
   //get the storedetail and branch list on page render 
   useEffect(() => {
     if (userData && userData.managed_stores.length > 0) {
-      dispatch(getStoreDetail(userData.managed_stores[0]))
-      dispatch(getBranchesList(userData.managed_stores[0]))
-      dispatch(getStoreDocumentsList(userData.managed_stores[0]))
-      dispatch(getSocialMediaList(userData.managed_stores[0]))
+      const storeId = userData.managed_stores[0]
+      dispatch(getStoreDetail(storeId))
+      dispatch(getBranchesList(storeId))
+      dispatch(getStoreDocumentsList(storeId))
+      dispatch(getSocialMediaList(storeId))
+      dispatch(getDiscount(storeId));
+      dispatch(getLayout(storeId));
+      dispatch(getBanner(storeId));
     }
   }, [userData])
 

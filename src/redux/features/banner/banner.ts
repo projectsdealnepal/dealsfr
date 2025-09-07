@@ -1,7 +1,7 @@
 import api from "@/lib/interceptor";
+import { extractErrorMessage } from "@/lib/utils";
 import { BannerItem } from "@/redux/features/banner/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios, { AxiosResponse } from "axios";
 
 export const getBanner = createAsyncThunk<
   BannerItem[],
@@ -15,24 +15,60 @@ export const getBanner = createAsyncThunk<
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
-      error.response?.data?.message || error.message || "Registration failed"
+      extractErrorMessage(error, "Failed to get the banners.")
     );
   }
 });
 
 export const createBanner = createAsyncThunk<
-  AxiosResponse<BannerItem>,
-  FormData,
+  BannerItem[],
+  { payload: FormData; s_id: number },
   { rejectValue: string }
->("userData/banner/create", async (userData, thunkAPI) => {
+>("userData/banner/create", async ({ payload, s_id }, thunkAPI) => {
   try {
-    const response = await api.post("/api/banners/", userData, {
+    const response = await api.post(`/api/stores/${s_id}/banners/`, payload, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
-      error.response?.data?.message || error.message || "Registration failed"
+      extractErrorMessage(error, "Failed to create banners.")
+    );
+  }
+});
+
+export const updateBanner = createAsyncThunk<
+  BannerItem,
+  { payload: FormData; s_id: number; b_id: string },
+  { rejectValue: string }
+>("userData/banner/update", async ({ payload, s_id, b_id }, thunkAPI) => {
+  try {
+    const response = await api.patch(
+      `/api/stores/${s_id}/banners/${b_id}/`,
+      payload,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      extractErrorMessage(error, "Failed to update banner.")
+    );
+  }
+});
+
+export const deleteBanner = createAsyncThunk<
+  BannerItem[],
+  { s_id: number; b_id: number },
+  { rejectValue: string }
+>("userData/banner/delete", async ({ s_id, b_id }, thunkAPI) => {
+  try {
+    const response = await api.delete(`/api/stores/${s_id}/banners/${b_id}/`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      extractErrorMessage(error, "Failed to delete banner.")
     );
   }
 });

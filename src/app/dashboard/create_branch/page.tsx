@@ -130,7 +130,7 @@ export default function CreateBranchPage() {
     if (creteBranchData && userData) {
       Toast({ message: "successfully Created the branch" });
       dispatch(getStoreDetail(userData?.managed_stores[0]));
-      router.replace("/dashboard/storeMgmt");
+      router.replace("/dashboard/store_management");
     }
 
     return () => {
