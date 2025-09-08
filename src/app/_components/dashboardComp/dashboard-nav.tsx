@@ -54,9 +54,9 @@ const navigationItems = [
     href: "/dashboard/store_management",
   },
   {
-    title: "Layout Preview",
+    title: "Layout",
     icon: Store,
-    href: "/dashboard/layoutPreview",
+    href: "/dashboard/layout",
   },
   {
     title: "Discounts",
