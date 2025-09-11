@@ -18,6 +18,21 @@ export const getLayout = createAsyncThunk<
   }
 });
 
+export const getIndLayout = createAsyncThunk<
+  LayoutItem,
+  { s_id: number, l_id: number },
+  { rejectValue: string }
+>("userData/layout/getind", async ({ s_id, l_id }, thunkAPI) => {
+  try {
+    const response = await api.get(`/api/stores/${s_id}/layouts/${l_id}/`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      extractErrorMessage(error, "Failed to get layouts.")
+    );
+  }
+});
+
 export const createLayout = createAsyncThunk<
   LayoutItem[],
   { payload: LayoutCreatePayload; s_id: number },

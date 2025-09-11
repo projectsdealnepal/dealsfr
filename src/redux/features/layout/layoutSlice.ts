@@ -1,6 +1,7 @@
 import {
   createLayout,
   deleteLayout,
+  getIndLayout,
   getLayout,
   updateLayout,
 } from "@/redux/features/layout/layout";
@@ -12,8 +13,12 @@ interface LayoutState {
   layoutData: LayoutItem[] | null;
   layoutError: string | null;
 
+  indLayoutData: LayoutItem | null;
+  indLayoutError: string | null;
+
   layoutCreateData: LayoutItem[] | null;
   layoutCreateError: string | null;
+
 
   layoutUpdateData: LayoutItem | null;
   layoutUpdateError: string | null;
@@ -27,6 +32,9 @@ const initialState: LayoutState = {
   layoutStateLoading: false,
   layoutData: null,
   layoutError: null,
+
+  indLayoutData: null,
+  indLayoutError: null,
 
   layoutCreateData: null,
   layoutCreateError: null,
@@ -47,6 +55,10 @@ const layoutSlice = createSlice({
       state.layoutData = null;
       state.layoutStateLoading = false;
     },
+    clearIndLayoutState(state) {
+      state.indLayoutData = null;
+      state.indLayoutError = null;
+    },
     clearLayoutCreateState(state) {
       state.layoutCreateData = null;
       state.layoutCreateError = null;
@@ -62,6 +74,7 @@ const layoutSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       .addCase(getLayout.pending, (state) => {
         state.layoutStateLoading = true;
         state.layoutError = null;
@@ -79,6 +92,25 @@ const layoutSlice = createSlice({
           state.layoutError = action.payload || "Failed to fetch layout";
         }
       )
+
+      .addCase(getIndLayout.pending, (state) => {
+        state.layoutStateLoading = true;
+        state.indLayoutError = null;
+      })
+      .addCase(getIndLayout.fulfilled, (state, action) => {
+        state.layoutStateLoading = false;
+        state.indLayoutData = action.payload;
+        state.indLayoutError = null;
+      })
+      .addCase(
+        getIndLayout.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.indLayoutData = null;
+          state.layoutStateLoading = false;
+          state.indLayoutError = action.payload || "Failed to fetch layout";
+        }
+      )
+
       .addCase(createLayout.pending, (state) => {
         state.layoutStateLoading = true;
         state.layoutCreateError = null;
@@ -96,6 +128,7 @@ const layoutSlice = createSlice({
           state.layoutCreateError = action.payload || "Failed to create layout";
         }
       )
+
       .addCase(updateLayout.pending, (state) => {
         state.layoutStateLoading = true;
         state.layoutUpdateError = null;
@@ -121,6 +154,7 @@ const layoutSlice = createSlice({
           state.layoutUpdateError = action.payload || "Failed to update layout";
         }
       )
+
       .addCase(deleteLayout.pending, (state) => {
         state.layoutStateLoading = true;
         state.layoutDeleteError = null;
@@ -139,6 +173,7 @@ const layoutSlice = createSlice({
           state.layoutDeleteError = action.payload || "Failed to delete layout";
         }
       );
+
   },
 });
 
@@ -147,5 +182,6 @@ export const {
   clearLayoutCreateState,
   clearLayoutUpdateState,
   clearLayoutDeleteState,
+  clearIndLayoutState,
 } = layoutSlice.actions;
 export default layoutSlice.reducer;

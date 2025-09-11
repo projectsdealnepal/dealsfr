@@ -20,7 +20,6 @@ const StoreManager = () => {
     // dispatch(getBanner(1));
     // dispatch(getDiscount(storeId));
     // dispatch(getLayout(storeId));
-
   }, []);
 
   console.log("discount", discountData);
