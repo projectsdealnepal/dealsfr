@@ -1,61 +1,31 @@
 import { BannerItem } from "../banner/types";
 import { LayoutItem } from "../layout/types";
+import { BranchItem } from "../store/types";
 
-//types used in request
-export interface CreateDiscountPayload {
-  title: string;
+export interface DiscountCreatePayload {
+  applicable_branches_ids?: number[];
+  product_ids?: number[];
+  name: string;
   description: string;
+  terms_conditions?: string;
   start_date: string;
   end_date: string;
-  discount_type: "main" | "secondary" | "special";
-  discount_percent: string;
-  banner: string;
-  layout: string;
-}
-
-export interface UpdateDiscountPayload {
-  title: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  discount_type: "main" | "secondary" | "special";
-  discount_percent: string;
-  banner: string;
-  layout: string;
-}
-
-// types that are used in response
-interface ApplicableBranch {
-  id: number;
-  name: string;
-  city: string;
-  district: string;
-  address: string;
-  location_link: string;
-  latitude: number;
-  longitude: number;
-  distance_km: number;
-}
-
-interface Banner {
-  id: number;
-  name: string;
-  web_image: string;
-  mobile_image: string;
+  status?: "active" | "inactive" | string;
+  discount_type: "PERCENTAGE" | "FLAT" | string;
+  value?: string;
+  buy_quantity?: number;
+  get_quantity?: number;
+  min_spend_amount?: string;
+  apply_to_all_branches?: boolean;
+  banner: number;
   layout: number;
-  store: number;
+  applicable_branches?: number[];
 }
 
-interface Layout {
-  id: number;
-  name: string;
-  array: null;
-}
-
-interface DiscountItem {
+export interface DiscountItem {
   id: number;
   is_currently_active: boolean;
-  applicable_branches: ApplicableBranch[];
+  applicable_branches: BranchItem[];
   banner: BannerItem;
   layout: LayoutItem;
   name: string;
@@ -63,22 +33,15 @@ interface DiscountItem {
   terms_conditions: string;
   start_date: string;
   end_date: string;
-  status: 'active' | string;
-  discount_type: 'PERCENTAGE' | 'FIXED' | 'BOGO';
-  value: number;
+  status: "active" | "inactive" | string;
+  discount_type: "PERCENTAGE" | "FLAT" | string;
+  value: string;
   buy_quantity: number;
   get_quantity: number;
-  min_spend_amount: number;
+  min_spend_amount: string;
   apply_to_all_branches: boolean;
   created_at: string;
   updated_at: string;
   store: number;
   created_by: number;
-}
-
-export interface GetDiscountResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: DiscountItem[];
 }

@@ -32,11 +32,11 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
   const { layoutData } = useAppSelector((s) => s.layout)
 
   return (
-    <Card className="w-full  bg-[var(--card)] text-[var(--card-foreground)] border-[var(--border)] rounded-[var(--radius)]">
+    <Card className="w-full ">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold text-[var(--primary)]">
-            {item.title}
+            {item.name}
           </CardTitle>
           <Badge
             className={`${item.status === "pending"
@@ -51,14 +51,14 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
       <CardContent className="space-y-4">
         <p className="text-[var(--muted-foreground)] line-clamp-2">{item.description}</p>
         <div className="flex items-center gap-2">
-          <Percent className="h-4 w-4 text-[var(--accent)]" />
+          <Percent className="h-4 w-4 " />
           <span className="text-[var(--foreground)]">
-            {item.discount_percent}% Discount
+            {item.value}% Discount
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[var(--accent)]" />
-          <span className="text-[var(--muted-foreground)]">
+          <Calendar className="h-4 w-4" />
+          <span className="">
             {formatDate(item.start_date)} - {formatDate(item.end_date)}
           </span>
         </div>
@@ -67,53 +67,31 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
           <p>{item.terms_conditions}</p>
         </div>
         <div className="grid grid-cols-2 gap-2 text-sm text-[var(--muted-foreground)]">
-
-          {item.main_category &&
-            (
-              <div>
-                <p className="font-semibold">Main Category:</p>
-                <p>{mainCategoryData?.find((i) => i.id === item.main_category)?.name}</p>
-              </div>
-            )}
-          {item.sub_category &&
-            (
-              <div>
-                <p className="font-semibold">Sub Category:</p>
-                <p>{subCategoryData?.find((i) => i.id === item.sub_category)?.name}</p>
-              </div>
-            )
-          }
           <div>
             <p className="font-semibold">Banner:</p>
-            <p>{bannerData?.find((i) => i.id === item.banner)?.banner_name}</p>
+            <p>{bannerData?.find((i) => i.id === item.banner.id)?.name}</p>
           </div>
           <div>
             <p className="font-semibold">Layout:</p>
-            <p>{layoutData?.find((i) => i.id === item.layout)?.name}</p>
+            <p>{layoutData?.find((i) => i.id === item.layout.id)?.name}</p>
           </div>
-        </div>
-        <div>
-          <p className="font-semibold text-[var(--foreground)]">Products:</p>
-          <p className="text-[var(--muted-foreground)]">
-            {item.product?.length || "No products"}
-          </p>
         </div>
       </CardContent>
 
       <CardFooter >
-        <div className="flex flex-row flex-wrap gap-4 justify-between w-full p-4 bg-[var(--card)] border-t border-[var(--border)] rounded-b-[var(--radius)]">
+        <div className="flex flex-row flex-wrap gap-4 justify-between w-full p-4 ">
           <Button
             variant="outline"
             size="sm"
-            className="text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--secondary)] hover:text-[var(--secondary-foreground)] min-w-30"
+            className="min-w-30"
           >
             <Eye className="h-4 w-4 mr-2" />
             Preview
           </Button>
           <Button
-            variant="default"
+            variant="outline"
             size="sm"
-            className="bg-[var(--toast-success-bg)] text-[var(--toast-success-color)] hover:bg-[var(--primary)] min-w-30"
+            className="min-w-30"
           >
             <Play className="h-4 w-4 mr-2" />
             Go Live
@@ -122,7 +100,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
             onClick={() => router.push("/dashboard/discounts/select_product")}
             variant="outline"
             size="sm"
-            className="text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--secondary)] hover:text-[var(--secondary-foreground)] min-w-30"
+            className="min-w-30"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Product
@@ -130,7 +108,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--secondary)] hover:text-[var(--secondary-foreground)] min-w-30"
+            className=" min-w-30"
           >
             <Pencil className="h-4 w-4 mr-2" />
             Edit
@@ -138,7 +116,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
           <Button
             variant="destructive"
             size="sm"
-            className="bg-[var(--toast-error-bg)] text-[var(--toast-error-color)] hover:bg-[var(--destructive)] min-w-30"
+            className="min-w-30"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete

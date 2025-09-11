@@ -1,13 +1,10 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { useToast } from "@/components/ui/use-toast";
 import { getProduct } from '@/redux/features/product/product';
-import { Toast } from '@/components/ui/toast';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { ProductItem } from '@/redux/features/product/types';
 interface Product {
@@ -39,33 +36,6 @@ export default function ProductsPage() {
   useEffect(() => {
     dispatch(getProduct(1))
   }, [])
-
-  // const handleSearch = () => {
-  //   if (searchQuery.trim()) {
-  //     dispatch(getItems(`http://192.168.100.133:8081/api/items/search_all/?q=${searchQuery}`))
-  //       .unwrap()
-  //       .then(() => {
-  //         toast({
-  //           title: "Search Successful",
-  //           description: "Products loaded successfully",
-  //           style: {
-  //             background: 'var(--toast-success-bg)',
-  //             color: 'var(--toast-success-color)',
-  //           },
-  //         });
-  //       })
-  //       .catch(() => {
-  //         toast({
-  //           title: "Search Failed",
-  //           description: "Failed to load products",
-  //           style: {
-  //             background: 'var(--toast-productError-bg)',
-  //             color: 'var(--toast-productError-color)',
-  //           },
-  //         });
-  //       });
-  //   }
-  // };
 
   const handleCheckboxChange = (product: ProductItem) => {
     setSelectedProducts((prev) => {

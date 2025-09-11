@@ -6,22 +6,21 @@ import {
 } from "@/redux/features/discount/discount";
 import {
   DiscountItem,
-  GetDiscountResponse,
 } from "@/redux/features/discount/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 
 interface DiscountState {
-  discountData: GetDiscountResponse | null;
-  discountLoading: boolean;
+  discountData: DiscountItem[] | null;
+  discountStateLoading: boolean;
   discountError: string | null;
 
   //create discount
-  createDiscountData: AxiosResponse<DiscountItem> | null;
+  createDiscountData: DiscountItem | null;
   createDiscountLoading: boolean;
 
   //update discount
-  updateDiscountData: AxiosResponse<DiscountItem> | null;
+  updateDiscountData: DiscountItem | null;
   updateDiscountLoading: boolean;
 
   //delete discount
@@ -31,9 +30,9 @@ interface DiscountState {
 
 // Initial state
 const initialState: DiscountState = {
+  discountStateLoading: false,
   //Get Discount
   discountData: null,
-  discountLoading: false,
   discountError: null,
 
   //create discount
@@ -56,7 +55,7 @@ const discountSlice = createSlice({
     clearAllDiscountState: (state) => {
       state.discountError = null;
       state.discountData = null;
-      state.discountLoading = false;
+      state.discountStateLoading = false;
       state.createDiscountData = null;
       state.createDiscountLoading = false;
       state.updateDiscountData = null;
@@ -67,7 +66,7 @@ const discountSlice = createSlice({
     clearGetDiscountState: (state) => {
       state.discountError = null;
       state.discountData = null;
-      state.discountLoading = false;
+      state.discountStateLoading = false;
     },
     clearCreateDiscountState: (state) => {
       state.discountError = null;
@@ -89,11 +88,11 @@ const discountSlice = createSlice({
     builder
       // Get Discount
       .addCase(getDiscount.pending, (state) => {
-        state.discountLoading = true;
+        state.discountStateLoading = true;
         state.discountError = null;
       })
       .addCase(getDiscount.fulfilled, (state, action: any) => {
-        state.discountLoading = false;
+        state.discountStateLoading = false;
         state.discountData = action.payload;
         state.discountError = null;
       })
@@ -101,7 +100,7 @@ const discountSlice = createSlice({
         getDiscount.rejected,
         (state, action: PayloadAction<string | undefined>) => {
           state.discountData = null;
-          state.discountLoading = false;
+          state.discountStateLoading = false;
           state.discountError = action.payload || "Failed to fetch discounts";
         }
       )
@@ -114,6 +113,7 @@ const discountSlice = createSlice({
       .addCase(createDiscount.fulfilled, (state, action) => {
         state.createDiscountLoading = false;
         state.createDiscountData = action.payload;
+        state.discountData?.push(action.payload)
         state.discountError = null;
       })
       .addCase(
