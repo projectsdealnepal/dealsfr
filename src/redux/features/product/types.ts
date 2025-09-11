@@ -1,37 +1,75 @@
+export interface ApiResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: ProductItem[];
+}
+
 export interface ProductItem {
   id: number;
-  main_category: number;
-  sub_category: number;
-  image: string;
   name: string;
   description: string;
-  fixed_price_drop: string | number;
-  price: string | number;
-  discounted_price: string | number;
-  store_admin: number;
+  category: Category;
+  brand: Brand;
+  price: string;
+  image: string;
+  is_available: boolean;
+  store: string;
+  store_id: number;
+  active_discount: ActiveDiscount | null;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface GetProductResponse {
-  count: number;
-  next: string;
-  previous: string;
-  results: ProductItem[]
-}
-
-//for response of filter Product Response
-export interface MainCategory {
+export interface Category {
   id: number;
   name: string;
+  parent: number;
+  child: CategoryChild | null;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface SearchedProduct {
+export interface CategoryChild {
   id: number;
   name: string;
-  price: number;
-  main_category: MainCategory;
+  parent: number;
+  created_at: string;
+  updated_at: string;
+  child: ChildItem[];
 }
 
-export interface FilterProductResponse {
-  message: string;
-  data: SearchedProduct[];
+export interface ChildItem {
+  property1: string | null;
+  property2: string | null;
+}
+
+export interface Brand {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ActiveDiscount {
+  id: number;
+  name: string;
+  description: string;
+  terms_conditions: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  discount_type: "PERCENTAGE" | "FLAT" | string;
+  value: string;
+  buy_quantity: number;
+  get_quantity: number;
+  min_spend_amount: string;
+  apply_to_all_branches: boolean;
+  created_at: string;
+  updated_at: string;
+  banner: number;
+  layout: number;
+  store: number;
+  created_by: number;
+  applicable_branches: number[];
 }

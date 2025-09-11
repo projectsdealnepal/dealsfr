@@ -106,7 +106,7 @@ export default function EditLayoutPage() {
     }
 
     return () => {
-      dispatch(clearLayoutState());
+      dispatch(clearLayoutUpdateState());
     };
   }, [layoutUpdateData, layoutUpdateError, dispatch, router]);
 

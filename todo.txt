@@ -1,2 +1,4 @@
-1. Banner page.
-2. product list.
+
+1. Problem in the banner create( need to validat the weather the banner is
+created successfully or not, right now it navigated without validation even in
+error it shows the successs)

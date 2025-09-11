@@ -24,14 +24,14 @@ export default function LayoutsPage() {
     layoutDeleteError,
   } = useAppSelector((state) => state.layout);
 
-  useEffect(() => {
-    if (storeId) {
-      dispatch(getLayout(storeId));
-    }
-    return () => {
-      dispatch(clearLayoutState());
-    }
-  }, [dispatch, storeId]);
+  // useEffect(() => {
+  //   if (storeId) {
+  //     dispatch(getLayout(storeId));
+  //   }
+  //   return () => {
+  //     dispatch(clearLayoutState());
+  //   }
+  // }, [dispatch, storeId]);
 
   useEffect(() => {
     if (layoutDeleteData) {

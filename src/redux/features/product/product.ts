@@ -1,18 +1,15 @@
 import api from "@/lib/interceptor";
-import { FilterProductResponse, ProductItem } from "@/redux/features/product/types";
+import { ApiResponse, ProductItem } from "@/redux/features/product/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { GetProductResponse } from "./types";
 
-export const getProduct = createAsyncThunk<
-  GetProductResponse,
+export const getProducts = createAsyncThunk<
+  ApiResponse,
   number,
   { rejectValue: string }
->("product/get", async (page, thunkAPI) => {
+>("product/get", async (s_id, thunkAPI) => {
   try {
-    const response = await api.get(`/api/items/?page=${page}`, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await api.get(`/products/store/${s_id}/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -22,7 +19,7 @@ export const getProduct = createAsyncThunk<
 });
 
 export const searchProduct = createAsyncThunk<
-  FilterProductResponse,
+  ApiResponse,
   string,
   { rejectValue: string }
 >

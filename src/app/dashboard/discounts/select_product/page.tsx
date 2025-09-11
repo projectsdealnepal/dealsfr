@@ -4,38 +4,23 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getProduct } from '@/redux/features/product/product';
+import { getProducts } from '@/redux/features/product/product';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { ProductItem } from '@/redux/features/product/types';
-interface Product {
-  id: number;
-  main_category: number;
-  sub_category: number;
-  image: string;
-  name: string;
-  description: string;
-  fixed_price_drop: string;
-  price: string;
-  discounted_price: string;
-  store_admin: number;
-}
-
-interface ApiResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Product[];
-}
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProducts, setSelectedProducts] = useState<ProductItem[]>([]);
+  const { storeDetailData } = useAppSelector(s => s.store)
   const dispatch = useAppDispatch();
   const { productData, productLoading, productError } = useAppSelector((state) => state.product);
 
   useEffect(() => {
-    dispatch(getProduct(1))
-  }, [])
+    if (storeDetailData) {
+      dispatch(getProducts(storeDetailData.id))
+    }
+
+  }, [storeDetailData])
 
   const handleCheckboxChange = (product: ProductItem) => {
     setSelectedProducts((prev) => {
@@ -99,7 +84,7 @@ export default function ProductsPage() {
                     {product.description}
                   </p>
                   <p className="text-sm font-medium">
-                    Price: {product.discounted_price || product.price}
+                    Price: {product.price || product.price}
                   </p>
                 </div>
               </div>

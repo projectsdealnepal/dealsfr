@@ -18,7 +18,7 @@ import {
 import { createBanner, getBanner, updateBanner } from "@/redux/features/banner/banner";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const CreateBannerPage = () => {
@@ -26,6 +26,8 @@ const CreateBannerPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const bannerId = searchParams.get("id");
+  const mobileFileInputRef = useRef<HTMLInputElement>(null);
+  const webFileInputRef = useRef<HTMLInputElement>(null);
 
   const { bannerStateLoading, bannerCreateError, bannerData } = useAppSelector((state) => state.banner);
   const { storeDetailData } = useAppSelector(s => s.store)
@@ -87,14 +89,13 @@ const CreateBannerPage = () => {
 
     try {
       if (bannerId) {
-        // @ts-ignore
         await dispatch(updateBanner({ payload: formData, s_id: storeDetailData.id, b_id: bannerId }));
         toast.success("Banner updated successfully!", { richColors: true });
       } else {
         await dispatch(createBanner({ payload: formData, s_id: storeDetailData.id }));
         toast.success("Banner created successfully!", { richColors: true });
       }
-      router.push("/dashboard/banner");
+      router.replace("/dashboard/banner");
     } catch (err) {
       toast.error(bannerCreateError || "Something went wrong.", { richColors: true })
     }
@@ -189,6 +190,7 @@ const CreateBannerPage = () => {
                             id="mobBannerImage"
                             type="file"
                             accept="image/*"
+                            ref={mobileFileInputRef}
                             onChange={(e) => handleImageChange(e, 'mobile')}
                             className="h-12 bg-background/50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                           />
@@ -228,7 +230,9 @@ const CreateBannerPage = () => {
                         )}
 
                         {!mobilePreview && (
-                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors">
+                          <div
+                            onClick={() => mobileFileInputRef.current?.click()}
+                            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors">
                             <div className="flex flex-col items-center gap-2">
                               <Upload className="w-8 h-8 text-muted-foreground" />
                               <p className="text-sm text-muted-foreground">Upload mobile banner image</p>
@@ -255,6 +259,7 @@ const CreateBannerPage = () => {
                             id="webBannerImage"
                             type="file"
                             accept="image/*"
+                            ref={webFileInputRef}
                             onChange={(e) => handleImageChange(e, 'web')}
                             className="h-12 bg-background/50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                           />
@@ -294,7 +299,9 @@ const CreateBannerPage = () => {
                         )}
 
                         {!webPreview && (
-                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors">
+                          <div
+                            onClick={() => webFileInputRef.current?.click()}
+                            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors">
                             <div className="flex flex-col items-center gap-2">
                               <Upload className="w-8 h-8 text-muted-foreground" />
                               <p className="text-sm text-muted-foreground">Upload website banner image</p>
