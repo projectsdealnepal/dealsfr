@@ -1,45 +1,47 @@
 "use client";
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getBranchesList, getStoreDetail } from "@/redux/features/store/store";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useEffect } from "react";
-import {
-  ChevronRight,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const dispatch = useAppDispatch()
-  const { userData, userStateLoading, userError } = useAppSelector((state) => state.userData);
+  const dispatch = useAppDispatch();
+  const { userData, userStateLoading, userError } = useAppSelector(
+    (state) => state.userData
+  );
   const { branchesData, storeDetailData } = useAppSelector((state) => state.store);
 
+  // Load store details and branches if user has managed stores
   // useEffect(() => {
   //   if (userData && userData.managed_stores.length > 0) {
-  //     dispatch(getStoreDetail(userData.managed_stores[0]))
-  //     dispatch(getBranchesList(userData.managed_stores[0]))
+  //     dispatch(getStoreDetail(userData.managed_stores[0]));
+  //     dispatch(getBranchesList(userData.managed_stores[0]));
   //   }
-  // }, [])
+  // }, []);
 
-
+  // Loading skeleton
   if (userStateLoading) {
     return (
-      <div className="min-h-screen bg-green flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="space-y-4 w-full max-w-md">
-          <Skeleton className="h-12 w-full bg-gray-800" />
-          <Skeleton className="h-8 w-3/4 bg-gray-800" />
-          <Skeleton className="h-8 w-1/2 bg-gray-800" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-8 w-1/2" />
         </div>
       </div>
     );
   }
 
-
+  // Error state
   if (userError || !userData) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <Alert className="max-w-md  border-red-700">
-          <AlertDescription className="text-red-200">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Alert className="max-w-md border-destructive">
+          <AlertDescription className="text-destructive-foreground">
             {userError || "Failed to load dashboard data"}
           </AlertDescription>
         </Alert>
@@ -47,41 +49,38 @@ export default function DashboardPage() {
     );
   }
 
-
   return (
-    <div className="p-6 space-y-6 ">
-      {/* Welcome Section */}
+    <div className="p-6 space-y-6 bg-background min-h-screen">
+      {/* Alerts */}
       {storeDetailData && storeDetailData.branches?.length < 1 && (
-        <Link
-          href={'/dashboard/create_branch'}
-        >
-          <h3 className="cursor-pointer flex justify-between items-center pr-10 mb-5 flex-row px-5 py-3 bg-primary/30 rounded-md text-foreground ">
+        <Link href="/dashboard/create_branch">
+          <div className="cursor-pointer flex justify-between items-center px-5 py-3 rounded-md bg-primary/10 text-foreground hover:bg-primary/20 transition-colors">
             You need to setup at least one store branch to publish Discounts.
             <ChevronRight />
-          </h3>
+          </div>
         </Link>
       )}
 
       {!storeDetailData && (
-        <Link
-          href={'/dashboard/store_setup'}
-        >
-          <h3 className="cursor-pointer flex justify-between items-center pr-10 mb-5 flex-row px-5 py-3 bg-primary/30 rounded-md text-foreground ">
+        <Link href="/dashboard/store_setup">
+          <div className="cursor-pointer flex justify-between items-center px-5 py-3 rounded-md bg-primary/10 text-foreground hover:bg-primary/20 transition-colors">
             Complete your store registration process.
             <ChevronRight />
-          </h3>
+          </div>
         </Link>
       )}
 
+      {/* Welcome Section */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground ">
-          Welcome back, {userData && userData.first_name}!
+        <h1 className="text-3xl font-bold text-foreground">
+          Welcome back, {userData.first_name}!
         </h1>
         <p className="text-muted-foreground">
-          Here&apos;s what&apos;s happening with your store today.
+          Here's what's happening with your store today.
         </p>
       </div>
 
-    </div >
+      {/* TODO: Add dashboard widgets, stats, etc. here */}
+    </div>
   );
 }

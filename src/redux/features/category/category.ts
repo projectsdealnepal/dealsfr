@@ -1,21 +1,20 @@
 import api from "@/lib/interceptor";
 import {
+  CategoryItem,
   MainCategoryItem,
   SubCategoryItem,
 } from "@/redux/features/category/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 
-// Get Main Category
-export const getMainCategory = createAsyncThunk<
-  MainCategoryItem[],
+// Get Category List
+export const getCategories = createAsyncThunk<
+  CategoryItem[],
   void,
   { rejectValue: string }
 >("category/mainCategory/get", async (_, thunkAPI) => {
   try {
-    const response = await api.get("/api/main-categories/", {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await api.get("/products/categories/");
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(

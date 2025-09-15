@@ -28,7 +28,6 @@ interface LoginFormType {
   password: string;
 }
 
-
 export default function LoginPage() {
   const [loginType, setLoginType] = useState<"store" | "customer">("store");
   const [formData, setFormData] = useState<LoginFormType>({
@@ -45,14 +44,12 @@ export default function LoginPage() {
     (state) => state.userData
   );
 
-  // Clear local error state when redux error changes
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     setLocalError(userLoginError);
   }, [userLoginError]);
 
-  // Handle complete authentication flow and get the storeDetail api
   useEffect(() => {
     if (userLoginData != null) {
       router.push("/dashboard");
@@ -63,18 +60,13 @@ export default function LoginPage() {
       setIsAuthenticating(false);
     }
 
-
     return () => {
       dispatch(resetLoginState())
     }
   }, [isAuthenticated, userLoginData, userLoginError]);
 
-
-
-  // Handle authentication process
   useEffect(() => {
     if (isAuthenticated && !userLoginData && !userStateLoading) {
-      // Login successful but user data not loaded yet, fetch user data
       dispatch(getUser());
     }
   }, [isAuthenticated, userLoginData, userStateLoading, dispatch]);
@@ -92,7 +84,6 @@ export default function LoginPage() {
     setIsAuthenticating(true);
     setLocalError(null);
 
-    // Prepare login payload according to user type
     const payload = {
       password: formData.password,
       email: formData.email,
@@ -100,42 +91,35 @@ export default function LoginPage() {
     dispatch(loginUser(payload));
   };
 
-
-  // Show loading state during authentication
+  // Loading state
   if (isAuthenticating || (isAuthenticated && !userLoginData) || userStateLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-        <div className="w-full max-w-md text-center">
-          {/* Logo */}
-          <div className="mb-8">
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="w-full max-w-sm space-y-6">
+          <div className="text-center space-y-2">
             <Link href="/" className="inline-block">
-              <div className="text-3xl font-bold text-white mb-2">
-                <Image
-                  src="/images/TheDealsFr.png"
-                  alt="TheDealsFr"
-                  width={120}
-                  height={40}
-                  className="h-8 md:h-10 w-auto"
-                />
-              </div>
-              <div className="text-emerald-400 text-sm">Deals For Real</div>
+              <Image
+                src="/images/TheDealsFr.png"
+                alt="TheDealsFr"
+                width={120}
+                height={40}
+                className="h-8 w-auto"
+              />
             </Link>
           </div>
 
-          <Card className="bg-gray-900 border-none">
-            <CardContent className="pt-8 pb-8">
+          <Card>
+            <CardContent className="pt-6">
               <div className="flex flex-col items-center space-y-4">
-                <Loader2 className="h-12 w-12 animate-spin text-emerald-400" />
-                <div className="text-center">
-                  <h2 className="text-xl font-semibold text-white mb-2">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <div className="text-center space-y-1">
+                  <h2 className="text-lg font-medium">
                     {isAuthenticated && !userLoginData
-                      ? "Loading your dashboard..."
-                      : "Signing you in..."}
+                      ? "Loading dashboard..."
+                      : "Signing in..."}
                   </h2>
-                  <p className="text-gray-400">
-                    {isAuthenticated && !userLoginData
-                      ? "Please wait while we load your account information"
-                      : "Please wait while we verify your credentials"}
+                  <p className="text-sm text-muted-foreground">
+                    Please wait a moment
                   </p>
                 </div>
               </div>
@@ -147,110 +131,87 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-sm space-y-6">
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center space-y-2">
           <Link href="/" className="inline-block">
-            <div className="text-3xl font-bold text-white mb-2">
-              <Image
-                src="/images/TheDealsFr.png"
-                alt="TheDealsFr"
-                width={120}
-                height={40}
-                className="h-8 md:h-10 w-auto"
-              />
-            </div>
-            <div className="text-emerald-400 text-sm">Deals For Real</div>
+            <Image
+              src="/images/TheDealsFr.png"
+              alt="TheDealsFr"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
+            />
           </Link>
+          <p className="text-sm text-muted-foreground">Deals For Real</p>
         </div>
 
-        <Card className="bg-gray-900 border-none">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-white">
-              Welcome Back
-            </CardTitle>
-            <CardDescription className="text-center text-gray-400">
-              {loginType === "store"
-                ? "Sign in to access your own store dashboard"
-                : "Sign in to access exclusive deals"}
+        <Card>
+          <CardHeader className="text-center space-y-2">
+            <CardTitle className="text-xl">Welcome Back</CardTitle>
+            <CardDescription>
+              Sign in to your account
             </CardDescription>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="space-y-6">
             {localError && (
-              <Alert className="mb-4 bg-red-900 border-red-700">
-                <AlertDescription className="text-red-200">
-                  {localError}
-                </AlertDescription>
+              <Alert variant="destructive">
+                <AlertDescription>{localError}</AlertDescription>
               </Alert>
             )}
 
-            {/* Tabs for Store / Customer */}
+            {/* Login Type Tabs */}
             <Tabs
               value={loginType}
               onValueChange={(value) =>
                 setLoginType(value as "store" | "customer")
               }
-              className="mb-6"
             >
-              <TabsList className="grid w-full grid-cols-2 bg-gray-800 rounded-full">
-                <TabsTrigger
-                  value="store"
-                  className="data-[state=active]:!bg-emerald-600 data-[state=active]:!text-white border-none rounded-full"
-                >
-                  <Store className="w-4 h-4 mr-2" />
+              <TabsList className="grid  w-full grid-cols-2 gap-5">
+                <TabsTrigger value="store" className="flex items-center gap-2">
+                  <Store className="w-4 h-4" />
                   Store
                 </TabsTrigger>
-                <TabsTrigger
-                  value="customer"
-                  className="data-[state=active]:!bg-emerald-600 data-[state=active]:!text-white border-none rounded-full"
-                >
-                  <User className="w-4 h-4 mr-2" />
+                <TabsTrigger value="customer" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
                   Customer
                 </TabsTrigger>
               </TabsList>
             </Tabs>
 
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-4">
               {loginType === "store" ? (
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-300">
-                    Store Email
-                  </Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    required
-                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-emerald-400"
                     placeholder="store@example.com"
+                    required
                   />
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <Label htmlFor="phone_number" className="text-gray-300">
-                    Customer Phone Number
-                  </Label>
+                  <Label htmlFor="phone_number">Phone Number</Label>
                   <Input
                     id="phone_number"
                     name="phone_number"
                     type="tel"
                     value={formData.phone_number}
                     onChange={handleInputChange}
-                    required
-                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-emerald-400"
                     placeholder="+9779800000000"
+                    required
                   />
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-300">
-                  Password
-                </Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -258,27 +219,27 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleInputChange}
+                    placeholder="Enter your password"
+                    className="pr-10"
                     required
-                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-emerald-400 pr-10"
-                    placeholder="••••••••"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="text-right">
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-emerald-400 hover:text-emerald-300"
+                  className="text-sm text-primary hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -287,7 +248,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isAuthenticating}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-md transition-colors btn-glow"
+                className="w-full"
               >
                 {isAuthenticating ? (
                   <>
@@ -300,20 +261,18 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-gray-400">
-                {"Don't have an account?"}{" "}
-                <Link
-                  href={
-                    loginType === "store"
-                      ? "/register/registerStoreAdmin"
-                      : "/register/registerCustomer"
-                  }
-                  className="text-emerald-400 hover:text-emerald-300 font-medium"
-                >
-                  Create account
-                </Link>
-              </p>
+            <div className="text-center text-sm">
+              <span className="text-muted-foreground">Don't have an account? </span>
+              <Link
+                href={
+                  loginType === "store"
+                    ? "/register/registerStoreAdmin"
+                    : "/register/registerCustomer"
+                }
+                className="text-primary hover:underline font-medium"
+              >
+                Create account
+              </Link>
             </div>
           </CardContent>
         </Card>

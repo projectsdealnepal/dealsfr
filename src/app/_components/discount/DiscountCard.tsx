@@ -27,7 +27,6 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
     });
   };
 
-  const { mainCategoryData, subCategoryData } = useAppSelector((s) => s.category)
   const { bannerData } = useAppSelector((s) => s.banner)
   const { layoutData } = useAppSelector((s) => s.layout)
 

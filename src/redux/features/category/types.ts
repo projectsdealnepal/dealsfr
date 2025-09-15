@@ -9,3 +9,13 @@ export interface SubCategoryItem {
   main_category: string,
   created_by: 0,
 }
+
+export interface CategoryItem {
+  id: number;
+  name: string;
+  parent: number | null;
+  created_at: string;
+  updated_at: string
+  children: CategoryItem[]
+}
+

@@ -1,24 +1,21 @@
 import {
-  getMainCategory,
-  getSubCategory,
+  getCategories,
 } from "@/redux/features/category/category";
 import {
+  CategoryItem,
   MainCategoryItem,
-  SubCategoryItem,
 } from "@/redux/features/category/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CategoryState {
-  mainCategoryData: MainCategoryItem[] | null;
-  subCategoryData: SubCategoryItem[] | null;
+  categoryData: CategoryItem[] | null;
   categoryLoading: boolean;
   categoryError: string | null;
 }
 
 // Initial state
 const initialState: CategoryState = {
-  mainCategoryData: null,
-  subCategoryData: null,
+  categoryData: null,
   categoryLoading: false,
   categoryError: null,
 };
@@ -28,8 +25,7 @@ const categorySlice = createSlice({
   initialState,
   reducers: {
     clearCategoryState(state) {
-      state.mainCategoryData = null;
-      state.subCategoryData = null;
+      state.categoryData = null;
       state.categoryLoading = false;
       state.categoryError = null;
     },
@@ -37,43 +33,24 @@ const categorySlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Main Category Cases
-      .addCase(getMainCategory.pending, (state) => {
+      .addCase(getCategories.pending, (state) => {
         state.categoryLoading = true;
         state.categoryError = null;
       })
-      .addCase(getMainCategory.fulfilled, (state, action) => {
+      .addCase(getCategories.fulfilled, (state, action) => {
         state.categoryLoading = false;
-        state.mainCategoryData = action.payload;
+        state.categoryData = action.payload;
         state.categoryError = null;
       })
       .addCase(
-        getMainCategory.rejected,
+        getCategories.rejected,
         (state, action: PayloadAction<string | undefined>) => {
-          state.mainCategoryData = null;
+          state.categoryData = null;
           state.categoryLoading = false;
           state.categoryError =
-            action.payload || "Failed to fetch main categories";
+            action.payload || "Failed to fetch categories";
         }
       )
-      // Sub Category Cases
-      .addCase(getSubCategory.pending, (state) => {
-        state.categoryLoading = true;
-        state.categoryError = null;
-      })
-      .addCase(getSubCategory.fulfilled, (state, action) => {
-        state.categoryLoading = false;
-        state.subCategoryData = action.payload;
-        state.categoryError = null;
-      })
-      .addCase(
-        getSubCategory.rejected,
-        (state, action: PayloadAction<string | undefined>) => {
-          state.subCategoryData = null;
-          state.categoryLoading = false;
-          state.categoryError =
-            action.payload || "Failed to fetch sub categories";
-        }
-      );
   },
 });
 

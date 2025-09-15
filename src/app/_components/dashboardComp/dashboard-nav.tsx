@@ -110,7 +110,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <Sidebar className="mt-2 bg-background pt-20">
-        <SidebarContent className="px-2 md:px-3 py-4 bg-background border-r">
+        <SidebarContent className="px-2 md:px-3 py-4 bg-background ">
           <SidebarGroup>
             <SidebarGroupLabel className="text-primary text-xs uppercase tracking-wider font-semibold mb-3 px-2 md:px-3"></SidebarGroupLabel>
             <SidebarGroupContent>
@@ -135,7 +135,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="border-r p-2 md:p-4 bg-background">
+        <SidebarFooter className=" p-2 md:p-4 bg-background">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -192,7 +192,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Fixed Header */}
         {/**/}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b px-3 md:px-6 py-3 md:py-4 shadow-lg flex items-center justify-between">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b px-3 md:px-6 py-3 md:py-4  flex items-center justify-between">
           <div className="flex items-center space-x-2 md:space-x-4">
             {/* Mobile menu button (hamburger) - only on mobile */}
             <button
