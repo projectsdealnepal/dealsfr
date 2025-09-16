@@ -11,19 +11,14 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight, ChevronDown } from "lucide-react";
+import { CategoryItem } from "@/redux/features/category/types";
 
-interface Category {
-  id: number;
-  name: string;
-  parent?: number | null;
-  children: Category[];
-}
 
 interface CategorySelectorModalProps {
   open: boolean;
   onClose: () => void;
-  categories: Category[];
-  onSelect: (selectedIds: number[]) => void; // should return only clicked items
+  categories: CategoryItem[];
+  onSelect: (selectedIds: CategoryItem[]) => void;
 }
 
 export function CategorySelectorModal({
@@ -33,10 +28,10 @@ export function CategorySelectorModal({
   onSelect,
 }: CategorySelectorModalProps) {
   const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
-  const [clickedIds, setClickedIds] = React.useState<number[]>([]);
+  const [clickedItem, setClickedItem] = React.useState<CategoryItem[]>([]);
   const [expandedIds, setExpandedIds] = React.useState<Set<number>>(new Set());
 
-  const getAllChildIds = (cat: Category): number[] => {
+  const getAllChildIds = (cat: CategoryItem): number[] => {
     let ids: number[] = [cat.id];
     for (const child of cat.children) {
       ids = ids.concat(getAllChildIds(child));
@@ -44,7 +39,7 @@ export function CategorySelectorModal({
     return ids;
   };
 
-  const toggleSelection = (cat: Category) => {
+  const toggleSelection = (cat: CategoryItem) => {
     const allIds = getAllChildIds(cat);
 
     setSelectedIds((prev) => {
@@ -58,10 +53,10 @@ export function CategorySelectorModal({
       }
     });
 
-    setClickedIds((prev) =>
-      prev.includes(cat.id)
-        ? prev.filter((id) => id !== cat.id)
-        : [...prev, cat.id]
+    setClickedItem((prev) =>
+      prev.includes(cat)
+        ? prev.filter((item) => item.id !== cat.id)
+        : [...prev, cat]
     );
   };
 
@@ -75,7 +70,7 @@ export function CategorySelectorModal({
   };
 
   // Recursive tree node
-  const TreeNode: React.FC<{ cat: Category; level?: number }> = ({
+  const TreeNode: React.FC<{ cat: CategoryItem; level?: number }> = ({
     cat,
     level = 0,
   }) => {
@@ -139,7 +134,7 @@ export function CategorySelectorModal({
           </Button>
           <Button
             onClick={() => {
-              onSelect(clickedIds); // return only clicked items
+              onSelect(clickedItem); // return only clicked items
               onClose();
             }}
           >

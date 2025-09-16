@@ -18,22 +18,21 @@ export const getProducts = createAsyncThunk<
   }
 });
 
-export const searchProduct = createAsyncThunk<
-  ApiResponse,
-  string,
-  { rejectValue: string }
->
-  ("product/search", async (value, thunkAPI) => {
-    try {
-      const response = await api.get(`/api/items/search_all/?name=${value}`)
-      return response.data;
-    } catch (e: any) {
-      return thunkAPI.rejectWithValue(
-        e.response?.data?.message || e.message || "search failed"
-      )
-    };
-  })
 
+export const filterProducts = createAsyncThunk<
+  ApiResponse,
+  { s_id: number, filter: string },
+  { rejectValue: string }
+>("product/filter/get", async ({ s_id, filter }, thunkAPI) => {
+  try {
+    const response = await api.get(`/products/store/${s_id}/?${filter}`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || error.message || "Registration failed"
+    );
+  }
+});
 
 export const createProduct = createAsyncThunk<
   AxiosResponse<ProductItem>,

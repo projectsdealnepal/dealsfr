@@ -16,10 +16,13 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { clearTokens } from "@/lib/auth";
 import { RootState } from "@/redux/store";
@@ -75,17 +78,127 @@ const navigationItems = [
   },
 ];
 
+function DashboardSidebar() {
+  const { userData } = useSelector((state: RootState) => state.userData);
+  const { state } = useSidebar();
+
+  const handleLogout = () => {
+    clearTokens();
+    window.location.href = "/loginUser";
+  };
+
+  const userInitials = `${userData?.first_name?.[0] || ''}${userData?.last_name?.[0] || ''}`;
+
+  return (
+    <Sidebar collapsible="icon" className="mt-2 pt-20">
+
+
+      <SidebarContent className="px-2 md:px-3 py-4">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link
+                      href={item.href}
+                      className="flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-all duration-200 group"
+                    >
+                      <item.icon />
+                      <span className="font-medium text-sm md:text-base truncate">
+                        {item.title}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="p-2 md:p-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage
+                  src={userData?.profile_image || "/placeholder.svg"}
+                  alt={`${userData?.first_name} ${userData?.last_name}`}
+                />
+                <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-xs font-semibold">
+                  {userInitials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">
+                  {userData?.first_name} {userData?.last_name}
+                </span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {userData?.email}
+                </span>
+              </div>
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            side="bottom"
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage
+                    src={userData?.profile_image || "/placeholder.svg"}
+                    alt={`${userData?.first_name} ${userData?.last_name}`}
+                  />
+                  <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-xs font-semibold">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {userData?.first_name} {userData?.last_name}
+                  </span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {userData?.email}
+                  </span>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <Link href="/dashboard/settingPage">
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
+              </DropdownMenuItem>
+            </Link>
+            <DropdownMenuItem>
+              <HelpCircle className="mr-2 h-4 w-4" />
+              Support
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
 export function DashboardNav({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { userData, userStateLoading: loading } = useSelector(
     (state: RootState) => state.userData
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleLogout = () => {
-    clearTokens();
-    window.location.href = "/loginUser";
-  };
 
   // Show loading state while user data is being fetched
   if (loading) {
@@ -105,95 +218,26 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  const userInitials = "Avatar";
+  const handleLogout = () => {
+    clearTokens();
+    window.location.href = "/loginUser";
+  };
+
+  const userInitials = `${userData.first_name?.[0] || ''}${userData.last_name?.[0] || ''}`;
 
   return (
     <SidebarProvider>
-      <Sidebar className="mt-2 bg-background pt-20">
-        <SidebarContent className="px-2 md:px-3 py-4 bg-background ">
-          <SidebarGroup>
-            <SidebarGroupLabel className="text-primary text-xs uppercase tracking-wider font-semibold mb-3 px-2 md:px-3"></SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu className="space-y-1">
-                {navigationItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={item.href}
-                        className="flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-all duration-200 group"
-                      >
-                        <item.icon className="h-4 w-4 md:h-5 md:w-5 text-primary transition-colors flex-shrink-0" />
-                        <span className="font-medium text-sm md:text-base truncate">
-                          {item.title}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-
-        <SidebarFooter className=" p-2 md:p-4 bg-background">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-full h-[40px] md:h-[50px] cursor-pointer justify-start space-x-2 md:space-x-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground p-2 md:p-3 rounded-lg transition-all duration-200"
-              >
-                <Avatar className="h-7 w-7 md:h-9 md:w-9 flex-shrink-0">
-                  <AvatarImage
-                    src={userData.profile_image || "/placeholder.svg"}
-                    alt={`${userData.first_name} ${userData.last_name}`}
-                  />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs md:text-sm font-semibold">
-                    {userInitials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 text-left min-w-0">
-                  <div className="text-xs md:text-sm font-semibold truncate text-foreground">
-                    {userData.first_name} {userData.last_name}
-                  </div>
-                  <div className="text-xs text-muted-foreground truncate">
-                    {userData.email}
-                  </div>
-                </div>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 md:w-56">
-              <DropdownMenuLabel className="text-foreground font-semibold text-sm md:text-base">
-                My Account
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <Link href="/dashboard/settingPage">
-                <DropdownMenuItem className="text-muted-foreground text-sm">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuItem className="text-muted-foreground text-sm">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                Support
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="text-destructive focus:bg-destructive/10 text-sm"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarFooter>
-      </Sidebar>
+      <DashboardSidebar />
 
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Fixed Header */}
-        {/**/}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b px-3 md:px-6 py-3 md:py-4  flex items-center justify-between">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b px-3 md:px-6 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2 md:space-x-4">
+            {/* Sidebar trigger for desktop */}
+            <div className="hidden md:block">
+              <SidebarTrigger className="-ml-1" />
+            </div>
+
             {/* Mobile menu button (hamburger) - only on mobile */}
             <button
               className="md:hidden text-muted-foreground hover:text-foreground p-2 rounded-md focus:outline-none"
@@ -202,6 +246,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-6 w-6" />
             </button>
+
             {/* Logo */}
             <div className="flex flex-col items-start space-y-1">
               <div className="relative h-6 w-24 md:h-8 md:w-32">
@@ -217,7 +262,8 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </div>
-          {/* Notification Bell and user dropdown (unchanged) */}
+
+          {/* Notification Bell */}
           <div className="flex items-center space-x-2 md:space-x-4">
             <Button
               variant="ghost"
@@ -232,7 +278,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
 
         {/* Mobile full-screen menu overlay */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 bg-background/95 flex flex-col">
+          <div className="fixed inset-0 z-50 bg-background/95 flex flex-col md:hidden">
             <div className="flex items-center justify-between px-4 py-4 border-b">
               <span className="text-lg font-bold text-foreground">Menu</span>
               <button

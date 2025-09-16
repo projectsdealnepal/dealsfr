@@ -3,6 +3,14 @@ import { getSubCategory } from "@/redux/features/category/category";
 import { useAppDispatch } from "@/redux/hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import { JSX } from "react/jsx-runtime";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 
 export default function ProductsPage(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -177,258 +185,265 @@ export default function ProductsPage(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#111827" }}>
-      <div className="mx-auto max-w-6xl p-6 text-slate-100">
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-6xl p-6">
         <header className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Products
           </h1>
-          <button
+          <Button
+            variant="outline"
             onClick={() => {
               if (!confirm("Clear ALL products? This cannot be undone."))
                 return;
               setProducts([]);
             }}
-            className="rounded-2xl border border-slate-700 px-4 py-2 text-sm hover:bg-slate-800 active:scale-[.99]"
             title="Clear all products"
           >
             Clear All
-          </button>
+          </Button>
         </header>
 
         {/* Form */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
-            <div className="rounded-2xl border border-slate-700 bg-slate-900 shadow-sm">
-              <div className="border-b border-slate-800 p-4">
-                <h2 className="font-semibold">
+            <Card>
+              <CardHeader>
+                <CardTitle>
                   {editingId ? "Edit product" : "Add a product"}
-                </h2>
+                </CardTitle>
                 {error && (
-                  <p className="mt-2 rounded-lg bg-red-900/30 px-3 py-2 text-sm text-red-200">
-                    {error}
-                  </p>
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
                 )}
-              </div>
-              <form onSubmit={handleSubmit} className="p-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium">
-                    Main Category
-                  </label>
-                  <select
-                    className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-500"
-                    value={form.mainCategory}
-                    onChange={(e) => {
-                      const mc = e.target
-                        .value as (typeof MAIN_CATEGORIES)[number];
-                      setForm((f) => ({
-                        ...f,
-                        mainCategory: mc,
-                        subCategory: SUB_CATEGORIES[mc][0],
-                      }));
-                    }}
-                  >
-                    {MAIN_CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium">
-                    Sub Category
-                  </label>
-                  <select
-                    className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-500"
-                    value={form.subCategory}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, subCategory: e.target.value }))
-                    }
-                  >
-                    {SUB_CATEGORIES[
-                      form.mainCategory as keyof typeof SUB_CATEGORIES
-                    ].map((sc) => (
-                      <option key={sc} value={sc}>
-                        {sc}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium">
-                    Product Name
-                  </label>
-                  <input
-                    className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 outline-none focus:ring-2 focus:ring-slate-500"
-                    value={form.productName}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, productName: e.target.value }))
-                    }
-                    placeholder="e.g., Mechanical Keyboard"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium">Price</label>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="1"
-                      className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 outline-none focus:ring-2 focus:ring-slate-500"
-                      value={form.price}
-                      onChange={(e) =>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="mainCategory">Main Category</Label>
+                    <Select
+                      value={form.mainCategory}
+                      onValueChange={(value) => {
+                        const mc = value as (typeof MAIN_CATEGORIES)[number];
                         setForm((f) => ({
                           ...f,
-                          price: Number(e.target.value),
-                        }))
-                      }
-                      placeholder="e.g., 49.99"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium">
-                      Image URL
-                    </label>
-                    <input
-                      className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 outline-none focus:ring-2 focus:ring-slate-500"
-                      value={form.image}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, image: e.target.value }))
-                      }
-                      placeholder="https://..."
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium">
-                    Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 outline-none focus:ring-2 focus:ring-slate-500"
-                    value={form.description}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, description: e.target.value }))
-                    }
-                    placeholder="Optional details"
-                  />
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    className="rounded-2xl bg-slate-100 px-4 py-2 text-slate-900 shadow hover:opacity-90 active:scale-[.99]"
-                  >
-                    {editingId ? "Save Changes" : "Add Product"}
-                  </button>
-                  {editingId && (
-                    <button
-                      type="button"
-                      onClick={resetForm}
-                      className="rounded-2xl border border-slate-700 px-4 py-2 hover:bg-slate-800"
+                          mainCategory: mc,
+                          subCategory: SUB_CATEGORIES[mc][0],
+                        }));
+                      }}
                     >
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </form>
-            </div>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MAIN_CATEGORIES.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="subCategory">Sub Category</Label>
+                    <Select
+                      value={form.subCategory}
+                      onValueChange={(value) =>
+                        setForm((f) => ({ ...f, subCategory: value }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SUB_CATEGORIES[
+                          form.mainCategory as keyof typeof SUB_CATEGORIES
+                        ].map((sc) => (
+                          <SelectItem key={sc} value={sc}>
+                            {sc}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="productName">Product Name</Label>
+                    <Input
+                      id="productName"
+                      value={form.productName}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, productName: e.target.value }))
+                      }
+                      placeholder="e.g., Mechanical Keyboard"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="price">Price</Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        inputMode="decimal"
+                        step="1"
+                        value={form.price}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            price: Number(e.target.value),
+                          }))
+                        }
+                        placeholder="e.g., 49.99"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="image">Image URL</Label>
+                      <Input
+                        id="image"
+                        value={form.image}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, image: e.target.value }))
+                        }
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      rows={3}
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, description: e.target.value }))
+                      }
+                      placeholder="Optional details"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Button type="submit">
+                      {editingId ? "Save Changes" : "Add Product"}
+                    </Button>
+                    {editingId && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={resetForm}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
 
           {/* List & Controls */}
           <div className="lg:col-span-2">
             <div className="mb-3 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
               <div className="flex-1">
-                <input
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 outline-none focus:ring-2 focus:ring-slate-500"
+                <Input
                   placeholder="Search by name, category, description..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
               <div className="flex items-center gap-2">
-                <label className="text-sm text-slate-400">Sort</label>
-                <select
-                  className="rounded-2xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 outline-none focus:ring-2 focus:ring-slate-500"
+                <Label className="text-sm text-muted-foreground">Sort</Label>
+                <Select
                   value={sort}
-                  onChange={(e) => setSort(e.target.value as any)}
+                  onValueChange={(value) => setSort(value as any)}
                 >
-                  <option value="productName_asc">Name A–Z</option>
-                  <option value="productName_desc">Name Z–A</option>
-                  <option value="price_asc">Price Low → High</option>
-                  <option value="price_desc">Price High → Low</option>
-                </select>
+                  <SelectTrigger className="w-auto">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="productName_asc">Name A–Z</SelectItem>
+                    <SelectItem value="productName_desc">Name Z–A</SelectItem>
+                    <SelectItem value="price_asc">Price Low → High</SelectItem>
+                    <SelectItem value="price_desc">Price High → Low</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {filtered.map((p) => (
-                <article
-                  key={p.id}
-                  className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    {p.image ? (
-                      <img
-                        src={p.image}
-                        alt={p.productName}
-                        className="h-16 w-16 flex-none rounded-xl object-cover border border-slate-700"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = "none";
-                        }}
-                      />
-                    ) : null}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold leading-tight truncate">
-                        {p.productName}
-                      </h3>
-                      <p className="text-sm text-slate-400 truncate">
-                        {p.mainCategory} • {p.subCategory}
-                      </p>
-                      {p.description && (
-                        <p className="mt-2 text-sm text-slate-300 line-clamp-3">
-                          {p.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold">
-                        {p.price.toFixed(2)}
+                <Card key={p.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      {p.image ? (
+                        <img
+                          src={p.image}
+                          alt={p.productName}
+                          className="h-16 w-16 flex-none rounded-lg object-cover border"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                      ) : null}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold leading-tight truncate text-foreground">
+                          {p.productName}
+                        </h3>
+                        <div className="flex gap-1 mt-1">
+                          <Badge variant="secondary" className="text-xs">
+                            {p.mainCategory}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {p.subCategory}
+                          </Badge>
+                        </div>
+                        {p.description && (
+                          <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                            {p.description}
+                          </p>
+                        )}
                       </div>
-                      <div className="mt-3 flex items-center gap-2">
-                        <button
-                          onClick={() => handleEdit(p)}
-                          className="rounded-xl border border-slate-700 px-3 py-1.5 text-sm hover:bg-slate-800"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(p.id)}
-                          className="rounded-xl bg-red-600 px-3 py-1.5 text-sm text-white hover:opacity-90"
-                        >
-                          Delete
-                        </button>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-foreground">
+                          ${p.price.toFixed(2)}
+                        </div>
+                        <div className="mt-3 flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(p)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(p.id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </article>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
             {filtered.length === 0 && (
-              <div className="mt-8 rounded-2xl border border-dashed border-slate-700 p-8 text-center text-slate-400">
-                No products yet. Use the form to add one.
-              </div>
+              <Card className="mt-8">
+                <CardContent className="p-8 text-center text-muted-foreground">
+                  No products yet. Use the form to add one.
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
 
-        <footer className="mt-12 text-center text-xs text-slate-500">
+        <footer className="mt-12 text-center text-xs text-muted-foreground">
           <p>
             Data is stored in your browser (localStorage). Refreshing or
             navigating away will keep it intact.

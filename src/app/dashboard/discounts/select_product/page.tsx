@@ -9,7 +9,7 @@ import { getCategories } from "@/redux/features/category/category"
 
 const AddProducts = () => {
   const dispatch = useAppDispatch()
-  const { productData } = useAppSelector(s => s.product)
+  const { productList, productData } = useAppSelector(s => s.product)
   const { storeDetailData } = useAppSelector(s => s.store)
 
   console.log({ productData })
@@ -28,8 +28,8 @@ const AddProducts = () => {
 
   return (
     <div className="container mx-auto py-10">
-      {productData && (
-        <DataTable columns={columns} data={productData} />
+      {productList && (
+        <DataTable columns={columns} data={productList} />
       )}
     </div>
   )

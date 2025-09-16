@@ -23,10 +23,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, X } from "lucide-react";
 import Filter from "./filter";
 import { CategorySelectorModal } from "./CategoriesModal";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { filterProducts, getProducts } from "@/redux/features/product/product";
+import { CategoryItem } from "@/redux/features/category/types";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -44,8 +46,10 @@ export function DataTable<TData, TValue>({
     pageSize: 10,
   });
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<CategoryItem[]>([]);
   const { categoryData } = useAppSelector(s => s.category)
+  const { storeDetailData } = useAppSelector(s => s.store)
+  const dispatch = useAppDispatch()
 
   const table = useReactTable({
     data,
@@ -75,9 +79,9 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <div className="max-w-5xl">
+    <div className="">
       <div className=" rounded-md overscroll-none bg-card">
-        <div className="p-6">
+        <div className="pb-4">
           <div>
             <Button
               onClick={() => setOpen(true)}
@@ -89,20 +93,47 @@ export function DataTable<TData, TValue>({
 
           {/* Show selected */}
           {selected.length > 0 && (
-            <div className="mt-4 text-sm">
-              Selected IDs: {selected.join(", ")}
-            </div>
+            <>
+              {selected.length > 0 && (
+                <div className="relative inline-block group">
+                  {/* Clear button (shows on hover) */}
+                  <Button
+                    onClick={() => {
+                      dispatch(getProducts(storeDetailData?.id || 0))
+                      setSelected([])
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="absolute -top-3 -right-3 hidden group-hover:flex rounded-full h-6 w-6 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+
+                  {/* Selected list */}
+                  <div className="flex flex-wrap gap-2 p-2 border rounded-md">
+                    {selected.map((item) => (
+                      <span
+                        key={item.id}
+                        className="bg-gray-200 text-gray-800 px-2 py-1 rounded-md text-xs"
+                      >
+                        {item.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {categoryData && (
-
             <CategorySelectorModal
               open={open}
               onClose={() => setOpen(false)}
               categories={categoryData}
-              onSelect={(ids) => {
-                setSelected(ids);
-                console.log("Selected category IDs:", ids);
+              onSelect={(items) => {
+                setSelected(items);
+                dispatch(filterProducts({ s_id: storeDetailData?.id || 0, filter: `category=${items.map(i => i.id).join(',')}` }))
+                console.log("Selected category IDs:", items);
               }}
             />
           )}
@@ -114,7 +145,7 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                    className="h-12  text-left align-middle font-semibold text-muted-foreground"
                   >
                     {header.isPlaceholder ? null : (
                       <div className="flex flex-col gap-2">
@@ -152,7 +183,7 @@ export function DataTable<TData, TValue>({
                   className="border-b transition-colors  hover:bg-muted/50 data-[state=selected]:bg-muted"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-2 max-w-screen whitespace-normal break-words py-1">
+                    <TableCell key={cell.id} className="px-2 whitespace-normal break-words py-1">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
