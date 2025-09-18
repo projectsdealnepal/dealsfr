@@ -1,9 +1,11 @@
+import { CategoryItem } from "@/redux/features/category/types";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
 export function capitalize(word: string) {
   if (!word) return "";
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -22,3 +24,16 @@ export const extractErrorMessage = (error: any, defaultMessage = "Something went
 
   return error?.message || defaultMessage;
 };
+
+
+
+//flat the category tree
+
+export const flaternCategoriesList = (list: CategoryItem[]): CategoryItem[] => {
+  return list.flatMap(cat => {
+    const { children, ...rest } = cat
+    const current: CategoryItem = { ...rest, children: [] }
+
+    return [current, ...flaternCategoriesList(children || [])]
+  })
+}

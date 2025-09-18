@@ -23,9 +23,19 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  ChevronDown,
+  X
+} from "lucide-react";
 import Filter from "./filter";
-import { CategorySelectorModal } from "./CategoriesModal";
+import { CategorySelectorSheet } from "./CategoriesSheet";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { filterProducts, getProducts } from "@/redux/features/product/product";
 import { CategoryItem } from "@/redux/features/category/types";
@@ -41,31 +51,40 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<CategoryItem[]>([]);
   const { categoryData } = useAppSelector(s => s.category)
   const { storeDetailData } = useAppSelector(s => s.store)
+  const { productData, productList } = useAppSelector(s => s.product)
   const dispatch = useAppDispatch()
 
   const table = useReactTable({
     data,
     columns,
+    manualPagination: true,   // 🚀 Server-side pagination
+    manualSorting: true,      // 🚀 Server-side sorting
+    manualFiltering: true,    // 🚀 Server-side filtering
+    pageCount: Math.ceil(productData?.count! / pageSize),
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
     enableRowSelection: true,
     state: {
       sorting,
       rowSelection,
-      pagination,
+      pagination: { pageIndex: page - 1, pageSize },
+    },
+    onPaginationChange: (updater) => {
+      const newState =
+        typeof updater === "function" ? updater({ pageIndex: page - 1, pageSize }) : updater;
+
+      setPage(newState.pageIndex + 1); // convert back to 1-based
+      setPageSize(newState.pageSize);
     },
   });
 
@@ -126,7 +145,7 @@ export function DataTable<TData, TValue>({
           )}
 
           {categoryData && (
-            <CategorySelectorModal
+            <CategorySelectorSheet
               open={open}
               onClose={() => setOpen(false)}
               categories={categoryData}
