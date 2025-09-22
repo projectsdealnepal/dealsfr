@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://thedealsfr.com"), // ✅ Fixes warning
+  metadataBase: new URL("https://thedealsfr.com"),
   title: "TheDealsFr - Discover Local Deals, Effortlessly",
   description:
     "TheDealsFr connects you with exclusive discounts from nearby stores. Save smarter, support local businesses in your community.",
@@ -66,9 +66,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
 };
 
 export default function RootLayout({
@@ -77,9 +74,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en"  >
+    <html lang="en "  >
       <body
-        className={`${geistSans.variable} ${geistMono.variable}  antialiased min-h-screen `}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen `}
       >
         <StoreProvider>{children}</StoreProvider>
         <Toaster />

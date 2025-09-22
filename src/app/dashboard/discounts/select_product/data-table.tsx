@@ -13,16 +13,18 @@ import {
 } from "@/components/ui/table";
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  OnChangeFn,
   PaginationState,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -39,6 +41,8 @@ import { CategorySelectorSheet } from "./CategoriesSheet";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { filterProducts, getProducts } from "@/redux/features/product/product";
 import { CategoryItem } from "@/redux/features/category/types";
+import { ProductItem } from "@/redux/features/product/types";
+import { addProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,25 +54,93 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  // const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<CategoryItem[]>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [selected, setSelected] = useState<CategoryItem>();
   const { categoryData } = useAppSelector(s => s.category)
   const { storeDetailData } = useAppSelector(s => s.store)
-  const { productData, productList } = useAppSelector(s => s.product)
+  const { productData, productList, productLoading, addedDisountProducts, rowSelection } = useAppSelector(s => s.product)
   const dispatch = useAppDispatch()
+
+
+  // Build query parameters for server requests
+  const buildQueryParams = useCallback(() => {
+    const params = new URLSearchParams();
+
+    // Pagination
+    params.set('page', (pagination.pageIndex + 1).toString());
+    params.set('page_size', pagination.pageSize.toString());
+
+    // Sorting
+    if (sorting.length > 0) {
+      const sortParam = sorting.map(sort =>
+        sort.desc ? `-${sort.id}` : sort.id
+      ).join(',');
+      params.set('ordering', sortParam);
+    }
+
+    // Column filters (search)
+    const nameFilter = columnFilters.find(filter => filter.id === 'name');
+    if (nameFilter && nameFilter.value) {
+      params.set('search', nameFilter.value as string);
+    }
+
+    // Category filters
+    if (selected) {
+      params.set('category', selected.id.toString());
+    }
+    return params.toString();
+  }, [pagination, sorting, columnFilters, selected]);
+
+  const handleRowSelectionChange = (updater: any) => {
+    const newSelection = typeof updater === 'function' ? updater(rowSelection) : updater;
+    //if the item is new(not present in the rowSelection)
+    console.log("newSelection", newSelection);
+    const changedRowId = Object.keys(newSelection).find(
+      key => newSelection[key] !== rowSelection[key]
+    );
+    dispatch(setRowSelection(newSelection));
+
+    const value = {
+      items: newSelection,
+      rowId: changedRowId ? Number(changedRowId) : undefined
+    }
+    dispatch(addProductOnDiscount(value))
+  };
+  console.log({ addedDisountProducts })
+
+  // Fetch data when any parameter changes
+  useEffect(() => {
+    if (storeDetailData?.id) {
+      const queryString = buildQueryParams();
+      if (queryString) {
+        dispatch(filterProducts({
+          s_id: storeDetailData.id,
+          filter: queryString
+        }));
+      } else {
+        dispatch(getProducts(storeDetailData.id));
+      }
+    }
+  }, [dispatch, storeDetailData?.id, buildQueryParams]);
 
   const table = useReactTable({
     data,
     columns,
     manualPagination: true,   // 🚀 Server-side pagination
+    getRowId: (row: any) => row.id.toString(),
     manualSorting: true,      // 🚀 Server-side sorting
     manualFiltering: true,    // 🚀 Server-side filtering
-    pageCount: Math.ceil(productData?.count! / pageSize),
+    pageCount: productData ? Math.ceil(productData?.count / pagination.pageSize) : 0,
     onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
+    onRowSelectionChange: handleRowSelectionChange, // Use custom handler
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -76,15 +148,9 @@ export function DataTable<TData, TValue>({
     enableRowSelection: true,
     state: {
       sorting,
+      columnFilters,
       rowSelection,
-      pagination: { pageIndex: page - 1, pageSize },
-    },
-    onPaginationChange: (updater) => {
-      const newState =
-        typeof updater === "function" ? updater({ pageIndex: page - 1, pageSize }) : updater;
-
-      setPage(newState.pageIndex + 1); // convert back to 1-based
-      setPageSize(newState.pageSize);
+      pagination,
     },
   });
 
@@ -95,6 +161,29 @@ export function DataTable<TData, TValue>({
     if (sortDirection === "asc") return <ArrowUp className="ml-2 h-4 w-4" />;
     if (sortDirection === "desc") return <ArrowDown className="ml-2 h-4 w-4" />;
     return <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />;
+  };
+
+  const handleCategorySelect = (items: CategoryItem) => {
+    setSelected(items);
+    // Reset to first page when filtering
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+  };
+
+  const handleClearCategories = () => {
+    setSelected(undefined);
+    // Reset to first page when clearing filters
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPagination(prev => ({
+      pageIndex: 0, // Reset to first page when changing page size
+      pageSize: newPageSize,
+    }));
+  };
+  const handleGoToPage = (pageNumber: number) => {
+    const pageIndex = Math.max(0, Math.min(pageNumber - 1, table.getPageCount() - 1));
+    setPagination(prev => ({ ...prev, pageIndex }));
   };
 
   return (
@@ -110,38 +199,27 @@ export function DataTable<TData, TValue>({
             </Button>
           </div>
 
-          {/* Show selected */}
-          {selected.length > 0 && (
-            <>
-              {selected.length > 0 && (
-                <div className="relative inline-block group">
-                  {/* Clear button (shows on hover) */}
-                  <Button
-                    onClick={() => {
-                      dispatch(getProducts(storeDetailData?.id || 0))
-                      setSelected([])
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    className="absolute -top-3 -right-3 hidden group-hover:flex rounded-full h-6 w-6 p-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+          {/* Show selected categories */}
+          {selected && (
+            <div className="relative inline-block group">
+              <Button
+                onClick={handleClearCategories}
+                variant="ghost"
+                size="sm"
+                className="absolute -top-3 -right-3 hidden group-hover:flex rounded-full h-6 w-6 p-0"
+                disabled={productLoading}
+              >
+                <X className="h-4 w-4" />
+              </Button>
 
-                  {/* Selected list */}
-                  <div className="flex flex-wrap gap-2 p-2 border rounded-md">
-                    {selected.map((item) => (
-                      <span
-                        key={item.id}
-                        className="bg-gray-200 text-gray-800 px-2 py-1 rounded-md text-xs"
-                      >
-                        {item.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
+              <div className="flex flex-wrap gap-2 p-2 border rounded-md">
+                <span
+                  className="bg-gray-200 text-gray-800 px-2 py-1 rounded-md text-xs"
+                >
+                  {selected.name}
+                </span>
+              </div>
+            </div>
           )}
 
           {categoryData && (
@@ -149,10 +227,12 @@ export function DataTable<TData, TValue>({
               open={open}
               onClose={() => setOpen(false)}
               categories={categoryData}
-              onSelect={(items) => {
-                setSelected(items);
-                dispatch(filterProducts({ s_id: storeDetailData?.id || 0, filter: `category=${items.map(i => i.id).join(',')}` }))
-                console.log("Selected category IDs:", items);
+              onSelect={(item) => {
+                setSelected(item)
+                setPagination(prev => ({ ...prev, pageIndex: 0 }));
+                handleCategorySelect(item)
+                // dispatch(filterProducts({ s_id: storeDetailData?.id || 0, filter: `category=${item.id.toString()}` }))
+                console.log("Selected category IDs:", item);
               }}
             />
           )}
@@ -184,7 +264,11 @@ export function DataTable<TData, TValue>({
                           {header.column.getCanSort() && getSortIcon(header.column)}
                         </div>
                         {header.column.id === 'name' && (
-                          <Filter table={table} column={header.column} />
+                          <Filter
+                            table={table}
+                            resetPage={() => setPagination(prev => ({ ...prev, pageIndex: 0 }))}
+                            column={header.column}
+                          />
                         )}
                       </div>
                     )}
@@ -230,9 +314,8 @@ export function DataTable<TData, TValue>({
           </p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
-            }}
+            onValueChange={(value) => handlePageSizeChange(Number(value))}
+            disabled={productLoading}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
@@ -300,12 +383,13 @@ export function DataTable<TData, TValue>({
             type="number"
             min="1"
             max={table.getPageCount()}
-            defaultValue={table.getState().pagination.pageIndex + 1}
+            value={pagination.pageIndex + 1}
             onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
+              const page = e.target.value ? Number(e.target.value) : 1;
+              handleGoToPage(page);
             }}
             className="h-8 w-16"
+            disabled={productLoading}
           />
         </div>
       </div>
@@ -318,8 +402,8 @@ export function DataTable<TData, TValue>({
             {table.getFilteredRowModel().rows.length} row(s) selected.{" "}
           </>
         )}
-        Showing {table.getRowModel().rows.length} of{" "}
-        {table.getRowCount()} total rows.
+        {/* Showing {table.getRowModel().rows.length} of{" "} */}
+        {/* {table.getRowCount()} total rows. */}
       </div>
     </div>
   );

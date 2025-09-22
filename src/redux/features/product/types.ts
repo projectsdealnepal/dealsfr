@@ -73,3 +73,9 @@ export interface ActiveDiscount {
   created_by: number;
   applicable_branches: number[];
 }
+
+//add discount payload
+export interface AddProductOnDiscount {
+  items: Record<string, boolean>,
+  rowId: number | undefined
+}

@@ -36,7 +36,6 @@ export default function LayoutsPage() {
   useEffect(() => {
     if (layoutDeleteData) {
       toast.success("Layout deleted successfully.", { richColors: true })
-      if (storeId) dispatch(getLayout(storeId)); // Refresh list
       dispatch(clearLayoutDeleteState());
     }
     if (layoutDeleteError) {

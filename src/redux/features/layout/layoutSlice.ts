@@ -118,6 +118,7 @@ const layoutSlice = createSlice({
       .addCase(createLayout.fulfilled, (state, action) => {
         state.layoutStateLoading = false;
         state.layoutCreateData = action.payload;
+        state.layoutData = action.payload;
         state.layoutCreateError = null;
       })
       .addCase(

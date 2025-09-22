@@ -68,11 +68,11 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
         <div className="grid grid-cols-2 gap-2 text-sm text-[var(--muted-foreground)]">
           <div>
             <p className="font-semibold">Banner:</p>
-            <p>{bannerData?.find((i) => i.id === item.banner.id)?.name}</p>
+            <p>{item.banner.name}</p>
           </div>
           <div>
             <p className="font-semibold">Layout:</p>
-            <p>{layoutData?.find((i) => i.id === item.layout.id)?.name}</p>
+            <p>{item.layout.name}</p>
           </div>
         </div>
       </CardContent>

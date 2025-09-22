@@ -7,14 +7,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight, ChevronDown, Check } from "lucide-react";
 import { CategoryItem } from "@/redux/features/category/types";
-import { Input } from "@/components/ui/input";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { cn, flaternCategoriesList } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { filterProducts } from "@/redux/features/product/product";
 
@@ -23,7 +18,7 @@ interface CategorySelectorModalProps {
   open: boolean;
   onClose: () => void;
   categories: CategoryItem[];
-  onSelect: (selectedIds: CategoryItem[]) => void;
+  onSelect: (selectedIds: CategoryItem) => void;
 }
 
 export function CategorySelectorSheet({
@@ -63,7 +58,8 @@ export function CategorySelectorSheet({
     const isExpanded = expandedIds.has(cat.id);
     const handleCategorySelect = () => {
       console.log("cat", cat)
-      dispatch(filterProducts({ s_id: storeDetailData?.id || 0, filter: `category=${cat.id}` }))
+      onSelect(cat)
+      // dispatch(filterProducts({ s_id: storeDetailData?.id || 0, filter: `category=${cat.id}` }))
       onClose()
     }
     return (

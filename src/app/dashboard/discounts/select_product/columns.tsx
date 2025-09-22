@@ -3,24 +3,27 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductItem } from "@/redux/features/product/types";
 import { ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "./data-table";
+import { useAppSelector } from "@/redux/hooks";
 
 export const columns: ColumnDef<ProductItem>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => {
-          table.toggleAllPageRowsSelected(!!value)
-        }}
-        aria-label="Select all"
-      />
-    ),
+    // header: "S.N.",
+    // header: ({ table }) => (
+    //   <Checkbox
+    //     checked={table.getIsAllPageRowsSelected()}
+    //     onCheckedChange={(value) => {
+    //       table.toggleAllPageRowsSelected(!!value)
+    //     }}
+    //     aria-label="Select all"
+    //   />
+    // ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => {
-          row.toggleSelected(!!value)
+          row.toggleSelected()
         }}
         aria-label="Select row"
       />
@@ -33,7 +36,7 @@ export const columns: ColumnDef<ProductItem>[] = [
     accessorKey: "id",
     header: "ID",
     enableSorting: true,
-    cell: ({ row }) => (row.index + 1)
+    cell: ({ row }) => (row.original.id)
   },
   {
     accessorKey: "name",
@@ -106,3 +109,4 @@ export const columns: ColumnDef<ProductItem>[] = [
     enableSorting: true,
   },
 ];
+

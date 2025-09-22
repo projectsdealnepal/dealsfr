@@ -34,6 +34,22 @@ export const filterProducts = createAsyncThunk<
   }
 });
 
+export const fetchProducts = createAsyncThunk<
+  ApiResponse,
+  { s_id: number; filter?: string }, // Make filter optional
+  { rejectValue: string }
+>("product/fetch", async ({ s_id, filter = '' }, thunkAPI) => {
+  try {
+    const url = filter ? `/products/store/${s_id}/?${filter}` : `/products/store/${s_id}/`;
+    const response = await api.get(url);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || error.message || "Failed to fetch products"
+    );
+  }
+});
+
 export const createProduct = createAsyncThunk<
   AxiosResponse<ProductItem>,
   FormData,

@@ -1,5 +1,5 @@
 import { filterProducts, getProducts } from "@/redux/features/product/product";
-import { ApiResponse, ProductItem, } from "@/redux/features/product/types";
+import { AddProductOnDiscount, ApiResponse, ProductItem, } from "@/redux/features/product/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProductState {
@@ -8,6 +8,9 @@ interface ProductState {
   productLoading: boolean;
   productError: string | null;
 
+  //added Discount product
+  addedDisountProducts: ProductItem[];
+  rowSelection: Record<string, boolean>;
 }
 
 // Initial state
@@ -17,6 +20,9 @@ const initialState: ProductState = {
   productLoading: false,
   productError: null,
 
+  //added Discount product
+  addedDisountProducts: [],
+  rowSelection: {},
 };
 
 
@@ -24,11 +30,36 @@ const productSlice = createSlice({
   name: "product",
   initialState,
   reducers: {
+
     clearProductState(state) {
       state.productError = null;
       state.productList = null;
       state.productLoading = false;
     },
+
+    addProductOnDiscount(state, action: PayloadAction<AddProductOnDiscount>) {
+      const productIds = Object.keys(action.payload.items).map(Number)
+      if (action.payload.rowId) {
+        const product = state.productData?.results.find((item: ProductItem) => (item as ProductItem).id === action.payload.rowId);
+        if (product)
+          state.addedDisountProducts.push(product)
+      }
+      if (!action.payload.rowId) {
+        state.addedDisountProducts = state.addedDisountProducts.filter((product) => productIds.includes(product.id))
+      }
+    },
+
+    setProductOnDiscount(state, action: PayloadAction<ProductItem[]>) {
+      state.addedDisountProducts = action.payload
+    },
+    //row selection to determine the tick on checkbox
+    setRowSelection(state, action: PayloadAction<Record<string, boolean>>) {
+      state.rowSelection = action.payload;
+    },
+
+    clearAddedDiscountProducts(state) {
+      state.addedDisountProducts = []
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -39,7 +70,7 @@ const productSlice = createSlice({
       .addCase(getProducts.fulfilled, (state, action) => {
         state.productLoading = false;
         state.productData = action.payload;
-        state.productList = [...state.productList ?? [], ...action.payload.results];
+        state.productList = action.payload.results;
         state.productError = null;
       })
       .addCase(
@@ -73,5 +104,5 @@ const productSlice = createSlice({
   },
 });
 
-export const { clearProductState } = productSlice.actions;
+export const { clearProductState, clearAddedDiscountProducts, addProductOnDiscount, setRowSelection, setProductOnDiscount } = productSlice.actions;
 export default productSlice.reducer;

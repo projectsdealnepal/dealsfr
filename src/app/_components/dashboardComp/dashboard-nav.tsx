@@ -90,7 +90,7 @@ function DashboardSidebar() {
   const userInitials = `${userData?.first_name?.[0] || ''}${userData?.last_name?.[0] || ''}`;
 
   return (
-    <Sidebar collapsible="icon" className="mt-2 pt-20">
+    <Sidebar collapsible="icon" className="pt-16">
 
 
       <SidebarContent className="px-2 md:px-3 py-4">
