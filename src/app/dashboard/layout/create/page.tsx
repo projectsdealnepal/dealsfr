@@ -94,8 +94,8 @@ export default function CreateLayoutPage() {
   const totalItems = positions.reduce((sum, count) => sum + count, 0);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <div className="min-h-screen">
+      <div className="container mx-auto p-4">
         {/* Header */}
         <div className="flex flex-col gap-4">
           <Button

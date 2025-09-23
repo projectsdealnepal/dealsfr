@@ -6,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { getIndLayout, updateLayout } from '@/redux/features/layout/layout';
-import { clearLayoutUpdateState, clearLayoutState, clearIndLayoutState } from '@/redux/features/layout/layoutSlice';
+import { clearLayoutUpdateState, clearIndLayoutState } from '@/redux/features/layout/layoutSlice';
 import { LayoutCreatePayload } from '@/redux/features/layout/types';
 import InteractiveLayoutBuilder from '@/app/_components/layout/InteractiveLayoutBuilder';
 import { Button } from '@/components/ui/button';
@@ -140,8 +140,8 @@ export default function EditLayoutPage() {
   // Loading state
   if (layoutStateLoading && !indLayoutData) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <div className="min-h-screen">
+        <div className="container mx-auto p-4">
           <div className="space-y-4">
             <Skeleton className="h-6 w-32" />
             <div className="flex items-center gap-3">
@@ -213,8 +213,8 @@ export default function EditLayoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <div className="min-h-screen ">
+      <div className="container  mx-auto p-4 ">
         {/* Header */}
         <div className="flex flex-col gap-4">
           <Button

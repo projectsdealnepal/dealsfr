@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { clearBannerCreateState, clearBannerUpdateState } from "@/redux/features/banner/bannerSlice";
 
 const CreateBannerPage = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +30,14 @@ const CreateBannerPage = () => {
   const mobileFileInputRef = useRef<HTMLInputElement>(null);
   const webFileInputRef = useRef<HTMLInputElement>(null);
 
-  const { bannerStateLoading, bannerCreateError, bannerData } = useAppSelector((state) => state.banner);
+  const {
+    bannerStateLoading,
+    bannerCreateData,
+    bannerCreateError,
+    bannerData,
+    bannerUpdateData,
+    bannerUpdateError,
+  } = useAppSelector((state) => state.banner);
   const { storeDetailData } = useAppSelector(s => s.store)
 
   const [bannerName, setBannerName] = useState<string>("");
@@ -90,16 +98,38 @@ const CreateBannerPage = () => {
     try {
       if (bannerId) {
         await dispatch(updateBanner({ payload: formData, s_id: storeDetailData.id, b_id: bannerId }));
-        toast.success("Banner updated successfully!", { richColors: true });
       } else {
         await dispatch(createBanner({ payload: formData, s_id: storeDetailData.id }));
-        toast.success("Banner created successfully!", { richColors: true });
       }
       router.replace("/dashboard/banner");
     } catch (err) {
       toast.error(bannerCreateError || "Something went wrong.", { richColors: true })
     }
   };
+
+
+  useEffect(() => {
+    if (bannerCreateData) {
+      toast.success("Banner created successfully!", { richColors: true });
+    }
+    if (bannerCreateError) {
+      toast.error(bannerCreateError || "Something went wrong.", { richColors: true });
+    }
+
+    if (bannerUpdateData) {
+      toast.success("Banner updated successfully!", { richColors: true });
+    }
+    if (bannerUpdateError) {
+      toast.error(bannerUpdateError || "Something went wrong.", { richColors: true });
+    }
+
+    return () => {
+      dispatch(clearBannerCreateState())
+      dispatch(clearBannerUpdateState())
+    }
+
+  }, [bannerCreateError, bannerCreateData, bannerUpdateData, bannerUpdateError])
+
 
   const clearImage = (type: 'mobile' | 'web') => {
     if (type === 'mobile') {

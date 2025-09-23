@@ -53,9 +53,6 @@ export default function AddDiscountForm() {
     (s) => s.discount
   );
 
-  useEffect(() => {
-    dispatch(getBanner(1));
-  }, [dispatch]);
 
   const form = useForm<DiscountFormData>({
     defaultValues: {

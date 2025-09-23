@@ -12,6 +12,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlusCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import PageHeader from '@/components/SectionHeader';
 
 export default function LayoutsPage() {
   const dispatch = useAppDispatch();
@@ -108,22 +109,14 @@ export default function LayoutsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <header className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Store Layouts</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your product display layouts.
-          </p>
-        </div>
-        {layouts && layouts.length > 0 && (
-          <Button asChild>
-            <Link href="/dashboard/layout/create">
-              <PlusCircle className="mr-2 h-4 w-4" /> Create New Layout
-            </Link>
-          </Button>
-        )}
-      </header>
+    <div className="container mx-auto p-4">
+      <>
+        <PageHeader
+          title='Layouts'
+          subtitle='Layout define how you discounts product will be shown to the users.'
+          herf={"/dashboard/layout/create"}
+        />
+      </>
       {renderContent()}
     </div>
   );

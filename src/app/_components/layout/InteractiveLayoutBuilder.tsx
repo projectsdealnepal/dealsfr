@@ -51,7 +51,7 @@ export default function InteractiveLayoutBuilder({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="container mx-auto">
       <div className="bg-card rounded-xl shadow-sm border p-6">
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-card-foreground mb-1">Layout Builder</h3>

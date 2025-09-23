@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { deleteBanner } from "@/redux/features/banner/banner";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import { BannerCard } from "@/app/_components/banner/BannerCard";
+import PageHeader from "@/components/SectionHeader";
 
 const BannerPage = () => {
   const dispatch = useAppDispatch();
@@ -21,18 +22,20 @@ const BannerPage = () => {
           toast.success("Banner deleted successfully!");
         } catch (err) {
           await dispatch(deleteBanner({ s_id: storeDetailData.id, b_id: id }));
-          toast.success("Banner deleted successfully!");
         }
       }
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between text-foreground items-center mb-4">
-        <h1 className="text-2xl font-bold">Banners</h1>
-        <Button onClick={() => router.push("/dashboard/banner/create")}>Add Banner</Button>
-      </div>
+    <div className="container  mx-auto p-4">
+      <>
+        <PageHeader
+          title="Banner"
+          subtitle="Banner will be shown at the top of the discount detail."
+          herf="/dashboard/banner/create"
+        />
+      </>
       {bannerStateLoading && <p>Loading...</p>}
       {bannerError && <p className="text-red-500">{bannerError}</p>}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

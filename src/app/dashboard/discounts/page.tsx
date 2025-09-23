@@ -1,5 +1,6 @@
 "use client";
 import { DiscountCard } from "@/app/_components/discount/DiscountCard";
+import PageHeader from "@/components/SectionHeader";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Link from "next/link";
@@ -15,13 +16,14 @@ const StoreManager = () => {
   console.log("discount", discountData);
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between text-foreground items-center mb-4">
-        <h1 className="text-2xl text-green-600 font-semibold">Discount</h1>
-        <Link href="/dashboard/discounts/create">
-          <Button>Add Discount</Button>
-        </Link>
-      </div>
+    <div className="container mx-auto p-4">
+      <>
+        <PageHeader
+          title='Discounts'
+          subtitle='Discount will be shown to the user along with the banner layout and products on it.'
+          herf={"/dashboard/discounts/create"}
+        />
+      </>
 
       <div className="w-full my-8">
         {discountData && !discountLoading
