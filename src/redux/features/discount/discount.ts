@@ -1,7 +1,7 @@
 import api from "@/lib/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { DiscountItem, DiscountCreatePayload } from "./types";
+import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload } from "./types";
 
 export const getDiscount = createAsyncThunk<
   DiscountItem[],
@@ -39,11 +39,11 @@ export const createDiscount = createAsyncThunk<
 
 export const updateDiscount = createAsyncThunk<
   DiscountItem,
-  any,
+  { payload: DiscountUpdatePayload, s_id: number, d_id: number },
   { rejectValue: string }
->("userData/discount/update", async (payload, thunkAPI) => {
+>("userData/discount/update", async ({ payload, s_id, d_id }, thunkAPI) => {
   try {
-    const response = await api.patch("/api/discounts/", payload);
+    const response = await api.patch(`/products/${s_id}/discount/${d_id}/`, payload);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(

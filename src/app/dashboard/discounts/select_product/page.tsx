@@ -26,8 +26,12 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { object } from "zod";
 import { setProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice";
+import { updateDiscount } from "@/redux/features/discount/discount";
+import { useSearchParams } from "next/navigation";
 
 const AddProducts = () => {
+  const params = useSearchParams()
+  const id = params.get("id")
   const dispatch = useAppDispatch();
   const { productList } = useAppSelector((s) => s.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
@@ -41,15 +45,25 @@ const AddProducts = () => {
   }, [storeDetailData]);
 
   const handleRemoveSelectedItem = (id: number) => {
+    //filter the removed product and modify the redux state
     let modifiedSelected: Record<string, boolean> = {}
-    console.log({ id })
-    console.log({ addedDisountProducts })
-
     const modifiedArr = addedDisountProducts.filter(item => item.id != id)
     modifiedArr.forEach((item) => modifiedSelected[item.id.toString()] = true)
 
     dispatch(setRowSelection(modifiedSelected))
     dispatch(setProductOnDiscount(modifiedArr))
+  }
+
+  const handleAddProductToDiscount = () => {
+    const payload = {
+      product_ids: addedDisountProducts.map(i => i.id)
+    }
+    dispatch(updateDiscount({
+      payload,
+      s_id: storeDetailData?.id || 0,
+      d_id: id ? Number(id) : 0
+    }))
+
   }
 
   return (
@@ -101,8 +115,8 @@ const AddProducts = () => {
                         Products that will be included in the discount campaign
                       </DialogDescription>
                     </div>
-                    <Button size="sm" variant="default">
-                      + Add Product
+                    <Button size="sm" variant="default" onClick={handleAddProductToDiscount}>
+                      Add to discount.
                     </Button>
                   </div>
 

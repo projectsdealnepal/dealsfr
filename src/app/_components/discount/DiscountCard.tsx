@@ -96,7 +96,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
             Go Live
           </Button>
           <Button
-            onClick={() => router.push("/dashboard/discounts/select_product")}
+            onClick={() => router.push(`/dashboard/discounts/select_product?id=${item.id}`)}
             variant="outline"
             size="sm"
             className="min-w-30"

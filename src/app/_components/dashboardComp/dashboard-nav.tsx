@@ -91,9 +91,7 @@ function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="pt-16">
-
-
-      <SidebarContent className="px-2 md:px-3 py-4">
+      <SidebarContent className=" mt-2">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
@@ -117,7 +115,7 @@ function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-2 md:p-4">
+      <SidebarFooter className="">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
