@@ -43,15 +43,18 @@ import { filterProducts, getProducts } from "@/redux/features/product/product";
 import { CategoryItem } from "@/redux/features/category/types";
 import { ProductItem } from "@/redux/features/product/types";
 import { addProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice";
+import AddedProductsDialog from "@/app/_components/discount/AddedProductsDialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  id: string | null;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  id,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   // const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
@@ -190,13 +193,14 @@ export function DataTable<TData, TValue>({
     <div className="">
       <div className=" rounded-md overscroll-none bg-card">
         <div className="pb-4">
-          <div>
+          <div className="flex justify-between">
             <Button
               onClick={() => setOpen(true)}
               variant={"ghost"}>
               Categories
               <ChevronDown />
             </Button>
+            <AddedProductsDialog id={id} />
           </div>
 
           {/* Show selected categories */}
@@ -396,12 +400,12 @@ export function DataTable<TData, TValue>({
 
       {/* Row count information */}
       <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <>
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.{" "}
-          </>
-        )}
+        {/* {table.getFilteredSelectedRowModel().rows.length > 0 && ( */}
+        {/*   <> */}
+        {/*     {table.getFilteredSelectedRowModel().rows.length} of{" "} */}
+        {/*     {table.getFilteredRowModel().rows.length} row(s) selected.{" "} */}
+        {/*   </> */}
+        {/* )} */}
         {/* Showing {table.getRowModel().rows.length} of{" "} */}
         {/* {table.getRowCount()} total rows. */}
       </div>

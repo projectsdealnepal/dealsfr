@@ -12,7 +12,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlusCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import PageHeader from '@/components/SectionHeader';
+import PageHeader from '@/components/PageHeader';
 
 export default function LayoutsPage() {
   const dispatch = useAppDispatch();

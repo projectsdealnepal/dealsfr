@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Save, X, Grid3X3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import ChildRouteHeader from '@/components/ChildRouteHeader';
 
 type FormData = {
   name: string;
@@ -97,38 +98,14 @@ export default function CreateLayoutPage() {
     <div className="min-h-screen">
       <div className="container mx-auto p-4">
         {/* Header */}
-        <div className="flex flex-col gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="w-fit hover:bg-muted"
-          >
-            <Link href="/dashboard/layout" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Layouts
-            </Link>
-          </Button>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 dark:bg-primary/20">
-                <Grid3X3 className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                  Create New Layout
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Design a custom product display layout for your store
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <ChildRouteHeader
+          title='Create New Layout'
+          subtitle={" Design a custom product display layout for discounts. "}
+          backLink='/dashboard/layout'
+          backText='Back to Layouts'
+          titleIcon={<Grid3X3 className="h-5 w-5 text-primary" />}
+        />
         <Separator className="my-6" />
-
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Layout Details Card */}

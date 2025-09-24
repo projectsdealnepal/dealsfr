@@ -1,6 +1,6 @@
 "use client";
 import { DiscountCard } from "@/app/_components/discount/DiscountCard";
-import PageHeader from "@/components/SectionHeader";
+import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Link from "next/link";

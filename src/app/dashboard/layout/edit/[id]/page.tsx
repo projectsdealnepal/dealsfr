@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import ChildRouteHeader from '@/components/ChildRouteHeader';
 
 export const runtime = "edge"
 
@@ -216,46 +217,14 @@ export default function EditLayoutPage() {
     <div className="min-h-screen ">
       <div className="container  mx-auto p-4 ">
         {/* Header */}
-        <div className="flex flex-col gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="w-fit hover:bg-muted"
-          >
-            <Link href="/dashboard/layout" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Layouts
-            </Link>
-          </Button>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/20">
-                <Edit3 className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                  Edit Layout
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Modify your existing product display layout
-                </p>
-              </div>
-            </div>
-
-            {indLayoutData && (
-              <div className="flex items-center gap-2 ml-13">
-                <Badge variant="outline" className="text-xs">
-                  ID: {layoutId}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {indLayoutData.name}
-                </Badge>
-              </div>
-            )}
-          </div>
-        </div>
+        <ChildRouteHeader
+          title='Edit Layout'
+          subtitle={"Modify your existing product display layout"}
+          backLink='/dashboard/layout'
+          backText='Back to Layouts'
+          titleIcon={<Edit3 className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
+        />
 
         <Separator className="my-6" />
 

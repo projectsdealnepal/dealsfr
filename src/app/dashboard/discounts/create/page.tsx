@@ -20,8 +20,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Percent, Image, Layout, Tag } from "lucide-react";
-import { getBanner } from "@/redux/features/banner/banner";
+import { CalendarDays, Percent, Image, Layout, Tag, ArrowLeft, Grid3X3 } from "lucide-react";
 import { createDiscount } from "@/redux/features/discount/discount";
 import { clearCreateDiscountState } from "@/redux/features/discount/discountSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -29,6 +28,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import Link from "next/link";
+import ChildRouteHeader from "@/components/ChildRouteHeader";
 
 
 // Define form data type
@@ -104,35 +105,21 @@ export default function AddDiscountForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="">
+      <div className="container mx-auto p-4">
         <div className="space-y-6">
           {/* Header Section */}
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Create New Discount
-            </h1>
-            <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-              Set up promotional discounts to boost sales and engage customers
-            </p>
-          </div>
+          <ChildRouteHeader
+            title='Create New Discount'
+            subtitle={"Configure your discount settings and promotional details"}
+            backLink='/dashboard/discounts'
+            backText='Back to discounts'
+            titleIcon={<Tag className="h-5 w-5 text-primary" />}
+          />
+
+          <Separator className="my-6" />
 
           <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="space-y-4 pb-8">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Tag className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl sm:text-2xl">Discount Details</CardTitle>
-                  <CardDescription className="text-sm">
-                    Configure your discount settings and promotional details
-                  </CardDescription>
-                </div>
-              </div>
-              <Separator />
-            </CardHeader>
-
             <CardContent className="space-y-8">
               <Form {...form}>
                 <form

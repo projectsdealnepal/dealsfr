@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { BannerCard } from "@/app/_components/banner/BannerCard";
-import PageHeader from "@/components/SectionHeader";
+import PageHeader from "@/components/PageHeader";
 
 const BannerPage = () => {
   const dispatch = useAppDispatch();
