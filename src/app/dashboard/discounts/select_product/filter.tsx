@@ -1,11 +1,10 @@
 import { Input } from "@/components/ui/input"
-import { Column, PaginationState, Table } from "@tanstack/react-table"
+import { Column, Table } from "@tanstack/react-table"
 import { useEffect, useState } from "react"
 
 export default function Filter({
   column,
   resetPage,
-  table,
 }: {
   column: Column<any, any>
   table: Table<any>

@@ -4,18 +4,17 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { updateDiscount } from "@/redux/features/discount/discount"
 import { setProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice"
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
-import { List, PackageSearch, ShoppingCart, TableProperties, Trash2 } from "lucide-react"
+import { TableProperties, Trash2 } from "lucide-react"
 
 const AddedProductsDialog = ({ id }: { id: string | null }) => {
   const dispatch = useAppDispatch()
-  const { productList } = useAppSelector((s) => s.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { addedDisountProducts, rowSelection } = useAppSelector((s) => s.product);
+  const { addedDisountProducts } = useAppSelector((s) => s.product);
 
 
   const handleRemoveSelectedItem = (id: number) => {
     //filter the removed product and modify the redux state
-    let modifiedSelected: Record<string, boolean> = {}
+    const modifiedSelected: Record<string, boolean> = {}
     const modifiedArr = addedDisountProducts.filter(item => item.id != id)
     modifiedArr.forEach((item) => modifiedSelected[item.id.toString()] = true)
 

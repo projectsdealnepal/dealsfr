@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { Button } from "./ui/button"
-import { ArrowLeft, Grid3X3 } from "lucide-react"
-import { Separator } from "@radix-ui/react-dropdown-menu"
+import { ArrowLeft } from "lucide-react"
 import { ReactNode } from "react";
 
 interface ChildRouteHeaderProps {

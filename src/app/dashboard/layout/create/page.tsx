@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { createLayout } from '@/redux/features/layout/layout';
 import { clearLayoutCreateState } from '@/redux/features/layout/layoutSlice';
@@ -15,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, X, Grid3X3 } from 'lucide-react';
+import { Save, X, Grid3X3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import ChildRouteHeader from '@/components/ChildRouteHeader';

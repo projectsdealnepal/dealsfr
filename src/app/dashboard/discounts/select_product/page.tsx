@@ -1,30 +1,16 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { getCategories } from "@/redux/features/category/category";
 import { getProducts } from "@/redux/features/product/product";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Package, ShoppingCart, Tag, Trash2 } from "lucide-react";
+import { Package } from "lucide-react";
 import { useEffect } from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { object } from "zod";
-import { setProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice";
-import { updateDiscount } from "@/redux/features/discount/discount";
 import { useSearchParams } from "next/navigation";
 import ChildRouteHeader from "@/components/ChildRouteHeader";
 
@@ -34,7 +20,6 @@ const AddProducts = () => {
   const dispatch = useAppDispatch();
   const { productList } = useAppSelector((s) => s.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { addedDisountProducts, rowSelection } = useAppSelector((s) => s.product);
 
   useEffect(() => {
     if (storeDetailData) {
@@ -43,26 +28,7 @@ const AddProducts = () => {
     }
   }, [storeDetailData]);
 
-  const handleRemoveSelectedItem = (id: number) => {
-    //filter the removed product and modify the redux state
-    let modifiedSelected: Record<string, boolean> = {}
-    const modifiedArr = addedDisountProducts.filter(item => item.id != id)
-    modifiedArr.forEach((item) => modifiedSelected[item.id.toString()] = true)
 
-    dispatch(setRowSelection(modifiedSelected))
-    dispatch(setProductOnDiscount(modifiedArr))
-  }
-
-  const handleAddProductToDiscount = () => {
-    const payload = {
-      product_ids: addedDisountProducts.map(i => i.id)
-    }
-    dispatch(updateDiscount({
-      payload,
-      s_id: storeDetailData?.id || 0,
-      d_id: id ? Number(id) : 0
-    }))
-  }
 
   return (
     <div className="container mx-auto p-4">

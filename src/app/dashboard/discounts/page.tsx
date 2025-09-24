@@ -1,13 +1,10 @@
 "use client";
 import { DiscountCard } from "@/app/_components/discount/DiscountCard";
 import PageHeader from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import Link from "next/link";
+import { useAppSelector } from "@/redux/hooks";
 import React, { useEffect } from "react";
 
 const StoreManager = () => {
-  const dispatch = useAppDispatch();
   const { discountData, discountStateLoading: discountLoading } = useAppSelector((s) => s.discount);
 
   useEffect(() => {

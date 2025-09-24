@@ -2,18 +2,15 @@
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getBranchesList, getStoreDetail } from "@/redux/features/store/store";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useEffect } from "react";
+import { useAppSelector } from "@/redux/hooks";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const dispatch = useAppDispatch();
   const { userData, userStateLoading, userError } = useAppSelector(
     (state) => state.userData
   );
-  const { branchesData, storeDetailData } = useAppSelector((state) => state.store);
+  const { storeDetailData } = useAppSelector((state) => state.store);
 
   // Load store details and branches if user has managed stores
   // useEffect(() => {
@@ -76,7 +73,7 @@ export default function DashboardPage() {
           Welcome back, {userData.first_name}!
         </h1>
         <p className="text-muted-foreground">
-          Here's what's happening with your store today.
+          {` Here's what's happening with your store today. `}
         </p>
       </div>
 

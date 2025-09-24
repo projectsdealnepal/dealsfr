@@ -262,7 +262,7 @@ export default function LoginPage() {
             </form>
 
             <div className="text-center text-sm">
-              <span className="text-muted-foreground">Don't have an account? </span>
+              <span className="text-muted-foreground">{` Don't have an account?`} </span>
               <Link
                 href={
                   loginType === "store"

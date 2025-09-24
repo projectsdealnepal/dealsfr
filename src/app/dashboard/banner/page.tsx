@@ -1,16 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { deleteBanner } from "@/redux/features/banner/banner";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import { toast } from "sonner";
 import { BannerCard } from "@/app/_components/banner/BannerCard";
 import PageHeader from "@/components/PageHeader";
 
 const BannerPage = () => {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const { bannerData, bannerStateLoading, bannerError } = useAppSelector((state) => state.banner);
   const { storeDetailData } = useAppSelector(s => s.store)
 

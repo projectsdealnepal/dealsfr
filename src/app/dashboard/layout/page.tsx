@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
-import { getLayout, deleteLayout, } from '@/redux/features/layout/layout';
-import { clearLayoutDeleteState, clearLayoutState, } from '@/redux/features/layout/layoutSlice';
+import { deleteLayout, } from '@/redux/features/layout/layout';
+import { clearLayoutDeleteState } from '@/redux/features/layout/layoutSlice';
 import LayoutCard from '@/app/_components/layout/LayoutCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';

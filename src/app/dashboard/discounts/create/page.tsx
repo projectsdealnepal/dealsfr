@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -20,7 +20,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Percent, Image, Layout, Tag, ArrowLeft, Grid3X3 } from "lucide-react";
+import { CalendarDays, Percent, Image, Layout, Tag } from "lucide-react";
 import { createDiscount } from "@/redux/features/discount/discount";
 import { clearCreateDiscountState } from "@/redux/features/discount/discountSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -28,7 +28,6 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import Link from "next/link";
 import ChildRouteHeader from "@/components/ChildRouteHeader";
 
 

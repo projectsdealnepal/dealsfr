@@ -79,8 +79,10 @@ export default function LayoutCard({ layout, onDelete, isDeleting }: LayoutCardP
             <DialogHeader>
               <DialogTitle>Are you absolutely sure?</DialogTitle>
               <DialogDescription>
-                This action cannot be undone. This will permanently delete the layout
-                named "{layout.name}".
+                {
+                  `This action cannot be undone. This will permanently delete the layout
+named "${layout.name}".`
+                }
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

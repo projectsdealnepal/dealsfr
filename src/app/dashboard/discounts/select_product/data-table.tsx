@@ -19,7 +19,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  OnChangeFn,
   PaginationState,
   SortingState,
   useReactTable,
@@ -41,7 +40,6 @@ import { CategorySelectorSheet } from "./CategoriesSheet";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { filterProducts, getProducts } from "@/redux/features/product/product";
 import { CategoryItem } from "@/redux/features/category/types";
-import { ProductItem } from "@/redux/features/product/types";
 import { addProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice";
 import AddedProductsDialog from "@/app/_components/discount/AddedProductsDialog";
 
@@ -67,7 +65,7 @@ export function DataTable<TData, TValue>({
   const [selected, setSelected] = useState<CategoryItem>();
   const { categoryData } = useAppSelector(s => s.category)
   const { storeDetailData } = useAppSelector(s => s.store)
-  const { productData, productList, productLoading, addedDisountProducts, rowSelection } = useAppSelector(s => s.product)
+  const { productData, productLoading, addedDisountProducts, rowSelection } = useAppSelector(s => s.product)
   const dispatch = useAppDispatch()
 
 
@@ -179,7 +177,7 @@ export function DataTable<TData, TValue>({
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
-    setPagination(prev => ({
+    setPagination(() => ({
       pageIndex: 0, // Reset to first page when changing page size
       pageSize: newPageSize,
     }));
