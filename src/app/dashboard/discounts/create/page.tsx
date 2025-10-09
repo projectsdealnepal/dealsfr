@@ -19,8 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Percent, Image, Layout, Tag } from "lucide-react";
+import { CalendarDays, Image, Layout, Tag } from "lucide-react";
 import { createDiscount } from "@/redux/features/discount/discount";
 import { clearCreateDiscountState } from "@/redux/features/discount/discountSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -29,7 +28,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import ChildRouteHeader from "@/components/ChildRouteHeader";
-
 
 // Define form data type
 export interface DiscountFormData {
@@ -60,8 +58,6 @@ export default function AddDiscountForm() {
       description: "",
       start_date: "",
       end_date: "",
-      discount_type: "PERCENTAGE",
-      value: "",
       banner: "",
       layout: "",
     },
@@ -72,7 +68,8 @@ export default function AddDiscountForm() {
       payload: {
         ...data,
         banner: Number(data.banner),
-        layout: Number(data.layout)
+        layout: Number(data.layout),
+        apply_to_all_branches: true,
       },
       s_id: storeDetailData?.id || 0
     }));
@@ -238,97 +235,6 @@ export default function AddDiscountForm() {
 
                   <Separator />
 
-                  {/* Discount Settings Section */}
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                      <Percent className="w-4 h-4" />
-                      DISCOUNT SETTINGS
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* Discount Type */}
-                      <FormField
-                        control={form.control}
-                        name="discount_type"
-                        rules={{ required: "Discount type is required" }}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-medium">Discount Type</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="h-12 bg-background/50">
-                                  <SelectValue placeholder="Choose discount type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="PERCENTAGE">
-                                  <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className={getDiscountTypeColor("main")}>
-                                      PERCENTAGE
-                                    </Badge>
-                                    <span>Percentage Off</span>
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="BOGO">
-                                  <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className={getDiscountTypeColor("secondary")}>
-                                      BOGO
-                                    </Badge>
-                                    <span>Buy X Get Y</span>
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="SPEND_GET">
-                                  <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className={getDiscountTypeColor("special")}>
-                                      SPEND_GET
-                                    </Badge>
-                                    <span> Spend X Get Y Off</span>
-                                  </div>
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Discount Percent */}
-                      <FormField
-                        control={form.control}
-                        name="value"
-                        rules={{
-                          required: "Discount percent is required",
-                          pattern: {
-                            value: /^-?\d*(\.\d+)?$/,
-                            message: "Invalid discount percentage",
-                          },
-                        }}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-medium">Discount Percentage</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Input
-                                  placeholder="15"
-                                  className="h-12 bg-background/50 pr-8"
-                                  {...field}
-                                />
-                                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                                  %
-                                </div>
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <Separator />
 
                   {/* Display Settings Section */}
                   <div className="space-y-6">

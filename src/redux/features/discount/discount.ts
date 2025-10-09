@@ -56,11 +56,11 @@ export const updateDiscount = createAsyncThunk<
 
 export const deleteDiscount = createAsyncThunk<
   AxiosResponse<{ message: string }>,
-  number,
+  { s_id: number, id: number },
   { rejectValue: string }
->("userData/discount/delete", async (id, thunkAPI) => {
+>("userData/discount/delete", async ({ s_id, id }, thunkAPI) => {
   try {
-    const response = await api.delete(`/api/discounts/${id}`);
+    const response = await api.delete(`/products/${s_id}/discount/${id}/`);
     return response;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(

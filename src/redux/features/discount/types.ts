@@ -11,11 +11,6 @@ export interface DiscountCreatePayload {
   start_date: string;
   end_date: string;
   status?: "active" | "inactive" | string;
-  discount_type: "PERCENTAGE" | "FLAT" | string;
-  value?: string;
-  buy_quantity?: number;
-  get_quantity?: number;
-  min_spend_amount?: string;
   apply_to_all_branches?: boolean;
   banner: number;
   layout: number;
@@ -54,11 +49,6 @@ export interface DiscountItem {
   start_date: string;
   end_date: string;
   status: "active" | "inactive" | string;
-  discount_type: "PERCENTAGE" | "FLAT" | string;
-  value: string;
-  buy_quantity: number;
-  get_quantity: number;
-  min_spend_amount: string;
   apply_to_all_branches: boolean;
   created_at: string;
   updated_at: string;

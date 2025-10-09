@@ -1,23 +1,30 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Eye, Pencil, Percent, Play, Plus, Trash2 } from "lucide-react";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Button } from "@/components/ui/button";
 import { DiscountItem } from "@/redux/features/discount/types";
 import { useRouter } from "next/navigation";
+import { deleteDiscount } from "@/redux/features/discount/discount";
 
 interface DiscountCardProps {
   item: DiscountItem;
-  // onEdit: () => void;
-  // onGoLive: () => void;
-  // onDelete: () => void;
-  // onPreview: () => void;
-  // onAddProduct: () => void;
 }
 
 export const DiscountCard: React.FC<DiscountCardProps> = ({
   item }) => {
   const router = useRouter()
+  const { storeDetailData } = useAppSelector(s => s.store)
+  const dispatch = useAppDispatch()
+
+  const handleDelete = (id: number) => {
+    const payload = {
+      s_id: storeDetailData?.id ?? 0,
+      id
+    }
+    dispatch(deleteDiscount(payload))
+  }
+
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -27,8 +34,6 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
     });
   };
 
-  const { bannerData } = useAppSelector((s) => s.banner)
-  const { layoutData } = useAppSelector((s) => s.layout)
 
   return (
     <Card className="w-full ">
@@ -49,11 +54,6 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-[var(--muted-foreground)] line-clamp-2">{item.description}</p>
-        <div className="flex items-center gap-2">
-          <span className="text-[var(--foreground)]">
-            {item.value} % Discount
-          </span>
-        </div>
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4" />
           <span className="">
@@ -115,6 +115,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
             variant="destructive"
             size="sm"
             className="min-w-30"
+            onClick={() => handleDelete(item.id)}
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete
