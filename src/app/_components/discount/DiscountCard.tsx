@@ -50,9 +50,8 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
       <CardContent className="space-y-4">
         <p className="text-[var(--muted-foreground)] line-clamp-2">{item.description}</p>
         <div className="flex items-center gap-2">
-          <Percent className="h-4 w-4 " />
           <span className="text-[var(--foreground)]">
-            {item.value}% Discount
+            {item.value} % Discount
           </span>
         </div>
         <div className="flex items-center gap-2">

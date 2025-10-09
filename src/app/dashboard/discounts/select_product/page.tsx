@@ -24,7 +24,6 @@ const AddProducts = () => {
   useEffect(() => {
     if (storeDetailData) {
       dispatch(getProducts(storeDetailData?.id));
-      dispatch(getCategories());
     }
   }, [storeDetailData]);
 

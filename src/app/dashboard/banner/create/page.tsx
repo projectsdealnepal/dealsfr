@@ -1,26 +1,45 @@
 "use client";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
+  createBanner,
+  getBanner,
+  updateBanner,
+} from "@/redux/features/banner/banner";
+import {
+  clearBannerCreateState,
+  clearBannerUpdateState,
+} from "@/redux/features/banner/bannerSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import {
+  Check,
+  Eye,
+  FileImage,
   Image,
-  Upload,
   Monitor,
   Smartphone,
-  FileImage,
-  Eye,
+  Upload,
   X,
-  Check
 } from "lucide-react";
-import { createBanner, getBanner, updateBanner } from "@/redux/features/banner/banner";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
-import { clearBannerCreateState, clearBannerUpdateState } from "@/redux/features/banner/bannerSlice";
 
 const CreateBannerPage = () => {
   const dispatch = useAppDispatch();
@@ -38,7 +57,7 @@ const CreateBannerPage = () => {
     bannerUpdateData,
     bannerUpdateError,
   } = useAppSelector((state) => state.banner);
-  const { storeDetailData } = useAppSelector(s => s.store)
+  const { storeDetailData } = useAppSelector((s) => s.store);
 
   const [bannerName, setBannerName] = useState<string>("");
   const [webBannerImage, setWebBannerImage] = useState<File | null>(null);
@@ -57,10 +76,13 @@ const CreateBannerPage = () => {
     }
   }, [bannerId, bannerData]);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>, mode: string) => {
+  const handleImageChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    mode: string
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (mode === 'mobile') {
+      if (mode === "mobile") {
         setMobBannerImage(file);
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -68,7 +90,7 @@ const CreateBannerPage = () => {
         };
         reader.readAsDataURL(file);
       }
-      if (mode === 'web') {
+      if (mode === "web") {
         setWebBannerImage(file);
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -81,8 +103,13 @@ const CreateBannerPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!bannerName || (!webBannerImage && !webPreview) || (!mobBannerImage && !mobilePreview) || !storeDetailData) {
-      toast.warning("Please fill all fields.", { richColors: true })
+    if (
+      !bannerName ||
+      (!webBannerImage && !webPreview) ||
+      (!mobBannerImage && !mobilePreview) ||
+      !storeDetailData
+    ) {
+      toast.warning("Please fill all fields.", { richColors: true });
       return;
     }
 
@@ -97,42 +124,58 @@ const CreateBannerPage = () => {
 
     try {
       if (bannerId) {
-        await dispatch(updateBanner({ payload: formData, s_id: storeDetailData.id, b_id: bannerId }));
+        await dispatch(
+          updateBanner({
+            payload: formData,
+            s_id: storeDetailData.id,
+            b_id: bannerId,
+          })
+        );
       } else {
-        await dispatch(createBanner({ payload: formData, s_id: storeDetailData.id }));
+        await dispatch(
+          createBanner({ payload: formData, s_id: storeDetailData.id })
+        );
       }
       router.replace("/dashboard/banner");
     } catch (err) {
-      toast.error(bannerCreateError || "Something went wrong.", { richColors: true })
+      toast.error(bannerCreateError || "Something went wrong.", {
+        richColors: true,
+      });
     }
   };
-
 
   useEffect(() => {
     if (bannerCreateData) {
       toast.success("Banner created successfully!", { richColors: true });
     }
     if (bannerCreateError) {
-      toast.error(bannerCreateError || "Something went wrong.", { richColors: true });
+      toast.error(bannerCreateError || "Something went wrong.", {
+        richColors: true,
+      });
     }
 
     if (bannerUpdateData) {
       toast.success("Banner updated successfully!", { richColors: true });
     }
     if (bannerUpdateError) {
-      toast.error(bannerUpdateError || "Something went wrong.", { richColors: true });
+      toast.error(bannerUpdateError || "Something went wrong.", {
+        richColors: true,
+      });
     }
 
     return () => {
-      dispatch(clearBannerCreateState())
-      dispatch(clearBannerUpdateState())
-    }
+      dispatch(clearBannerCreateState());
+      dispatch(clearBannerUpdateState());
+    };
+  }, [
+    bannerCreateError,
+    bannerCreateData,
+    bannerUpdateData,
+    bannerUpdateError,
+  ]);
 
-  }, [bannerCreateError, bannerCreateData, bannerUpdateData, bannerUpdateError])
-
-
-  const clearImage = (type: 'mobile' | 'web') => {
-    if (type === 'mobile') {
+  const clearImage = (type: "mobile" | "web") => {
+    if (type === "mobile") {
       setMobBannerImage(null);
       setMobilePreview(null);
     } else {
@@ -151,7 +194,9 @@ const CreateBannerPage = () => {
               {bannerId ? "Edit Banner" : "Create New Banner"}
             </h1>
             <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-              {bannerId ? "Update your promotional banner" : "Design promotional banners for web and mobile platforms"}
+              {bannerId
+                ? "Update your promotional banner"
+                : "Design promotional banners for web and mobile platforms"}
             </p>
           </div>
 
@@ -162,7 +207,9 @@ const CreateBannerPage = () => {
                   <Image className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl sm:text-2xl">Banner Configuration</CardTitle>
+                  <CardTitle className="text-xl sm:text-2xl">
+                    Banner Configuration
+                  </CardTitle>
                   <CardDescription className="text-sm">
                     Upload images optimized for different devices and platforms
                   </CardDescription>
@@ -181,7 +228,10 @@ const CreateBannerPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="bannerName" className="text-base font-medium">
+                    <Label
+                      htmlFor="bannerName"
+                      className="text-base font-medium"
+                    >
                       Banner Name
                     </Label>
                     <Input
@@ -208,8 +258,13 @@ const CreateBannerPage = () => {
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <Smartphone className="w-4 h-4 text-orange-500" />
-                        <Label className="text-base font-medium">Mobile Banner</Label>
-                        <Badge variant="outline" className="bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400">
+                        <Label className="text-base font-medium">
+                          Mobile Banner
+                        </Label>
+                        <Badge
+                          variant="outline"
+                          className="bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400"
+                        >
                           Mobile
                         </Badge>
                       </div>
@@ -221,7 +276,7 @@ const CreateBannerPage = () => {
                             type="file"
                             accept="image/*"
                             ref={mobileFileInputRef}
-                            onChange={(e) => handleImageChange(e, 'mobile')}
+                            onChange={(e) => handleImageChange(e, "mobile")}
                             className="h-12 bg-background/50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                           />
                         </div>
@@ -232,13 +287,15 @@ const CreateBannerPage = () => {
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                   <Eye className="w-4 h-4 text-muted-foreground" />
-                                  <span className="text-sm font-medium">Preview</span>
+                                  <span className="text-sm font-medium">
+                                    Preview
+                                  </span>
                                 </div>
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => clearImage('mobile')}
+                                  onClick={() => clearImage("mobile")}
                                   className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
                                 >
                                   <X className="w-4 h-4" />
@@ -262,11 +319,16 @@ const CreateBannerPage = () => {
                         {!mobilePreview && (
                           <div
                             onClick={() => mobileFileInputRef.current?.click()}
-                            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors">
+                            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors"
+                          >
                             <div className="flex flex-col items-center gap-2">
                               <Upload className="w-8 h-8 text-muted-foreground" />
-                              <p className="text-sm text-muted-foreground">Upload mobile banner image</p>
-                              <p className="text-xs text-muted-foreground/70">PNG, JPG up to 5MB</p>
+                              <p className="text-sm text-muted-foreground">
+                                Upload mobile banner image
+                              </p>
+                              <p className="text-xs text-muted-foreground/70">
+                                PNG, JPG up to 5MB
+                              </p>
                             </div>
                           </div>
                         )}
@@ -277,8 +339,13 @@ const CreateBannerPage = () => {
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <Monitor className="w-4 h-4 text-blue-500" />
-                        <Label className="text-base font-medium">Website Banner</Label>
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
+                        <Label className="text-base font-medium">
+                          Website Banner
+                        </Label>
+                        <Badge
+                          variant="outline"
+                          className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                        >
                           Desktop
                         </Badge>
                       </div>
@@ -290,7 +357,7 @@ const CreateBannerPage = () => {
                             type="file"
                             accept="image/*"
                             ref={webFileInputRef}
-                            onChange={(e) => handleImageChange(e, 'web')}
+                            onChange={(e) => handleImageChange(e, "web")}
                             className="h-12 bg-background/50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                           />
                         </div>
@@ -301,13 +368,15 @@ const CreateBannerPage = () => {
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                   <Eye className="w-4 h-4 text-muted-foreground" />
-                                  <span className="text-sm font-medium">Preview</span>
+                                  <span className="text-sm font-medium">
+                                    Preview
+                                  </span>
                                 </div>
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => clearImage('web')}
+                                  onClick={() => clearImage("web")}
                                   className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
                                 >
                                   <X className="w-4 h-4" />
@@ -331,11 +400,16 @@ const CreateBannerPage = () => {
                         {!webPreview && (
                           <div
                             onClick={() => webFileInputRef.current?.click()}
-                            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors">
+                            className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center bg-muted/20 hover:bg-muted/30 transition-colors"
+                          >
                             <div className="flex flex-col items-center gap-2">
                               <Upload className="w-8 h-8 text-muted-foreground" />
-                              <p className="text-sm text-muted-foreground">Upload website banner image</p>
-                              <p className="text-xs text-muted-foreground/70">PNG, JPG up to 5MB</p>
+                              <p className="text-sm text-muted-foreground">
+                                Upload website banner image
+                              </p>
+                              <p className="text-xs text-muted-foreground/70">
+                                PNG, JPG up to 5MB
+                              </p>
                             </div>
                           </div>
                         )}
@@ -361,8 +435,14 @@ const CreateBannerPage = () => {
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        {bannerId ? <Check className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
-                        <span>{bannerId ? "Update Banner" : "Create Banner"}</span>
+                        {bannerId ? (
+                          <Check className="w-4 h-4" />
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                        <span>
+                          {bannerId ? "Update Banner" : "Create Banner"}
+                        </span>
                       </div>
                     )}
                   </Button>
