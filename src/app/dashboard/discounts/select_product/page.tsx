@@ -4,15 +4,15 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getCategories } from "@/redux/features/category/category";
 import { getProducts } from "@/redux/features/product/product";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Package } from "lucide-react";
 import { useEffect } from "react";
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
 import { useSearchParams } from "next/navigation";
 import ChildRouteHeader from "@/components/ChildRouteHeader";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import DiscountItemManager from "./ApplyProductDiscount";
 
 const AddProducts = () => {
   const params = useSearchParams()
@@ -33,20 +33,24 @@ const AddProducts = () => {
     <div className="container mx-auto p-4">
       {/* Header Section */}
       <ChildRouteHeader
-        title='Select Products'
-        subtitle={"Choose products to apply discounts and create special offers"}
+        title='Choose Discounted Products or Brands'
+        subtitle='Select the products or brands offering current discounts.'
         backLink='/dashboard/discounts'
         backText='Back to discounts'
         titleIcon={<Package className="h-5 w-5 text-primary" />}
       />
-
       <Separator className="my-6" />
 
-      <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
+      <Card className=" border-0 bg-card/50 rounded-none">
+        {/* <CardContent> */}
+        {/*   {productList && <DataTable columns={columns} data={productList} id={id} />} */}
+        {/* </CardContent> */}
 
         <CardContent>
-          {productList && <DataTable columns={columns} data={productList} id={id} />}
+          <DiscountItemManager />
         </CardContent>
+
+
       </Card>
     </div>
   );
