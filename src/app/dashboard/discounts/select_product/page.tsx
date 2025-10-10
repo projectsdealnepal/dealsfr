@@ -1,22 +1,19 @@
 "use client";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import ChildRouteHeader from "@/components/ChildRouteHeader";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getProducts } from "@/redux/features/product/product";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Package } from "lucide-react";
-import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import ChildRouteHeader from "@/components/ChildRouteHeader";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
-import DiscountItemManager from "./ApplyProductDiscount";
+import { useEffect } from "react";
+import DiscountItemManager from "./Components/ApplyProductDiscount";
+import { columns } from "./Components/columns";
+import { DataTable } from "./Components/data-table";
 
 const AddProducts = () => {
-  const params = useSearchParams()
-  const id = params.get("id")
+  const params = useSearchParams();
+  const id = params.get("id");
   const dispatch = useAppDispatch();
   const { productList } = useAppSelector((s) => s.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
@@ -27,16 +24,14 @@ const AddProducts = () => {
     }
   }, [storeDetailData]);
 
-
-
   return (
     <div className="container mx-auto p-4">
       {/* Header Section */}
       <ChildRouteHeader
-        title='Choose Discounted Products or Brands'
-        subtitle='Select the products or brands offering current discounts.'
-        backLink='/dashboard/discounts'
-        backText='Back to discounts'
+        title="Choose Discounted Products or Brands"
+        subtitle="Select the products or brands offering current discounts."
+        backLink="/dashboard/discounts"
+        backText="Back to discounts"
         titleIcon={<Package className="h-5 w-5 text-primary" />}
       />
       <Separator className="my-6" />
@@ -49,8 +44,6 @@ const AddProducts = () => {
         <CardContent>
           <DiscountItemManager />
         </CardContent>
-
-
       </Card>
     </div>
   );
