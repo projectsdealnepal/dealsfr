@@ -35,7 +35,7 @@ export const columns: ColumnDef<ProductItem>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    enableSorting: true,
+    enableSorting: false,
     cell: ({ row }) => (row.original.id)
   },
   {
@@ -58,7 +58,7 @@ export const columns: ColumnDef<ProductItem>[] = [
     accessorKey: "brand",
     header: "Brand",
     cell: ({ row }) => row.original.brand?.name || "-",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "price",
@@ -106,7 +106,7 @@ export const columns: ColumnDef<ProductItem>[] = [
       row.original.created_at
         ? new Date(row.original.created_at).toLocaleDateString()
         : "-",
-    enableSorting: true,
+    enableSorting: false,
   },
 ];
 

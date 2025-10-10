@@ -42,6 +42,7 @@ import { filterProducts, getProducts } from "@/redux/features/product/product";
 import { CategoryItem } from "@/redux/features/category/types";
 import { addProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice";
 import AddedProductsDialog from "@/app/_components/discount/AddedProductsDialog";
+import DiscountType from "./DiscountTypeSelection";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -198,7 +199,12 @@ export function DataTable<TData, TValue>({
               Categories
               <ChevronDown />
             </Button>
-            <AddedProductsDialog id={id} />
+            <div>
+              <DiscountType />
+            </div>
+            <div>
+              <AddedProductsDialog id={id} />
+            </div>
           </div>
 
           {/* Show selected categories */}
