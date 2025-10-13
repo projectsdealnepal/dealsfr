@@ -1,5 +1,5 @@
-import { filterProducts, getProducts } from "@/redux/features/product/product";
-import { AddProductOnDiscount, ApiResponse, ProductItem, } from "@/redux/features/product/types";
+import { filterProducts, getBrandsList, getProducts } from "@/redux/features/product/product";
+import { AddProductOnDiscount, ApiResponse, BrandItem, ProductItem, } from "@/redux/features/product/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProductState {
@@ -8,8 +8,13 @@ interface ProductState {
   productLoading: boolean;
   productError: string | null;
 
-  //added Discount product
-  addedDisountProducts: ProductItem[];
+  //for listing all brands
+  brandListData: BrandItem[] | null
+  //to select and add the item in the discount list
+  discountProductList: any[],
+  tempDiscountProductList: ProductItem[],
+  //added Discount product(used in table)
+  selectedProductList: ProductItem[];
   rowSelection: Record<string, boolean>;
 }
 
@@ -20,8 +25,14 @@ const initialState: ProductState = {
   productLoading: false,
   productError: null,
 
-  //added Discount product
-  addedDisountProducts: [],
+  //for listing all brands
+  brandListData: null,
+
+  //to select and add the item in the discount list
+  tempDiscountProductList: [],
+  discountProductList: [],
+  //added Discount product(used in data-table)
+  selectedProductList: [],
   rowSelection: {},
 };
 
@@ -37,29 +48,50 @@ const productSlice = createSlice({
       state.productLoading = false;
     },
 
-    addProductOnDiscount(state, action: PayloadAction<AddProductOnDiscount>) {
-      const productIds = Object.keys(action.payload.items).map(Number)
-      if (action.payload.rowId) {
-        const product = state.productData?.results.find((item: ProductItem) => (item as ProductItem).id === action.payload.rowId);
-        if (product)
-          state.addedDisountProducts.push(product)
-      }
-      if (!action.payload.rowId) {
-        state.addedDisountProducts = state.addedDisountProducts.filter((product) => productIds.includes(product.id))
-      }
-    },
-
-    setProductOnDiscount(state, action: PayloadAction<ProductItem[]>) {
-      state.addedDisountProducts = action.payload
-    },
     //row selection to determine the tick on checkbox
     setRowSelection(state, action: PayloadAction<Record<string, boolean>>) {
       state.rowSelection = action.payload;
     },
+    clearRowSelection(state) {
+      state.rowSelection = {};
+    },
+    //to make the list when user check the product from the table
+    makeSelectedProductList(state, action: PayloadAction<AddProductOnDiscount>) {
+      const productIds = Object.keys(action.payload.items).map(Number)
+      if (action.payload.rowId) {
+        const product = state.productData?.results.find((item: ProductItem) => (item as ProductItem).id === action.payload.rowId);
+        if (product)
+          state.selectedProductList.push(product)
+      }
+      if (!action.payload.rowId) {
+        state.selectedProductList = state.selectedProductList.filter((product) => productIds.includes(product.id))
+      }
+    },
+    setSelectedProductList(state, action: PayloadAction<ProductItem[]>) {
+      state.selectedProductList = action.payload
+    },
+    clearSelectedProductList(state) {
+      state.selectedProductList = []
+    },
+    //to select and create the product list for discount
+    setTempProductList(state) {
+      state.tempDiscountProductList = state.selectedProductList
+    },
+    updateTempProductList(state, action: PayloadAction<ProductItem[]>) {
+      state.tempDiscountProductList = action.payload
+    },
+    clearTempProductList(state) {
+      state.tempDiscountProductList = []
+    },
+    //to select and create the product list for discount
+    addDiscountProductList(state, action: PayloadAction<ProductItem[]>) {
+      state.discountProductList = action.payload
+    },
+    clearDiscountProductList(state) {
+      state.discountProductList = []
+    },
 
-    clearAddedDiscountProducts(state) {
-      state.addedDisountProducts = []
-    }
+
   },
   extraReducers: (builder) => {
     builder
@@ -100,9 +132,26 @@ const productSlice = createSlice({
           state.productError = action.payload || "Failed to fetch filter products";
         }
       )
+      //get the list of brands
+      .addCase(getBrandsList.fulfilled, (state, action) => {
+        state.brandListData = action.payload;
+      })
 
   },
 });
 
-export const { clearProductState, clearAddedDiscountProducts, addProductOnDiscount, setRowSelection, setProductOnDiscount } = productSlice.actions;
+export const {
+  clearProductState,
+  setRowSelection,
+  clearRowSelection,
+  makeSelectedProductList,
+  setSelectedProductList,
+  clearSelectedProductList,
+  setTempProductList,
+  updateTempProductList,
+  clearTempProductList,
+  addDiscountProductList,
+  clearDiscountProductList
+
+} = productSlice.actions;
 export default productSlice.reducer;

@@ -21,7 +21,7 @@ import {
 import { CategoryItem } from "@/redux/features/category/types";
 import { filterProducts, getProducts } from "@/redux/features/product/product";
 import {
-  addProductOnDiscount,
+  makeSelectedProductList,
   setRowSelection,
 } from "@/redux/features/product/productSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -55,16 +55,16 @@ import Filter from "./filter";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  id: string | null;
+  setSelectProductDialog: React.Dispatch<React.SetStateAction<boolean>>
+
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  id,
+  setSelectProductDialog,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  // const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -74,9 +74,11 @@ export function DataTable<TData, TValue>({
   const [selected, setSelected] = useState<CategoryItem>();
   const { categoryData } = useAppSelector((s) => s.category);
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { productData, productLoading, addedDisountProducts, rowSelection } =
+  const { productData, productLoading, selectedProductList, rowSelection } =
     useAppSelector((s) => s.product);
   const dispatch = useAppDispatch();
+  //for dialog that give preview of selected products
+  const [previewDialog, setPreviewDialog] = useState(false)
 
   // Build query parameters for server requests
   const buildQueryParams = useCallback(() => {
@@ -121,10 +123,10 @@ export function DataTable<TData, TValue>({
       items: newSelection,
       rowId: changedRowId ? Number(changedRowId) : undefined,
     };
-    dispatch(addProductOnDiscount(value));
+    dispatch(makeSelectedProductList(value));
   };
-  console.log({ addedDisountProducts });
 
+  console.log({ addedDisountProducts: selectedProductList });
   // Fetch data when any parameter changes
   useEffect(() => {
     if (storeDetailData?.id) {
@@ -197,6 +199,7 @@ export function DataTable<TData, TValue>({
       pageSize: newPageSize,
     }));
   };
+
   const handleGoToPage = (pageNumber: number) => {
     const pageIndex = Math.max(
       0,
@@ -215,7 +218,11 @@ export function DataTable<TData, TValue>({
               <ChevronDown />
             </Button>
             <div>
-              <AddedProductsDialog id={id} />
+              <AddedProductsDialog
+                closeProdctListDialog={() => setSelectProductDialog(false)}
+                open={previewDialog}
+                onOpenChange={() => setPreviewDialog((prev) => !prev)}
+              />
             </div>
           </div>
 

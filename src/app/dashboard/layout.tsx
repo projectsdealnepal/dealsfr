@@ -6,6 +6,7 @@ import { getBanner } from "@/redux/features/banner/banner";
 import { getCategories } from "@/redux/features/category/category";
 import { getDiscount } from "@/redux/features/discount/discount";
 import { getLayout } from "@/redux/features/layout/layout";
+import { getBrandsList } from "@/redux/features/product/product";
 import {
   getBranchesList,
   getSocialMediaList,
@@ -45,6 +46,7 @@ export default function DashboardLayout({
       dispatch(getLayout(storeId));
       dispatch(getBanner(storeId));
       dispatch(getCategories());
+      dispatch(getBrandsList());
     }
   }, [userData]);
 

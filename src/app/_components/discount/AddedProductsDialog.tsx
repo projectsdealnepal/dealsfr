@@ -2,14 +2,20 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { updateDiscount } from "@/redux/features/discount/discount"
-import { setProductOnDiscount, setRowSelection } from "@/redux/features/product/productSlice"
+import { setSelectedProductList, setRowSelection, setTempProductList, clearSelectedProductList, clearRowSelection } from "@/redux/features/product/productSlice"
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 import { TableProperties, Trash2 } from "lucide-react"
 
-const AddedProductsDialog = ({ id }: { id: string | null }) => {
+interface AddedProductsDialogProp {
+  open: boolean;
+  onOpenChange: () => void;
+  closeProdctListDialog: () => void;
+}
+
+const AddedProductsDialog = ({ open, onOpenChange, closeProdctListDialog }: AddedProductsDialogProp) => {
   const dispatch = useAppDispatch()
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { addedDisountProducts } = useAppSelector((s) => s.product);
+  const { selectedProductList: addedDisountProducts } = useAppSelector((s) => s.product);
 
 
   const handleRemoveSelectedItem = (id: number) => {
@@ -19,21 +25,29 @@ const AddedProductsDialog = ({ id }: { id: string | null }) => {
     modifiedArr.forEach((item) => modifiedSelected[item.id.toString()] = true)
 
     dispatch(setRowSelection(modifiedSelected))
-    dispatch(setProductOnDiscount(modifiedArr))
+    dispatch(setSelectedProductList(modifiedArr))
   }
 
-  const handleAddProductToDiscount = () => {
-    const payload = {
-      product_ids: addedDisountProducts.map(i => i.id)
-    }
-    dispatch(updateDiscount({
-      payload,
-      s_id: storeDetailData?.id || 0,
-      d_id: id ? Number(id) : 0
-    }))
+  const handleAddToTempProductList = () => {
+    // const payload = {
+    //   product_ids: addedDisountProducts.map(i => i.id)
+    // }
+    // dispatch(updateDiscount({
+    //   payload,
+    //   s_id: storeDetailData?.id || 0,
+    //   d_id: id ? Number(id) : 0
+    // }))
+    dispatch(setTempProductList())
+    onOpenChange()
+    closeProdctListDialog()
+    dispatch(clearSelectedProductList())
+    dispatch(clearRowSelection())
   }
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <TableProperties className="h-4 w-4" />
@@ -51,7 +65,7 @@ const AddedProductsDialog = ({ id }: { id: string | null }) => {
               Products that will be included in the discount campaign
             </DialogDescription>
           </div>
-          <Button size="sm" variant="default" onClick={handleAddProductToDiscount}>
+          <Button size="sm" variant="default" onClick={handleAddToTempProductList}>
             Add to discount.
           </Button>
         </div>

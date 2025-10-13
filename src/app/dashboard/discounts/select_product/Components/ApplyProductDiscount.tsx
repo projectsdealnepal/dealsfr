@@ -7,13 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogOverlay,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,14 +17,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppSelector } from "@/redux/hooks";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import { AlertCircle, Plus, PlusCircle, Trash2 } from "lucide-react";
+import { AlertCircle, Plus, Trash2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-import { set } from "react-hook-form";
 import { z } from "zod";
 import { columns } from "./columns";
-import { DataTable } from "./data-table";
+import { toast } from "sonner";
+import TargetSelector from "./Select-Target";
 
 // Types
 type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT" | "BOGO" | "SPEND_GET";
@@ -110,10 +102,11 @@ const DiscountManager: React.FC = () => {
     discountType: "PERCENTAGE",
     targetType: "PRODUCT",
   });
-  const { productList } = useAppSelector((s) => s.product);
+  const { productList, tempDiscountProductList } = useAppSelector(
+    (s) => s.product
+  );
   const [selectedTargetType, setSelectedTargetType] =
     useState<TargetType>("PRODUCT");
-  const [selectProductDialog, setSelectProductDialog] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const discountTypeOptions = [
@@ -140,6 +133,12 @@ const DiscountManager: React.FC = () => {
     if (!currentItem.targetType) {
       newErrors.targetType = "Application scope is required";
       setErrors(newErrors);
+      return false;
+    }
+
+    //check if there are any product selected or not 
+    if (tempDiscountProductList.length === 0) {
+      toast.info("At least one product is required", { richColors: true })
       return false;
     }
 
@@ -458,14 +457,15 @@ const DiscountManager: React.FC = () => {
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {/*Choose the discount type, based on this different fields will show up*/}
               <div className="space-y-2">
                 <Label htmlFor="discountType">Discount Type</Label>
                 <Select
                   value={currentItem.discountType}
                   onValueChange={(value) =>
                     handleDiscountTypeChange(value as DiscountType)
-                  }
-                >
+                  } >
                   <SelectTrigger id="discountType" className="w-full">
                     <SelectValue placeholder="Select discount type" />
                   </SelectTrigger>
@@ -481,6 +481,8 @@ const DiscountManager: React.FC = () => {
                   <p className="text-sm text-red-500">{errors.discountType}</p>
                 )}
               </div>
+
+              {/*Select targets type (products/brands)*/}
               <div className="space-y-2">
                 <Label htmlFor="targetType">Target Type</Label>
                 <Select
@@ -510,53 +512,19 @@ const DiscountManager: React.FC = () => {
               </div>
             </div>
 
-            <div className="w-full space-y-2">
-              <Label htmlFor="targetType">Targets</Label>
-              {selectedTargetType == "PRODUCT" ? (
-                <Dialog
-                  open={selectProductDialog}
-                  onOpenChange={setSelectProductDialog}
-                >
-                  <DialogTitle className="font-normal text-base">
-                    <DialogTrigger asChild>
-                      <Card className="flex flex-row items-center gap-4 justify-center cursor-pointer">
-                        <PlusCircle size={15} />
-                        Add Products
-                      </Card>
-                    </DialogTrigger>
-                  </DialogTitle>
-                  <DialogContent className="!max-w-none w-[95%] h-full p-0 bg-white m-0">
-                    <div className="h-full w-full overflow-y-auto p-6">
-                      {productList && (
-                        <DataTable
-                          columns={columns}
-                          data={productList}
-                          id={id}
-                        />
-                      )}
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              ) : (
-                <Card
-                  onClick={() => console.log("clicked")}
-                  className="flex flex-row  items-center gap-4 justify-center cursor-pointer"
-                >
-                  <PlusCircle size={15} />
-                  Add Brand
-                </Card>
-              )}
-              {errors.target && (
-                <p className="text-sm text-red-500">{errors.target}</p>
-              )}
-            </div>
+            {/*Select targets (products/brands) where discount will be applied*/}
+            <TargetSelector
+              selectedTargetType={selectedTargetType}
+              errors={errors}
+            />
+
           </div>
 
           {renderDiscountFields()}
 
           <Button onClick={addDiscountItem} className="w-full">
             <Plus className="mr-2 h-4 w-4" />
-            Add Discount Item
+            Add to list
           </Button>
         </CardContent>
       </Card>

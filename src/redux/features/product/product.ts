@@ -1,5 +1,5 @@
 import api from "@/lib/interceptor";
-import { ApiResponse, ProductItem } from "@/redux/features/product/types";
+import { ApiResponse, BrandItem, ProductItem } from "@/redux/features/product/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 
@@ -63,6 +63,26 @@ export const createProduct = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message || error.message || "Registration failed"
+    );
+  }
+});
+
+//##################################################
+// Brand List 
+//##################################################
+export const getBrandsList = createAsyncThunk<
+  BrandItem[],
+  void,
+  { rejectValue: string }
+>("brandList/get", async (_, thunkAPI) => {
+  try {
+    const response = await api.get(`products/brands/`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to get the brands list."
     );
   }
 });

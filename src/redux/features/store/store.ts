@@ -13,7 +13,6 @@ import {
 // =============================================
 // STORE
 // =============================================
-
 export const createStore = createAsyncThunk<
   GetStoreDetailResponse,
   FormData,
@@ -287,3 +286,5 @@ export const deleteSocialMedia = createAsyncThunk<
     );
   }
 });
+
+
