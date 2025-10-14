@@ -2,17 +2,18 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { updateDiscount } from "@/redux/features/discount/discount"
-import { setSelectedProductList, setRowSelection, setTempProductList, clearSelectedProductList, clearRowSelection } from "@/redux/features/product/productSlice"
+import { setSelectedProductList, setRowSelection, setTempProductList, clearSelectedProductList, clearRowSelection, setRewardProductList } from "@/redux/features/product/productSlice"
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 import { TableProperties, Trash2 } from "lucide-react"
 
 interface AddedProductsDialogProp {
+  mode: "default" | "reward"
   open: boolean;
   onOpenChange: () => void;
   closeProdctListDialog: () => void;
 }
 
-const AddedProductsDialog = ({ open, onOpenChange, closeProdctListDialog }: AddedProductsDialogProp) => {
+const AddedProductsDialog = ({ mode = "default", open, onOpenChange, closeProdctListDialog }: AddedProductsDialogProp) => {
   const dispatch = useAppDispatch()
   const { storeDetailData } = useAppSelector((s) => s.store);
   const { selectedProductList: addedDisountProducts } = useAppSelector((s) => s.product);
@@ -37,7 +38,12 @@ const AddedProductsDialog = ({ open, onOpenChange, closeProdctListDialog }: Adde
     //   s_id: storeDetailData?.id || 0,
     //   d_id: id ? Number(id) : 0
     // }))
-    dispatch(setTempProductList())
+    if (mode == 'default') {
+      dispatch(setTempProductList())
+    }
+    if (mode == "reward") {
+      dispatch(setRewardProductList())
+    }
     onOpenChange()
     closeProdctListDialog()
     dispatch(clearSelectedProductList())

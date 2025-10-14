@@ -15,6 +15,8 @@ interface ProductState {
   tempDiscountProductList: ProductItem[],
   //added Discount product(used in table)
   selectedProductList: ProductItem[];
+  //for rewardProductList
+  rewardProductList: ProductItem[];
   rowSelection: Record<string, boolean>;
 }
 
@@ -33,6 +35,8 @@ const initialState: ProductState = {
   discountProductList: [],
   //added Discount product(used in data-table)
   selectedProductList: [],
+  //rewardProductList
+  rewardProductList: [],
   rowSelection: {},
 };
 
@@ -90,7 +94,16 @@ const productSlice = createSlice({
     clearDiscountProductList(state) {
       state.discountProductList = []
     },
-
+    //for reward product list
+    setRewardProductList(state) {
+      state.rewardProductList = state.selectedProductList
+    },
+    updateRewardProductList(state, action: PayloadAction<ProductItem[]>) {
+      state.rewardProductList = action.payload
+    },
+    clearRewardProductList(state) {
+      state.rewardProductList = []
+    },
 
   },
   extraReducers: (builder) => {
@@ -151,7 +164,10 @@ export const {
   updateTempProductList,
   clearTempProductList,
   addDiscountProductList,
-  clearDiscountProductList
+  clearDiscountProductList,
+  setRewardProductList,
+  clearRewardProductList,
+  updateRewardProductList
 
 } = productSlice.actions;
 export default productSlice.reducer;

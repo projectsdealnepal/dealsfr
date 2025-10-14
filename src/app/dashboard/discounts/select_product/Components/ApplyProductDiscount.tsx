@@ -23,7 +23,8 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { columns } from "./columns";
 import { toast } from "sonner";
-import TargetSelector from "./Select-Target";
+import SelectProductDialog from "./SelectProductDialog";
+import SelectRewardDialog from "./SelectRewardDialog";
 
 // Types
 type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT" | "BOGO" | "SPEND_GET";
@@ -330,18 +331,9 @@ const DiscountManager: React.FC = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="rewardItems">Reward Items (Optional)</Label>
-              <Input
-                id="rewardItems"
-                type="text"
-                placeholder="Specify eligible reward items"
-                value={(currentItem as BOGODiscount).rewardItems || ""}
-                onChange={(e) =>
-                  setCurrentItem({
-                    ...currentItem,
-                    rewardItems: e.target.value,
-                  })
-                }
-              />
+              <div>
+                <SelectRewardDialog />
+              </div>
             </div>
           </div>
         );
@@ -513,7 +505,7 @@ const DiscountManager: React.FC = () => {
             </div>
 
             {/*Select targets (products/brands) where discount will be applied*/}
-            <TargetSelector
+            <SelectProductDialog
               selectedTargetType={selectedTargetType}
               errors={errors}
             />

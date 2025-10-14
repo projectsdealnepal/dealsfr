@@ -53,6 +53,7 @@ import { CategorySelectorSheet } from "./CategoriesSheet";
 import Filter from "./filter";
 
 interface DataTableProps<TData, TValue> {
+  mode?: "reward" | "default"
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   setSelectProductDialog: React.Dispatch<React.SetStateAction<boolean>>
@@ -60,6 +61,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
+  mode = "default",
   columns,
   data,
   setSelectProductDialog,
@@ -219,6 +221,7 @@ export function DataTable<TData, TValue>({
             </Button>
             <div>
               <AddedProductsDialog
+                mode={mode}
                 closeProdctListDialog={() => setSelectProductDialog(false)}
                 open={previewDialog}
                 onOpenChange={() => setPreviewDialog((prev) => !prev)}
