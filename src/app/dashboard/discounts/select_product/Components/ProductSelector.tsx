@@ -1,4 +1,5 @@
 "use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -7,33 +8,36 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { useAppSelector } from "@/redux/hooks";
 import { PlusCircle, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { RewardProductPrevList } from "./RewardProductPrevList";
+import { TempProductPrevList } from "./TempProductPrevList";
 
-export default function SelectRewardDialog() {
-  const [rewardProductPrev, setRewardProductPrev] = useState(false);
-  const [selectProductDialog, setSelectProductDialog] = useState(false);
-  const { rewardProductList, productList } = useAppSelector((s) => s.product);
+export default function SelectProductDialog() {
+  const [selectProductDialog, setSelectProductDialog] = useState(false); const { tempDiscountProductList, productList } = useAppSelector((s) => s.product);
+
 
   return (
     <div className="w-full space-y-2">
+      {/* <Label htmlFor="targetType">Targets</Label> */}
       <div className="flex w-full items-center gap-3">
         {/* Show only if there are selected products */}
-        {rewardProductList && rewardProductList.length > 0 && (
+        {tempDiscountProductList && tempDiscountProductList.length > 0 && (
           <>
             <Card
-              onClick={() => setRewardProductPrev(true)}
               className="flex bg-primary/20 flex-row items-center justify-between cursor-pointer flex-1 p-3 hover:bg-accent/30 transition"
             >
               <span className="text-sm font-medium">Products Selected</span>
-              <Badge variant="secondary">{rewardProductList?.length}</Badge>
+              <Badge variant="secondary">
+                {tempDiscountProductList.length}
+              </Badge>
             </Card>
           </>
         )}
+
         {/* Add Products Dialog */}
         <Dialog
           open={selectProductDialog}
@@ -42,7 +46,7 @@ export default function SelectRewardDialog() {
           <DialogTitle asChild>
             <DialogTrigger asChild>
               <Card className="flex flex-row items-center justify-center gap-2 cursor-pointer p-3 flex-1 hover:bg-accent/30 transition">
-                {rewardProductList.length > 0 ? (
+                {tempDiscountProductList.length > 0 ? (
                   <>
                     <RotateCcw size={16} />
                     <span className="text-sm font-medium">Replace</span>
@@ -60,7 +64,6 @@ export default function SelectRewardDialog() {
             <div className="h-full w-full overflow-y-auto p-6">
               {productList && (
                 <DataTable
-                  mode="reward"
                   setSelectProductDialog={() => setSelectProductDialog(false)}
                   columns={columns}
                   data={productList}
@@ -71,10 +74,12 @@ export default function SelectRewardDialog() {
         </Dialog>
       </div>
 
-      {/* Sheet for previewing selected products */}
-      <div>
-        <RewardProductPrevList />
-      </div>
+      {/* it will show the selected product list */}
+      {tempDiscountProductList.length > 0 && (
+        <div className="h-40 overflow-y-auto py-2">
+          <TempProductPrevList />
+        </div>
+      )}
     </div>
   );
 }

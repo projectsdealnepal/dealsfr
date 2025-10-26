@@ -1,5 +1,5 @@
 import { filterProducts, getBrandsList, getProducts } from "@/redux/features/product/product";
-import { AddProductOnDiscount, ApiResponse, BrandItem, ProductItem, } from "@/redux/features/product/types";
+import { AddProductOnDiscount, ApiResponse, BrandItem, DiscountedProductType, ProductItem, RewardProductItem, } from "@/redux/features/product/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProductState {
@@ -11,12 +11,12 @@ interface ProductState {
   //for listing all brands
   brandListData: BrandItem[] | null
   //to select and add the item in the discount list
-  discountProductList: any[],
+  discountProductList: DiscountedProductType[],
   tempDiscountProductList: ProductItem[],
   //added Discount product(used in table)
   selectedProductList: ProductItem[];
   //for rewardProductList
-  rewardProductList: ProductItem[];
+  rewardProductList: RewardProductItem[];
   rowSelection: Record<string, boolean>;
 }
 
@@ -88,17 +88,20 @@ const productSlice = createSlice({
       state.tempDiscountProductList = []
     },
     //to select and create the product list for discount
-    addDiscountProductList(state, action: PayloadAction<ProductItem[]>) {
+    addDiscountedProductList(state, action: PayloadAction<DiscountedProductType[]>) {
       state.discountProductList = action.payload
     },
     clearDiscountProductList(state) {
       state.discountProductList = []
     },
+
     //for reward product list
     setRewardProductList(state) {
-      state.rewardProductList = state.selectedProductList
+      state.rewardProductList = state.selectedProductList.map(
+        (item, index) => ({ ...item, quantity: 1 })
+      )
     },
-    updateRewardProductList(state, action: PayloadAction<ProductItem[]>) {
+    updateRewardProductList(state, action: PayloadAction<RewardProductItem[]>) {
       state.rewardProductList = action.payload
     },
     clearRewardProductList(state) {
@@ -163,7 +166,7 @@ export const {
   setTempProductList,
   updateTempProductList,
   clearTempProductList,
-  addDiscountProductList,
+  addDiscountedProductList: addDiscountProductList,
   clearDiscountProductList,
   setRewardProductList,
   clearRewardProductList,

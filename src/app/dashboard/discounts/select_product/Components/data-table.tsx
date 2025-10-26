@@ -128,7 +128,6 @@ export function DataTable<TData, TValue>({
     dispatch(makeSelectedProductList(value));
   };
 
-  console.log({ addedDisountProducts: selectedProductList });
   // Fetch data when any parameter changes
   useEffect(() => {
     if (storeDetailData?.id) {

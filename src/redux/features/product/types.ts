@@ -87,3 +87,26 @@ export interface BrandItem {
   created_at: string
   updated_at: string
 }
+
+export interface RewardProductItem extends ProductItem {
+  quantity: number;
+}
+
+export type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT" | "BOGO" | "SPEND_GET" | "BUNDLE"
+export type TargetType = "storeproduct" | "category" | "brand"
+
+export interface DiscountedProductType {
+  discount_type: DiscountType;
+  value?: string;
+  buy_quantity?: number;
+  get_quantity?: number;
+  min_spend_amount?: string;
+  reward_products?: RewardProduct[];
+  target_type: TargetType;
+  target_id: number;
+}
+
+export interface RewardProduct {
+  store_product_id: number;
+  get_quantity: number;
+}

@@ -6,36 +6,47 @@ import { Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   updateRewardProductList,
-  updateTempProductList,
 } from "@/redux/features/product/productSlice";
-import { CategoryItem } from "@/redux/features/category/types";
+import { Input } from "@/components/ui/input";
 
 interface TempProductPreviewProps {
   mode?: "reward" | "default";
 }
 
-export function TempProductPrevList({ mode = "default" }: TempProductPreviewProps) {
+export function RewardProductPrevList({ mode = "default" }: TempProductPreviewProps) {
   const dispatch = useAppDispatch();
-  const { tempDiscountProductList } = useAppSelector(
-    (s) => s.product
-  );
+  const { rewardProductList } = useAppSelector((s) => s.product);
 
+  //  Remove item from list
   const handleRemoveTempProduct = (id: number) => {
-    const modifiedArr = tempDiscountProductList.filter((item) => item.id !== id);
-    dispatch(updateTempProductList(modifiedArr));
+    const modifiedArr = rewardProductList.filter((item) => item.id !== id);
+    dispatch(updateRewardProductList(modifiedArr));
   };
 
-  const productList = tempDiscountProductList;
+  //  Update quantity and sync with Redux
+  const handleQuantityChange = (id: number, quantity: number) => {
+    // Ensure minimum quantity = 1
+    const validQuantity = Math.max(1, quantity);
+
+    const updatedList = rewardProductList.map((item) =>
+      item.id === id ? { ...item, quantity: validQuantity } : item
+    );
+
+    dispatch(updateRewardProductList(updatedList));
+  };
+
+  const productList = rewardProductList;
 
   return (
-    <div className="w-full flex flex-col ">
+    <div className="w-full flex flex-col">
       {productList.length > 0 ? (
         productList.map((product, index) => (
           <div
             key={product.id}
-            className={`p-3 py-1 border-b ${index % 2 == 0 ? 'bg-muted' : 'bg-muted/50'} flex justify-between hover:bg-muted/30 transition-colors  `}
+            className={`p-3 py-1 border-b ${index % 2 == 0 ? "bg-muted" : "bg-muted/50"
+              } flex justify-between hover:bg-muted/30 transition-colors`}
           >
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-5 min-w-0 flex-1">
               <img
                 src={product.image || "/placeholder.png"}
                 alt={product.name}
@@ -46,10 +57,21 @@ export function TempProductPrevList({ mode = "default" }: TempProductPreviewProp
                   {product.name}
                 </h3>
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0">
                 <p className="text-xs sm:text-sm text-muted-foreground truncate">
                   Price: ${product.price}
                 </p>
+              </div>
+              <div>
+                <Input
+                  className="w-20"
+                  value={product.quantity}
+                  min={1}
+                  type="number"
+                  onChange={(e) =>
+                    handleQuantityChange(product.id, Number(e.target.value))
+                  }
+                />
               </div>
               <Button
                 variant="ghost"
@@ -60,7 +82,6 @@ export function TempProductPrevList({ mode = "default" }: TempProductPreviewProp
                 <Trash2 className="h-5 w-5" />
               </Button>
             </div>
-
           </div>
         ))
       ) : (

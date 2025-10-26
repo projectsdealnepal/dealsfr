@@ -7,15 +7,12 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Package } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import DiscountItemManager from "./Components/ApplyProductDiscount";
-import { columns } from "./Components/columns";
-import { DataTable } from "./Components/data-table";
+import DiscountProductManager from "./Components/DiscountProductManager";
 
 const AddProducts = () => {
   const params = useSearchParams();
   const id = params.get("id");
   const dispatch = useAppDispatch();
-  const { productList } = useAppSelector((s) => s.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
 
   useEffect(() => {
@@ -36,13 +33,9 @@ const AddProducts = () => {
       />
       <Separator className="my-6" />
 
-      <Card className=" border-0 bg-card/50 rounded-none">
-        {/* <CardContent> */}
-        {/*   {productList && <DataTable columns={columns} data={productList} id={id} />} */}
-        {/* </CardContent> */}
-
-        <CardContent>
-          <DiscountItemManager />
+      <Card className=" border-0 p-0  bg-card/50 rounded-none">
+        <CardContent className="p-0">
+          <DiscountProductManager />
         </CardContent>
       </Card>
     </div>
