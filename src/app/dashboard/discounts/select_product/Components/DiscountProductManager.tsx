@@ -18,12 +18,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BrandItem,
-  DiscountedProductType,
   DiscountType,
   RewardProduct,
   TargetType,
+  ValueType,
 } from "@/redux/features/product/types";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -31,12 +31,16 @@ import { z } from "zod";
 import { BrandSelector } from "./BrandSelector";
 import ProductSelector from "./ProductSelector";
 import SelectRewardDialog from "./SelectRewardDialog";
+import { AddProductOnDiscountPayload } from "@/redux/features/discount/types";
+import { addProductOnDiscount } from "@/redux/features/discount/discount";
+import { useSearchParams } from "next/navigation";
 
 // Types
 interface BaseDiscountItem {
   id: string;
   discountType: DiscountType;
   targetType: TargetType;
+  valueType: ValueType;
 }
 
 interface PercentageDiscount extends BaseDiscountItem {
@@ -54,6 +58,7 @@ interface FixedAmountDiscount extends BaseDiscountItem {
 
 interface BOGODiscount extends BaseDiscountItem {
   discountType: "BOGO";
+  valueType: ValueType,
   target: number;
   buyQuantity: number;
   percentageValue: number;
@@ -64,6 +69,7 @@ interface BOGODiscount extends BaseDiscountItem {
 
 interface SpendGetDiscount extends BaseDiscountItem {
   discountType: "SPEND_GET";
+  valueType: ValueType,
   target: number;
   spendAmount: number;
   percentageValue: number;
@@ -74,6 +80,7 @@ interface SpendGetDiscount extends BaseDiscountItem {
 
 interface BundleDiscount extends BaseDiscountItem {
   discountType: "BUNDLE";
+  valueType: ValueType,
   percentageValue: number;
   maximumDiscount: number;
   discountValue: number;
@@ -98,27 +105,36 @@ const fixedAmountSchema = z.object({
 
 const bogoSchema = z.object({
   buyQuantity: z.number().int().min(1),
-  discountValue: z.number().min(0).max(100),
+  percentageValue: z.number().min(0).max(100).optional(),
+  maximumDiscount: z.number().min(0).optional(),
+  discountValue: z.number().min(0).optional(),
   rewardItems: z.string().optional(),
 });
 
 const spendGetSchema = z.object({
-  spendAmount: z.number().min(0),
-  discountValue: z.number().min(0).max(100),
+  spendAmount: z.number().min(1),
+  percentageValue: z.number().min(0).max(100).optional(),
+  maximumDiscount: z.number().min(0).optional(),
+  discountValue: z.number().min(0).optional(),
   rewardItems: z.string().optional(),
 });
 
-const DiscountManager: React.FC = () => {
+const DiscountManager = () => {
   const [currentItem, setCurrentItem] = useState<PartialDiscountItem>({
     discountType: "PERCENTAGE",
+    valueType: "PERCENTAGE",
     targetType: "storeproduct",
   });
-  const { tempDiscountProductList, rewardProductList } =
-    useAppSelector((s) => s.product);
   const [selectedTargetType, setSelectedTargetType] =
     useState<TargetType>("storeproduct");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [brandValue, setBrandValue] = useState<BrandItem>();
+
+  const param = useSearchParams()
+  const id = parseInt(param.get("id") ?? "0", 10)
+  const dispatch = useAppDispatch()
+  const { storeDetailData } = useAppSelector((s) => s.store);
+  const { tempDiscountProductList, rewardProductList } = useAppSelector((s) => s.product);
 
   const discountTypeOptions = [
     { value: "PERCENTAGE", label: "Percentage Off" },
@@ -128,40 +144,76 @@ const DiscountManager: React.FC = () => {
     { value: "BUNDLE", label: "Buy Combo of Products to Get Discount" },
   ];
 
-
   const validateCurrentItem = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (!currentItem.discountType) {
       newErrors.discountType = "Discount type is required";
       setErrors(newErrors);
+      toast.info("Discount type is required", {
+        richColors: true,
+      });
+      return false;
+    }
+
+    if (!currentItem.targetType) {
+      newErrors.targetType = "Discount value type is required";
+      setErrors(newErrors);
+      toast.info("Discount value type is required", {
+        richColors: true,
+      });
+
       return false;
     }
 
     if (!currentItem.targetType) {
       newErrors.targetType = "Application scope is required";
       setErrors(newErrors);
+      toast.info("Application scope is required", {
+        richColors: true,
+      });
       return false;
     }
-
-    //check if there are any product selected or not
-    if (tempDiscountProductList.length === 0) {
-      toast.info("At least one product is required", { richColors: true });
-      return false;
+    //TODO: need to modify validation schema
+    // Rule 1: Either percentageValue or discountValue must be present
+    if (currentItem.discountType === "BOGO" || currentItem.discountType === "SPEND_GET") {
+      if (currentItem.percentageValue == null && currentItem.discountValue == null) {
+        toast.info("at least the bonus value or disocunt value is requied", {
+          richColors: true,
+        });
+        return false;
+      }
+      // Rule 2: If percentageValue is present, maximumDiscount must also be present
+      if (currentItem.percentageValue != null && currentItem.maximumDiscount == null) {
+        toast.info("at least the bonus value or disocunt value is requied1", {
+          richColors: true,
+        });
+        return false;
+      }
     }
 
+    //if the discount type is BOGO or SPEND_GET then either disocunt value or reward
+    //product is mendatery
     if (
       (currentItem.discountType === "BOGO" ||
         currentItem.discountType === "SPEND_GET") &&
       rewardProductList.length <= 0 &&
       currentItem.discountValue === 0 &&
+      currentItem.percentageValue === 0 &&
       currentItem.discountValue === undefined
     ) {
-      toast.info("At least one reward product or discount vlaue is required", {
+      toast.info("At least one reward product or discount value is required", {
         richColors: true,
       });
       return false;
     }
+
+    //check if there are any product selected or not
+    if (currentItem.targetType == "storeproduct" && tempDiscountProductList.length === 0) {
+      toast.info("At least one product is required", { richColors: true });
+      return false;
+    }
+
 
     try {
       switch (currentItem.discountType) {
@@ -207,31 +259,82 @@ const DiscountManager: React.FC = () => {
   //funcitons that are used to api post  the proucts on the discount
 
   const handlePercentageDiscount = () => {
+    let payload: AddProductOnDiscountPayload[] = []
     if (currentItem.discountType == "PERCENTAGE") {
-      const payload: DiscountedProductType[] = tempDiscountProductList.map(
-        (item, index) => ({
-          discount_type: currentItem.discountType,
-          target_type: currentItem.targetType ?? "storeproduct",
-          value: currentItem.percentageValue?.toString(),
-          target_id: item.id,
-        })
-      );
-
+      //for currentItem.tartet type is "storeProduct"
+      switch (currentItem.targetType) {
+        case "storeproduct":
+          payload = tempDiscountProductList.map(
+            (item) => ({
+              discount_type: currentItem.discountType,
+              value: currentItem.percentageValue,
+              value_type: "PERCENTAGE",
+              max_discount_amount: currentItem.maximumDiscount?.toString(),
+              store_product: item.id,
+            })
+          );
+          break;
+        case "brand":
+          //for currentItem.tartet type is "brand"
+          payload = [{
+            discount_type: currentItem.discountType,
+            value: currentItem.percentageValue,
+            value_type: "PERCENTAGE",
+            max_discount_amount: currentItem.maximumDiscount?.toString(),
+            brand: brandValue?.id,
+          }]
+          break;
+        default:
+          break;
+      }
+      const dispatchData = {
+        payload,
+        d_id: id,
+        s_id: storeDetailData?.id ?? 0
+      }
+      // dispatch(addProductOnDiscount(dispatchData))
       console.log({ payload });
     }
   };
 
   const handleFixedDiscount = () => {
+    let payload: AddProductOnDiscountPayload[] = []
     if (currentItem.discountType == "FIXED_AMOUNT") {
-      const payload: DiscountedProductType[] = tempDiscountProductList.map(
-        (item, _) => ({
-          discount_type: currentItem.discountType,
-          target_type: currentItem.targetType ?? "storeproduct",
-          value: currentItem.amountValue?.toString(),
-          target_id: item.id,
-        })
-      );
 
+      switch (currentItem.targetType) {
+        case "storeproduct":
+          payload = tempDiscountProductList.map(
+            (item, _) => ({
+              discount_type: currentItem.discountType,
+              value: currentItem.amountValue,
+              value_type: "FIXED_AMOUNT",
+
+              // conditional key assignment
+              [currentItem.targetType === "storeproduct" ? "store_product" : "brand"]:
+                currentItem.targetType === "storeproduct" ? item.id : brandValue?.id,
+            })
+          );
+          break;
+
+        case "brand":
+          //for currentItem.tartet type is "brand"
+          payload = [{
+            discount_type: currentItem.discountType,
+            value: currentItem.amountValue,
+            value_type: "FIXED_AMOUNT",
+            brand: brandValue?.id,
+          }]
+          break;
+        default:
+          break;
+      }
+
+      const dispatchData = {
+        payload,
+        d_id: id,
+        s_id: storeDetailData?.id ?? 0
+      }
+      // dispatch(addProductOnDiscount(dispatchData))
       console.log({ payload });
     }
   };
@@ -243,16 +346,41 @@ const DiscountManager: React.FC = () => {
         get_quantity: item.quantity,
       }));
 
-      const payload: DiscountedProductType[] = tempDiscountProductList.map(
-        (item, _) => ({
-          discount_type: currentItem.discountType,
-          target_type: currentItem.targetType ?? "storeproduct",
-          target_id: item.id,
-          buy_quantity: currentItem.buyQuantity,
-          reward_products: rewardProducts,
-          value: currentItem.discountValue?.toString(),
-        })
-      );
+      let payload: AddProductOnDiscountPayload[] = []
+      switch (currentItem.targetType) {
+        case "storeproduct":
+          payload = tempDiscountProductList.map(
+            (item, _) => ({
+              discount_type: currentItem.discountType as "PERCENTAGE",
+              value_type: currentItem.valueType as ValueType,
+              buy_quantity: currentItem.buyQuantity,
+              reward_products: rewardProducts,
+              value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
+              store_product: item?.id,
+              //pass the max disocunt amount only on percentage
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            })
+          );
+          break;
+        case "brand":
+          payload = [{
+            discount_type: currentItem.discountType as "PERCENTAGE",
+            value_type: currentItem.valueType as ValueType,
+            buy_quantity: currentItem.buyQuantity,
+            reward_products: rewardProducts,
+            value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
+            brand: brandValue?.id,
+            //pass the max disocunt amount only on percentage
+            ...(currentItem.valueType === "PERCENTAGE" && {
+              max_discount_amount: currentItem.maximumDiscount?.toString(),
+            }),
+          }]
+          break;
+        default:
+          break;
+      }
 
       console.log({ payload });
     }
@@ -265,16 +393,43 @@ const DiscountManager: React.FC = () => {
         get_quantity: item.quantity,
       }));
 
-      const payload: DiscountedProductType[] = tempDiscountProductList.map(
-        (item, _) => ({
-          discount_type: currentItem.discountType,
-          target_type: currentItem.targetType ?? "storeproduct",
-          target_id: item.id,
-          min_spend_amount: currentItem.spendAmount?.toString(),
-          reward_products: rewardProducts,
-          value: currentItem.discountValue?.toString(),
-        })
-      );
+      let payload: AddProductOnDiscountPayload[] = []
+      switch (currentItem.targetType) {
+        case "storeproduct":
+          payload = tempDiscountProductList.map(
+            (item, _) => ({
+              discount_type: "SPEND_GET",
+              value_type: currentItem.valueType as "PERCENTAGE",
+              max_discount_amount: currentItem.maximumDiscount?.toString(),
+              store_product: item.id,
+              reward_products: rewardProducts,
+              value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
+
+              //pass the max disocunt amount only on percentage
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            })
+          );
+          break;
+        case "brand":
+          payload = [{
+            discount_type: "SPEND_GET",
+            value_type: currentItem.valueType as "PERCENTAGE",
+            brand: brandValue?.id,
+            min_spend_amount: currentItem.spendAmount?.toString(),
+            reward_products: rewardProducts,
+            value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
+
+            //pass the max disocunt amount only on percentage
+            ...(currentItem.valueType === "PERCENTAGE" && {
+              max_discount_amount: currentItem.maximumDiscount?.toString(),
+            }),
+          }]
+          break;
+        default:
+          break;
+      }
 
       console.log({ payload });
     }
@@ -283,7 +438,6 @@ const DiscountManager: React.FC = () => {
   const addDiscountItem = () => {
     if (validateCurrentItem()) {
       console.log("addDiscountItemClicked");
-      console.log({ currentItem });
       switch (currentItem.discountType) {
         case "PERCENTAGE":
           handlePercentageDiscount();
@@ -293,7 +447,7 @@ const DiscountManager: React.FC = () => {
           handleFixedDiscount();
           break;
         case "BOGO":
-          console.log("BOGO");
+          console.log("aaaaaaaaaaaaaaaaaaaBOGO");
           handleBOGODiscount();
           break;
 
@@ -312,6 +466,7 @@ const DiscountManager: React.FC = () => {
 
   const handleDiscountTypeChange = (value: DiscountType) => {
     setCurrentItem({
+      ...currentItem,
       discountType: value,
       targetType: currentItem.targetType || "storeproduct",
     });
@@ -395,23 +550,45 @@ const DiscountManager: React.FC = () => {
       case "BOGO":
         return (
           <div className="space-y-4">
-            <div className="grid grid-cols-1">
-              <div className="space-y-2">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2 col-span-1">
+                <Label htmlFor="buyQuantity">Buy Quantity</Label>
+                <Input
+                  id="buyQuantity"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="e.g. 2"
+                  value={(currentItem as BOGODiscount).buyQuantity || ""}
+                  onChange={(e) =>
+                    setCurrentItem({
+                      ...currentItem,
+                      buyQuantity: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                />
+                {errors.buyQuantity && (
+                  <p className="text-sm text-red-500">{errors.buyQuantity}</p>
+                )}
+              </div>
+
+              <div className="space-y-2 col-span-2">
                 <Label htmlFor="targetType">Discount Value Type</Label>
                 <Tabs
-                  defaultValue="storeproduct"
+                  defaultValue="PERCENTAGE"
                   className="w-full bg-accent"
                   onValueChange={(v) => {
                     setSelectedTargetType(v as TargetType)
                     setCurrentItem({
+                      ...currentItem,
                       discountType: currentItem.discountType,
-                      targetType: v as TargetType,
+                      valueType: v as ValueType,
                     });
                   }}
                 >
                   <TabsList className="flex w-full justify-start gap-6 border-b border-primary/10  rounded-none p-0">
                     <TabsTrigger
-                      value="percentage"
+                      value="PERCENTAGE"
                       style={{
                         boxShadow: "none",
                       }}
@@ -423,7 +600,7 @@ const DiscountManager: React.FC = () => {
                     </TabsTrigger>
 
                     <TabsTrigger
-                      value="fixed"
+                      value="FIXED_AMOUNT"
                       style={{
                         boxShadow: "none",
                       }}
@@ -435,7 +612,7 @@ const DiscountManager: React.FC = () => {
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="percentage" className="flex gap-2 mt-4">
+                  <TabsContent value="PERCENTAGE" className="flex gap-2 mt-4">
                     <div className="flex-1">
                       <Label htmlFor="discountValue">Discount Value (%)</Label>
                       <Input
@@ -453,8 +630,8 @@ const DiscountManager: React.FC = () => {
                           })
                         }
                       />
-                      {errors.discountValue && (
-                        <p className="text-sm text-red-500">{errors.discountValue}</p>
+                      {errors.percentageValue && (
+                        <p className="text-sm text-red-500">{errors.percentageValue}</p>
                       )}
                     </div>
 
@@ -475,7 +652,7 @@ const DiscountManager: React.FC = () => {
                       />
                     </div>
                   </TabsContent>
-                  <TabsContent value="fixed" className="mt-4">
+                  <TabsContent value="FIXED_AMOUNT" className="mt-4">
                     <Label htmlFor="discountValue">Discount Value</Label>
                     <Input
                       id="discountValue"
@@ -510,8 +687,8 @@ const DiscountManager: React.FC = () => {
       case "SPEND_GET":
         return (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2 col-span-1">
                 <Label htmlFor="spendAmount">Minimum Spend Amount</Label>
                 <Input
                   id="spendAmount"
@@ -531,22 +708,23 @@ const DiscountManager: React.FC = () => {
                   <p className="text-sm text-red-500">{errors.spendAmount}</p>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 col-span-2">
                 <Label htmlFor="targetType">Discount Value Type</Label>
                 <Tabs
-                  defaultValue="storeproduct"
+                  defaultValue="PERCENTAGE"
                   className="w-full bg-accent"
                   onValueChange={(v) => {
                     setSelectedTargetType(v as TargetType)
                     setCurrentItem({
+                      ...currentItem,
+                      valueType: v as ValueType,
                       discountType: currentItem.discountType,
-                      targetType: v as TargetType,
                     });
                   }}
                 >
                   <TabsList className="flex w-full justify-start gap-6 border-b border-primary/10  rounded-none p-0">
                     <TabsTrigger
-                      value="storeproduct"
+                      value="PERCENTAGE"
                       style={{
                         boxShadow: "none",
                       }}
@@ -558,7 +736,7 @@ const DiscountManager: React.FC = () => {
                     </TabsTrigger>
 
                     <TabsTrigger
-                      value="brand"
+                      value="FIXED_AMOUNT"
                       style={{
                         boxShadow: "none",
                       }}
@@ -570,7 +748,7 @@ const DiscountManager: React.FC = () => {
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="storeproduct" className="flex gap-2 mt-4">
+                  <TabsContent value="PERCENTAGE" className="flex gap-2 mt-4">
                     <div className="flex-1">
                       <Label htmlFor="discountValue">Discount Value (%)</Label>
                       <Input
@@ -588,8 +766,8 @@ const DiscountManager: React.FC = () => {
                           })
                         }
                       />
-                      {errors.discountValue && (
-                        <p className="text-sm text-red-500">{errors.discountValue}</p>
+                      {errors.percentageValue && (
+                        <p className="text-sm text-red-500">{errors.percentageValue}</p>
                       )}
                     </div>
 
@@ -610,7 +788,7 @@ const DiscountManager: React.FC = () => {
                       />
                     </div>
                   </TabsContent>
-                  <TabsContent value="brand" className="mt-4">
+                  <TabsContent value="FIXED_AMOUNT" className="mt-4">
                     <Label htmlFor="discountValue">Discount Value (%)</Label>
                     <Input
                       id="discountValue"
@@ -817,6 +995,7 @@ const DiscountManager: React.FC = () => {
               onValueChange={(v) => {
                 setSelectedTargetType(v as TargetType)
                 setCurrentItem({
+                  ...currentItem,
                   discountType: currentItem.discountType,
                   targetType: v as TargetType,
                 });

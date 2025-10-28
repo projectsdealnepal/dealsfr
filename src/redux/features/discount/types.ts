@@ -55,3 +55,28 @@ export interface DiscountItem {
   store: number;
   created_by: number;
 }
+
+//to add the products on the discount
+interface BundleDiscount {
+  store_product_id: number;
+  buy_quantity: number;
+}
+
+interface RewardProduct {
+  store_product_id: number;
+  get_quantity: number;
+}
+
+export interface AddProductOnDiscountPayload {
+  discount_type: "PERCENTAGE" | "FIXED_AMOUNT" | "SPEND_GET" | "BUNDLE";
+  value?: number;
+  value_type: "PERCENTAGE" | "FIXED_AMOUNT";
+  buy_quantity?: number;
+  min_spend_amount?: string;
+  max_discount_amount?: string;
+  brand?: number;
+  category?: number;
+  store_product?: number;
+  bundle_discounts?: BundleDiscount[];
+  reward_products?: RewardProduct[];
+}

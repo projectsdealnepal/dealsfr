@@ -1,12 +1,11 @@
 import {
+  addProductOnDiscount,
   createDiscount,
+  deleteDiscount,
   getDiscount,
   updateDiscount,
-  deleteDiscount,
 } from "@/redux/features/discount/discount";
-import {
-  DiscountItem,
-} from "@/redux/features/discount/types";
+import { DiscountItem } from "@/redux/features/discount/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 
@@ -26,6 +25,10 @@ interface DiscountState {
   //delete discount
   deleteDiscountData: AxiosResponse<{ message: string }> | null;
   deleteDiscountLoading: boolean;
+
+  //add Products on disocunts
+  addProductOnDiscountData: any | null;
+  addProductOnDiscoutLoading: boolean;
 }
 
 // Initial state
@@ -46,6 +49,10 @@ const initialState: DiscountState = {
   //delete discount
   deleteDiscountData: null,
   deleteDiscountLoading: false,
+
+  //add Products on disocunts
+  addProductOnDiscountData: null,
+  addProductOnDiscoutLoading: false,
 };
 
 const discountSlice = createSlice({
@@ -113,7 +120,7 @@ const discountSlice = createSlice({
       .addCase(createDiscount.fulfilled, (state, action) => {
         state.createDiscountLoading = false;
         state.createDiscountData = action.payload;
-        state.discountData?.push(action.payload)
+        state.discountData?.push(action.payload);
         state.discountError = null;
       })
       .addCase(
@@ -161,6 +168,31 @@ const discountSlice = createSlice({
           state.deleteDiscountLoading = false;
           state.discountError = action.payload || "Failed to delete discount";
         }
+      )
+
+      // Add products on discount (extra reducer)
+      .addCase(addProductOnDiscount.pending, (state) => {
+        state.addProductOnDiscoutLoading = true;
+        state.discountError = null;
+      })
+      .addCase(addProductOnDiscount.fulfilled, (state, action) => {
+        state.addProductOnDiscoutLoading = false;
+        state.addProductOnDiscountData = action.payload;
+        state.discountError = null;
+        // Optionally update discountData if needed:
+        // if (action.payload?.id && state.discountData) {
+        //   const idx = state.discountData.findIndex(d => d.id === action.payload.id);
+        //   if (idx !== -1) state.discountData[idx] = action.payload;
+        // }
+      })
+      .addCase(
+        addProductOnDiscount.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.addProductOnDiscountData = null;
+          state.addProductOnDiscoutLoading = false;
+          state.discountError =
+            action.payload || "Failed to add products on discount";
+        }
       );
   },
 });
@@ -170,7 +202,7 @@ export const {
   clearCreateDiscountState,
   clearDeleteDiscountState,
   clearGetDiscountState,
-  clearUpdateDiscountState
+  clearUpdateDiscountState,
 } = discountSlice.actions;
 
 export default discountSlice.reducer;

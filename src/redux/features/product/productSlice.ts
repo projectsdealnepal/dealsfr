@@ -18,6 +18,9 @@ interface ProductState {
   //for rewardProductList
   rewardProductList: RewardProductItem[];
   rowSelection: Record<string, boolean>;
+
+  //selected barnd
+  selectedBrand: null | BrandItem
 }
 
 // Initial state
@@ -38,6 +41,9 @@ const initialState: ProductState = {
   //rewardProductList
   rewardProductList: [],
   rowSelection: {},
+
+  //selected barnd
+  selectedBrand: null,
 };
 
 
@@ -108,6 +114,11 @@ const productSlice = createSlice({
       state.rewardProductList = []
     },
 
+    //for selected brand item
+    setSelectedBrand(state, action: PayloadAction<BrandItem | null>) {
+      state.selectedBrand = action.payload
+    }
+
   },
   extraReducers: (builder) => {
     builder
@@ -170,7 +181,8 @@ export const {
   clearDiscountProductList,
   setRewardProductList,
   clearRewardProductList,
-  updateRewardProductList
+  updateRewardProductList,
+  setSelectedBrand
 
 } = productSlice.actions;
 export default productSlice.reducer;

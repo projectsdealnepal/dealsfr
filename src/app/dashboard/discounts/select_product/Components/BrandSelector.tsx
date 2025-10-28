@@ -14,10 +14,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { setSelectedBrand } from "@/redux/features/product/productSlice";
 import { BrandItem } from "@/redux/features/product/types";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Virtuoso } from "react-virtuoso";
 
 interface BrandSelectorProps {
@@ -27,8 +29,17 @@ interface BrandSelectorProps {
 
 export function BrandSelector({ value, onSelect }: BrandSelectorProps) {
   const [open, setOpen] = useState(false);
+  const dispatch = useAppDispatch()
   const { brandListData } = useAppSelector((state) => state.product);
   const filteredBrands = useMemo(() => brandListData ?? [], [brandListData]);
+
+
+  const handleBrandSelect = (brand: BrandItem) => {
+
+    const newValue = value?.id === brand.id ? undefined : brand;
+    onSelect?.(newValue);
+    setOpen(false);
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,12 +69,7 @@ export function BrandSelector({ value, onSelect }: BrandSelectorProps) {
                     <CommandItem
                       key={brand.id}
                       value={brand.name}
-                      onSelect={() => {
-                        const newValue =
-                          value?.id === brand.id ? undefined : brand;
-                        onSelect?.(newValue);
-                        setOpen(false);
-                      }}
+                      onSelect={() => handleBrandSelect(brand)}
                     >
                       {brand.name}
                       <Check

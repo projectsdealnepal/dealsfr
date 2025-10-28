@@ -94,6 +94,7 @@ export interface RewardProductItem extends ProductItem {
 
 export type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT" | "BOGO" | "SPEND_GET" | "BUNDLE"
 export type TargetType = "storeproduct" | "category" | "brand"
+export type ValueType = "PERCENTAGE" | "FIXED_AMOUNT"
 
 export interface DiscountedProductType {
   discount_type: DiscountType;

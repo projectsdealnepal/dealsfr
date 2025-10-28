@@ -1,7 +1,7 @@
 import api from "@/lib/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload } from "./types";
+import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload, AddProductOnDiscountPayload } from "./types";
 
 export const getDiscount = createAsyncThunk<
   DiscountItem[],
@@ -67,6 +67,27 @@ export const deleteDiscount = createAsyncThunk<
       error.response?.data?.message ||
       error.message ||
       "Failed to delete discount."
+    );
+  }
+});
+
+//=====================================
+//Add products on disocunt
+//=====================================
+
+export const addProductOnDiscount = createAsyncThunk<
+  any,
+  { payload: AddProductOnDiscountPayload[], s_id: number, d_id: number },
+  { rejectValue: string }
+>("addProductOnDiscount", async ({ payload, s_id, d_id }, thunkAPI) => {
+  try {
+    const response = await api.post(`/products/${s_id}/discount/${d_id}/products/`, payload);
+    return response;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to add products on discount."
     );
   }
 });
