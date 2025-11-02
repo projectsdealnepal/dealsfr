@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { addProductOnDiscount } from "@/redux/features/discount/discount"
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 import { TableProperties, Trash2 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
 interface AddedProductsDialogProp {
   open: boolean;
@@ -11,6 +13,8 @@ interface AddedProductsDialogProp {
 
 const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsDialogProp) => {
   const dispatch = useAppDispatch()
+  const param = useSearchParams()
+  const id = param.get("id")
   const { storeDetailData } = useAppSelector((s) => s.store);
   const { discountAppliedProductList } = useAppSelector((s) => s.product);
 
@@ -20,7 +24,14 @@ const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsD
   }
 
   const handleAddToTempProductList = () => {
-    console.log("product list will be applid to the discount")
+    if (id && storeDetailData) {
+      const payload = {
+        d_id: parseInt(id, 10),
+        s_id: storeDetailData.id,
+        payload: discountAppliedProductList,
+      }
+      dispatch(addProductOnDiscount(payload))
+    }
   }
 
   return (

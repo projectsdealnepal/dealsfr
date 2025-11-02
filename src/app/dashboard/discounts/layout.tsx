@@ -1,22 +1,10 @@
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import StoreProvider from "./providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://thedealsfr.com"),
-  title: "TheDealsFr - Discover Local Deals, Effortlessly",
+  title: "Discount- Discover Local Deals, Effortlessly",
   description:
     "TheDealsFr connects you with exclusive discounts from nearby stores. Save smarter, support local businesses in your community.",
   keywords: [
@@ -68,19 +56,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function DiscountLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en ">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen `}
-      >
-        <StoreProvider>{children}</StoreProvider>
-        <Toaster />
-      </body>
-    </html>
-  );
+  return <>{children}</>;
 }
