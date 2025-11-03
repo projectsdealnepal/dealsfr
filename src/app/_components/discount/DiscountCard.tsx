@@ -82,6 +82,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
             variant="outline"
             size="sm"
             className="min-w-30"
+            onClick={() => router.push(`/dashboard/discounts/preview?id=${item.id}`)}
           >
             <Eye className="h-4 w-4 mr-2" />
             Preview
