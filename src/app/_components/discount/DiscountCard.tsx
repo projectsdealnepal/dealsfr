@@ -34,6 +34,10 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
     });
   };
 
+  const handleAddProductButtons = (id: number) => {
+
+  }
+
 
   return (
     <Card className="w-full ">

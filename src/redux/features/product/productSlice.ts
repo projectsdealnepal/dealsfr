@@ -2,6 +2,7 @@ import { filterProducts, getBrandsList, getProducts } from "@/redux/features/pro
 import { AddProductOnDiscount, ApiResponse, BrandItem, DiscountedProductType, ProductItem, RewardProductItem, } from "@/redux/features/product/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AddProductOnDiscountPayload } from "../discount/types";
+import { getDiscountProductList } from "../discount/discount";
 
 interface ProductState {
   productList: ProductItem[] | null;
@@ -184,6 +185,11 @@ const productSlice = createSlice({
       .addCase(getBrandsList.fulfilled, (state, action) => {
         state.brandListData = action.payload;
       })
+      //got get the list of product and store them in the discounted product list
+      .addCase(getDiscountProductList.fulfilled, (state, action) => {
+        state.discountAppliedProductList = action.payload
+      })
+
 
   },
 });

@@ -70,9 +70,9 @@ const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsD
             >
               <div className="flex items-center gap-4">
                 <div>
-                  <h3 className="font-medium">{product.buy_quantity}</h3>
+                  <h3 className="font-medium">{product.discount_type}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Price: ${product.brand}
+                    Price: ${product.value}
                   </p>
                 </div>
               </div>

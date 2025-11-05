@@ -91,3 +91,20 @@ export const addProductOnDiscount = createAsyncThunk<
     );
   }
 });
+
+export const getDiscountProductList = createAsyncThunk<
+  AddProductOnDiscountPayload[],
+  { s_id: number, d_id: number },
+  { rejectValue: string }
+>("getDiscountProductList ", async ({ s_id, d_id }, thunkAPI) => {
+  try {
+    const response = await api.get(`/products/${s_id}/discount/${d_id}/products/`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to get the product list of a discount."
+    );
+  }
+});

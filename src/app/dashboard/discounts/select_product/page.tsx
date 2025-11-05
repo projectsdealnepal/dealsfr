@@ -8,6 +8,7 @@ import { Package } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import DiscountProductManager from "./Components/DiscountProductManager";
+import { getDiscountProductList } from "@/redux/features/discount/discount";
 
 const AddProducts = () => {
   const params = useSearchParams();
@@ -18,8 +19,10 @@ const AddProducts = () => {
   useEffect(() => {
     if (storeDetailData) {
       dispatch(getProducts(storeDetailData?.id));
+      //get the already added discount list
+      dispatch(getDiscountProductList({ d_id: parseInt(id ?? "0", 10), s_id: storeDetailData?.id }));
     }
-  }, [storeDetailData]);
+  }, [storeDetailData, id]);
 
   return (
     <div className="container mx-auto p-4">
