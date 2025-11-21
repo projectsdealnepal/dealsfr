@@ -12,6 +12,7 @@ import {
   getSocialMediaList,
   getStoreDetail,
   getStoreDocumentsList,
+  getStoresCategories,
 } from "@/redux/features/store/store";
 import { getUser } from "@/redux/features/user/user";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -47,6 +48,7 @@ export default function DashboardLayout({
       dispatch(getBanner(storeId));
       dispatch(getCategories());
       dispatch(getBrandsList());
+      dispatch(getStoresCategories())
     }
   }, [userData]);
 

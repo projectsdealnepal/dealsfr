@@ -10,10 +10,10 @@ import {
 import { clearTokens } from "./auth";
 
 // API BASE URL AND REFRESH ENDPOINT
-const apiBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const apiBaseURL = `${process.env.NEXT_PUBLIC_API_BASE_URL}admin/`;
 
 
-const refreshEndpoint = `${apiBaseURL}/api/token/refresh/`;
+const refreshEndpoint = `${apiBaseURL}/token/refresh/`;
 
 // FLAGS AND QUEUE FOR TOKEN REFRESH
 let isRefreshing = false;
@@ -138,7 +138,7 @@ api.interceptors.response.use(
         // console.error("Refresh token is missing. Redirecting to login.");
 
         // FOR SIGNOUT
-        // handleClearWeb();
+        handleClearWeb();
         window.location.replace("/");
         // EXAMPLE REDIRECT TO LOGIN PAGE IN NEXT.JS
       }

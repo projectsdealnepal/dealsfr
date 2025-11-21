@@ -9,7 +9,7 @@ export const getLayout = createAsyncThunk<
   { rejectValue: string }
 >("userData/layout/get", async (s_id, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/${s_id}/layouts/`);
+    const response = await api.get(`/stores/${s_id}/layouts/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -24,7 +24,7 @@ export const getIndLayout = createAsyncThunk<
   { rejectValue: string }
 >("userData/layout/getind", async ({ s_id, l_id }, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/${s_id}/layouts/${l_id}/`);
+    const response = await api.get(`/stores/${s_id}/layouts/${l_id}/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -39,7 +39,7 @@ export const createLayout = createAsyncThunk<
   { rejectValue: string }
 >("userData/layout/create", async ({ payload, s_id }, thunkAPI) => {
   try {
-    const response = await api.post(`/api/stores/${s_id}/layouts/`, payload, {
+    const response = await api.post(`/stores/${s_id}/layouts/`, payload, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
@@ -57,7 +57,7 @@ export const updateLayout = createAsyncThunk<
 >("userData/layout/update", async ({ payload, s_id, l_id }, thunkAPI) => {
   try {
     const response = await api.patch(
-      `/api/stores/${s_id}/layouts/${l_id}/`,
+      `/stores/${s_id}/layouts/${l_id}/`,
       payload,
       {
         headers: { "Content-Type": "application/json" },
@@ -77,7 +77,7 @@ export const deleteLayout = createAsyncThunk<
   { rejectValue: string }
 >("userData/layout/delete", async ({ s_id, l_id }, thunkAPI) => {
   try {
-    const response = await api.delete(`/api/stores/${s_id}/layouts/${l_id}/`);
+    const response = await api.delete(`/stores/${s_id}/layouts/${l_id}/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(

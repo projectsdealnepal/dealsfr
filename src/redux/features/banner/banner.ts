@@ -9,7 +9,7 @@ export const getBanner = createAsyncThunk<
   { rejectValue: string }
 >("userData/banner/get", async (store_id, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/${store_id}/banners/`, {
+    const response = await api.get(`/stores/${store_id}/banners/`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
@@ -26,7 +26,7 @@ export const createBanner = createAsyncThunk<
   { rejectValue: string }
 >("userData/banner/create", async ({ payload, s_id }, thunkAPI) => {
   try {
-    const response = await api.post(`/api/stores/${s_id}/banners/`, payload, {
+    const response = await api.post(`/stores/${s_id}/banners/`, payload, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -44,7 +44,7 @@ export const updateBanner = createAsyncThunk<
 >("userData/banner/update", async ({ payload, s_id, b_id }, thunkAPI) => {
   try {
     const response = await api.patch(
-      `/api/stores/${s_id}/banners/${b_id}/`,
+      `/stores/${s_id}/banners/${b_id}/`,
       payload,
       {
         headers: { "Content-Type": "multipart/form-data" },
@@ -64,7 +64,7 @@ export const deleteBanner = createAsyncThunk<
   { rejectValue: string }
 >("userData/banner/delete", async ({ s_id, b_id }, thunkAPI) => {
   try {
-    const response = await api.delete(`/api/stores/${s_id}/banners/${b_id}/`);
+    const response = await api.delete(`/stores/${s_id}/banners/${b_id}/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(

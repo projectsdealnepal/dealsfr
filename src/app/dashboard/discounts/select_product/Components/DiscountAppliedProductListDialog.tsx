@@ -18,9 +18,8 @@ const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsD
   const { storeDetailData } = useAppSelector((s) => s.store);
   const { discountAppliedProductList } = useAppSelector((s) => s.product);
 
-
-  const handleRemoveSelectedItem = (id: number) => {
-    console.log("tried to delete::", id)
+  const handleRemoveSelectedItem = () => {
+    console.log("tried to delete::")
   }
 
   const handleAddToTempProductList = () => {
@@ -77,6 +76,7 @@ const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsD
                 </div>
               </div>
               <Button
+                onClick={() => handleRemoveSelectedItem()}
                 variant="ghost"
                 size="icon"
                 className="text-destructive hover:text-destructive"

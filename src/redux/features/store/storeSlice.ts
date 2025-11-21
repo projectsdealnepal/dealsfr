@@ -12,6 +12,7 @@ import {
   getStoreDetail,
   getStoreDocumentsList,
   getStoreList,
+  getStoresCategories,
   updateStore,
 } from "./store";
 import {
@@ -19,6 +20,7 @@ import {
   DocumentItem,
   GetStoreDetailResponse,
   SocialMediaResp,
+  StoreCategoryItem,
   StoreItem,
 } from "./types";
 
@@ -71,6 +73,11 @@ interface StoreInitialState {
   //social media delete data
   socialMediaDeleteData: SocialMediaResp[] | null;
   socialMediaDeleteError: string | null;
+
+  //for getting the list of categories for store 
+  storeCategoriesData: StoreCategoryItem[] | null
+  storeCategoriesError: string | null
+
 }
 
 // Initial state
@@ -123,7 +130,13 @@ const initialState: StoreInitialState = {
   //social media delete data
   socialMediaDeleteData: null,
   socialMediaDeleteError: null,
+
+
+  //for getting the list of categories for store 
+  storeCategoriesData: null,
+  storeCategoriesError: null
 };
+
 
 const storeSlice = createSlice({
   name: "store",
@@ -490,7 +503,30 @@ const storeSlice = createSlice({
           state.socialMediaDeleteError =
             action.payload || "Failed to delete social media item";
         }
+      )
+
+      //*************************************************************
+      //for StoreCategories List
+      //*************************************************************
+
+      .addCase(getStoresCategories.pending, (state) => {
+        state.storeCategoriesError = null;
+      })
+      .addCase(
+        getStoresCategories.fulfilled,
+        (state, action: PayloadAction<StoreCategoryItem[]>) => {
+          state.storeCategoriesData = action.payload;
+          state.storeCategoriesError = null;
+        }
+      )
+      .addCase(
+        getStoresCategories.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.storeCategoriesError =
+            action.payload || "Failed to get the list of store caegories";
+        }
       );
+
   },
 });
 

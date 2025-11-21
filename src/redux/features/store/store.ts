@@ -8,6 +8,7 @@ import {
   GetStoreListResponse,
   SocialMedia,
   SocialMediaResp,
+  StoreCategoryItem,
 } from "./types";
 
 // =============================================
@@ -19,7 +20,7 @@ export const createStore = createAsyncThunk<
   { rejectValue: string }
 >("storeDetail/create", async (formData, thunkAPI) => {
   try {
-    const response = await api.post(`/api/stores/`, formData, {
+    const response = await api.post(`/stores/`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -40,7 +41,7 @@ export const updateStore = createAsyncThunk<
   { rejectValue: string }
 >("storeDetail/update", async ({ payload, id }, thunkAPI) => {
   try {
-    const response = await api.patch(`/api/stores/${id}/`, payload, {
+    const response = await api.patch(`/stores/${id}/`, payload, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -61,7 +62,7 @@ export const getStoreList = createAsyncThunk<
   { rejectValue: string }
 >("storeList/get", async (_, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/`);
+    const response = await api.get(`/stores/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -78,7 +79,7 @@ export const getStoreDetail = createAsyncThunk<
   { rejectValue: string }
 >("storeDetail/get", async (id, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/${id}/`);
+    const response = await api.get(`/stores/${id}/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -99,7 +100,7 @@ export const getBranchesList = createAsyncThunk<
   { rejectValue: string }
 >("storeDetail/get/branches", async (id, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/${id}/branches/`);
+    const response = await api.get(`/stores/${id}/branches/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -130,7 +131,7 @@ export const createStoreBranch = createAsyncThunk<
           payload
         );
       } else {
-        response = await api.post(`/api/stores/${id}/branches/`, payload);
+        response = await api.post(`/stores/${id}/branches/`, payload);
       }
 
       return response.data;
@@ -153,7 +154,7 @@ export const getBranchDetails = createAsyncThunk<
   async ({ branch_id, store_id }, thunkAPI) => {
     try {
       const response = await api.get(
-        `/api/stores/${store_id}/branches/${branch_id}/`
+        `/stores/${store_id}/branches/${branch_id}/`
       );
       return response.data;
     } catch (error: any) {
@@ -176,7 +177,7 @@ export const getStoreDocumentsList = createAsyncThunk<
   { rejectValue: string }
 >("store/get/documents-list", async (s_id, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/${s_id}/documents/`);
+    const response = await api.get(`/stores/${s_id}/documents/`);
     return response.data;
   } catch (err: any) {
     thunkAPI.rejectWithValue(
@@ -193,7 +194,7 @@ export const createStoreDocuments = createAsyncThunk<
   { rejectValue: string }
 >("store/create/documents", async ({ payload, s_id }, thunkAPI) => {
   try {
-    const response = await api.post(`/api/stores/${s_id}/documents/`, payload, {
+    const response = await api.post(`/stores/${s_id}/documents/`, payload, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -215,7 +216,7 @@ export const deleteStoreDocuments = createAsyncThunk<
   { rejectValue: string }
 >("store/delete/documents", async ({ s_id, id }, thunkAPI) => {
   try {
-    const response = await api.delete(`/api/stores/${s_id}/documents/${id}/`);
+    const response = await api.delete(`/stores/${s_id}/documents/${id}/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -236,7 +237,7 @@ export const getSocialMediaList = createAsyncThunk<
   { rejectValue: string }
 >("storeDetail/get/social-media-list", async (s_id, thunkAPI) => {
   try {
-    const response = await api.get(`/api/stores/${s_id}/social-media/`);
+    const response = await api.get(`/stores/${s_id}/social-media/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -254,7 +255,7 @@ export const createSocialMedia = createAsyncThunk<
 >("storeDetail/create/social-media", async ({ payload, s_id }, thunkAPI) => {
   try {
     const response = await api.post(
-      `/api/stores/${s_id}/social-media/`,
+      `/stores/${s_id}/social-media/`,
       payload
     );
     return response.data;
@@ -275,7 +276,7 @@ export const deleteSocialMedia = createAsyncThunk<
 >("storeDetail/delete/social-media", async ({ s_id, id }, thunkAPI) => {
   try {
     const response = await api.delete(
-      `/api/stores/${s_id}/social-media/${id}/`
+      `/stores/${s_id}/social-media/${id}/`
     );
     return response.data;
   } catch (error: any) {
@@ -288,3 +289,22 @@ export const deleteSocialMedia = createAsyncThunk<
 });
 
 
+//=======================================================
+//for store categories list
+//get the list of store categories
+export const getStoresCategories = createAsyncThunk<
+  StoreCategoryItem[],
+  void,
+  { rejectValue: string }
+>("store/category_list", async (_, thunkAPI) => {
+  try {
+    const response = await api.get("/stores/category/");
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to fetch main categories"
+    );
+  }
+});

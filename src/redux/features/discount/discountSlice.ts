@@ -8,6 +8,7 @@ import {
 import { DiscountItem } from "@/redux/features/discount/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
+import { toast } from "sonner";
 
 interface DiscountState {
   discountData: DiscountItem[] | null;
@@ -137,9 +138,13 @@ const discountSlice = createSlice({
         state.updateDiscountLoading = true;
         state.discountError = null;
       })
-      .addCase(updateDiscount.fulfilled, (state, action) => {
+      .addCase(updateDiscount.fulfilled, (state, action: PayloadAction<DiscountItem>) => {
+        toast.info("Update Successfully", { richColors: true })
         state.updateDiscountLoading = false;
         state.updateDiscountData = action.payload;
+        state.discountData = state.discountData && state.discountData.map((item) =>
+          action.payload.id == item.id ? { ...item, ...action.payload } : item
+        )
         state.discountError = null;
       })
       .addCase(

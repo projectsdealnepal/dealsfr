@@ -76,6 +76,11 @@ const navigationItems = [
     icon: Package,
     href: "/dashboard/product",
   },
+  {
+    title: "Featured Products",
+    icon: Package,
+    href: "/dashboard/featured",
+  },
 ];
 
 function DashboardSidebar() {

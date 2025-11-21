@@ -56,7 +56,7 @@ export const createProduct = createAsyncThunk<
   { rejectValue: string }
 >("product/create", async (userData, thunkAPI) => {
   try {
-    const response = await api.post("/api/products/", userData, {
+    const response = await api.post("/products/", userData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;

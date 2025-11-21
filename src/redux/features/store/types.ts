@@ -108,3 +108,11 @@ export interface DocumentItem {
   is_verified: boolean
 }
 
+//******************************
+//store  category list
+//******************************
+export interface StoreCategoryItem {
+  id: number;
+  name: string;
+  didplay_name: string;
+}

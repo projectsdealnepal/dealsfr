@@ -2,6 +2,7 @@ import api from "@/lib/interceptor";
 import {
   CategoryItem,
   MainCategoryItem,
+  StoreCategoryItem,
   SubCategoryItem,
 } from "@/redux/features/category/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -32,7 +33,7 @@ export const createMainCategory = createAsyncThunk<
   { rejectValue: string }
 >("category/mainCategory/create", async (categoryData, thunkAPI) => {
   try {
-    const response = await api.post("/api/main-categories/", categoryData, {
+    const response = await api.post("/main-categories/", categoryData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -53,7 +54,7 @@ export const updateMainCategory = createAsyncThunk<
 >("category/mainCategory/update", async ({ id, categoryData }, thunkAPI) => {
   try {
     const response = await api.patch(
-      `/api/main-categories/${id}`,
+      `/main-categories/${id}`,
       categoryData,
       {
         headers: { "Content-Type": "multipart/form-data" },
@@ -76,7 +77,7 @@ export const deleteMainCategory = createAsyncThunk<
   { rejectValue: string }
 >("category/mainCategory/delete", async (id, thunkAPI) => {
   try {
-    const response = await api.delete(`/api/main-categories/${id}`, {
+    const response = await api.delete(`/main-categories/${id}`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
@@ -100,7 +101,7 @@ export const getSubCategory = createAsyncThunk<
   { rejectValue: string }
 >("category/subCategory/get", async (_, thunkAPI) => {
   try {
-    const response = await api.get("/api/sub-categories/", {
+    const response = await api.get("/sub-categories/", {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
@@ -120,7 +121,7 @@ export const createSubCategory = createAsyncThunk<
   { rejectValue: string }
 >("category/subCategory/create", async (categoryData, thunkAPI) => {
   try {
-    const response = await api.post("/api/sub-categories/", categoryData, {
+    const response = await api.post("/sub-categories/", categoryData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -140,7 +141,7 @@ export const updateSubCategory = createAsyncThunk<
   { rejectValue: string }
 >("category/subCategory/update", async ({ id, categoryData }, thunkAPI) => {
   try {
-    const response = await api.put(`/api/sub-categories/${id}`, categoryData, {
+    const response = await api.put(`/sub-categories/${id}`, categoryData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -160,7 +161,7 @@ export const deleteSubCategory = createAsyncThunk<
   { rejectValue: string }
 >("category/subCategory/delete", async (id, thunkAPI) => {
   try {
-    const response = await api.delete(`/api/sub-categories/${id}`, {
+    const response = await api.delete(`/sub-categories/${id}`, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
@@ -172,3 +173,4 @@ export const deleteSubCategory = createAsyncThunk<
     );
   }
 });
+

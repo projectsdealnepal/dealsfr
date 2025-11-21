@@ -3,9 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Eye, Pencil, Percent, Play, Plus, Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Button } from "@/components/ui/button";
-import { DiscountItem } from "@/redux/features/discount/types";
+import { DiscountItem, DiscountUpdatePayload } from "@/redux/features/discount/types";
 import { useRouter } from "next/navigation";
-import { deleteDiscount } from "@/redux/features/discount/discount";
+import { deleteDiscount, updateDiscount } from "@/redux/features/discount/discount";
 
 interface DiscountCardProps {
   item: DiscountItem;
@@ -34,8 +34,23 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
     });
   };
 
-  const handleAddProductButtons = (id: number) => {
 
+  const handleGoLive = () => {
+    if (storeDetailData) {
+      const data: { payload: DiscountUpdatePayload, d_id: number, s_id: number } = {
+        payload: {
+          status: "active",
+        },
+        d_id: item.id,
+        s_id: storeDetailData?.id,
+
+      }
+      dispatch(updateDiscount(data))
+    }
+  }
+
+  const handleEdit = () => {
+    router.push(`/dashboard/discounts/create?id=${item.id}`)
   }
 
 
@@ -49,7 +64,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
           <Badge
             className={`${item.status === "pending"
               ? "bg-[var(--toast-loading-bg)] text-[var(--toast-loading-color)]"
-              : "bg-[var(--toast-success-bg)] text-[var(--toast-success-color)]"
+              : "bg-[var(--primary)] text-[var(--toast-success-color)]"
               }`}
           >
             {item.status}
@@ -92,6 +107,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
             Preview
           </Button>
           <Button
+            onClick={handleGoLive}
             variant="outline"
             size="sm"
             className="min-w-30"
@@ -109,6 +125,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({
             Add Product
           </Button>
           <Button
+            onClick={handleEdit}
             variant="outline"
             size="sm"
             className=" min-w-30"

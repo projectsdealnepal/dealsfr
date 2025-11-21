@@ -1,12 +1,10 @@
 "use client"
 
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import CustomerWebView from "./customer_view_web";
 import CustomerMobileView from "./customer_view_mobile";
-
 
 interface StorePreviewModalProps {
   isOpen: boolean;

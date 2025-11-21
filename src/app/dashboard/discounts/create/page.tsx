@@ -20,10 +20,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { CalendarDays, Image, Layout, Tag } from "lucide-react";
-import { createDiscount } from "@/redux/features/discount/discount";
+import { createDiscount, updateDiscount } from "@/redux/features/discount/discount";
 import { clearCreateDiscountState } from "@/redux/features/discount/discountSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -43,14 +43,21 @@ export interface DiscountFormData {
 
 export default function AddDiscountForm() {
   const dispatch = useAppDispatch();
+  const param = useSearchParams()
+  const id = param.get("id")
   const router = useRouter()
+
   const { layoutData } = useAppSelector((state) => state.layout);
   const { bannerData } = useAppSelector((state) => state.banner);
   const { storeDetailData } = useAppSelector(s => s.store)
-  const { createDiscountData, discountError } = useAppSelector(
+  const { createDiscountData, discountData, discountError } = useAppSelector(
     (s) => s.discount
   );
 
+  const isEditMode = Boolean(id)
+  const currentDiscount = isEditMode
+    ? discountData?.find((d) => d.id === Number(id))
+    : null
 
   const form = useForm<DiscountFormData>({
     defaultValues: {
@@ -63,16 +70,39 @@ export default function AddDiscountForm() {
     },
   });
 
+  useEffect(() => {
+    if (isEditMode && currentDiscount) {
+      form.reset({
+        name: currentDiscount.name || "",
+        description: currentDiscount.description || "",
+        start_date: currentDiscount.start_date || "",
+        end_date: currentDiscount.end_date || "",
+        banner: String(currentDiscount.banner || ""),
+        layout: String(currentDiscount.layout || ""),
+      });
+    }
+  }, [isEditMode, currentDiscount]);
+
   const onSubmit = (data: DiscountFormData) => {
-    dispatch(createDiscount({
-      payload: {
-        ...data,
-        banner: Number(data.banner),
-        layout: Number(data.layout),
-        apply_to_all_branches: true,
-      },
-      s_id: storeDetailData?.id || 0
-    }));
+    const payload = {
+      ...data,
+      banner: Number(data.banner),
+      layout: Number(data.layout),
+      apply_to_all_branches: true,
+    };
+
+    if (isEditMode && currentDiscount) {
+      dispatch(updateDiscount({
+        payload,
+        d_id: Number(id),
+        s_id: storeDetailData?.id || 0
+      }))
+    } else {
+      dispatch(createDiscount({
+        payload,
+        s_id: storeDetailData?.id || 0
+      }));
+    }
   };
 
   useEffect(() => {
@@ -106,8 +136,11 @@ export default function AddDiscountForm() {
         <div className="space-y-6">
           {/* Header Section */}
           <ChildRouteHeader
-            title='Create New Discount'
-            subtitle={"Configure your discount settings and promotional details"}
+            title={isEditMode ? "Edit Discount" : "Create New Discount"}
+            subtitle={isEditMode
+              ? "Update your discount settings and promotional details"
+              : "Configure your discount settings and promotional details"
+            }
             backLink='/dashboard/discounts'
             backText='Back to discounts'
             titleIcon={<Tag className="h-5 w-5 text-primary" />}
@@ -327,12 +360,8 @@ export default function AddDiscountForm() {
 
                   {/* Submit Button */}
                   <div className="pt-4">
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full h-12 text-base font-medium bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-lg hover:shadow-xl"
-                    >
-                      Create Discount Campaign
+                    <Button type="submit">
+                      {isEditMode ? "Update Discount" : "Create Discount Campaign"}
                     </Button>
                   </div>
                 </form>

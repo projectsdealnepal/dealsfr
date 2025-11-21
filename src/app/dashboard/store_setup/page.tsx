@@ -79,6 +79,8 @@ export default function StoreRegistrationPage() {
     storeCreateError,
     storeUpdateData,
     storeUpdateError,
+    storeCategoriesData,
+    storeCategoriesError,
   } = useAppSelector((state) => state.store);
 
   const defaultValues: Partial<StoreFormValues> = useMemo(
@@ -286,6 +288,7 @@ export default function StoreRegistrationPage() {
                     </FormItem>
                   )}
                 />
+
 
                 <FormField
                   control={form.control}

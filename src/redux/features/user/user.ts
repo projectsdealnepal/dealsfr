@@ -11,7 +11,7 @@ export const registerUser = createAsyncThunk<
 >("user/registerUser", async (userData, thunkAPI) => {
   try {
 
-    const response = await api.post("/api/accounts/register/", userData, {
+    const response = await api.post("/accounts/register/", userData, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -29,7 +29,7 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string }
 >("user/loginUser", async (loginData, thunkAPI) => {
   try {
-    const response = await api.post<UserLoginResponse>("/api/accounts/login/", loginData, {
+    const response = await api.post<UserLoginResponse>("/accounts/login/", loginData, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -68,7 +68,7 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
       }
 
       await api.post(
-        "/api/accounts/logout/",
+        "/accounts/logout/",
         { refresh: refreshToken },
         {
           headers: { "Content-Type": "application/json" },
@@ -95,7 +95,7 @@ export const getUser = createAsyncThunk<
     "user/getUser",
     async (_, thunkAPI) => {
       try {
-        const response = await authApi.get("/api/me/", {
+        const response = await authApi.get("http://20.244.10.187/api/v1/accounts/me/", {
           headers: { "Content-Type": "application/json" },
         });
 
