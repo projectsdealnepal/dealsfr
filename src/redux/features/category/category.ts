@@ -2,7 +2,6 @@ import api from "@/lib/interceptor";
 import {
   CategoryItem,
   MainCategoryItem,
-  StoreCategoryItem,
   SubCategoryItem,
 } from "@/redux/features/category/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";

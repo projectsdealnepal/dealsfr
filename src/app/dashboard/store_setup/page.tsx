@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -19,6 +20,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import {
   createStore,
+  getStoresCategories,
   updateStore,
 } from "@/redux/features/store/store";
 import {
@@ -63,6 +65,7 @@ const storeFormSchema = z.object({
   logo: z.any().optional(),
   cover_image: z.any().optional(),
   documents: z.any().optional(),
+  store_category_ids: z.array(z.string()).optional(),
 });
 
 type StoreFormValues = z.infer<typeof storeFormSchema>;
@@ -83,6 +86,19 @@ export default function StoreRegistrationPage() {
     storeCategoriesError,
   } = useAppSelector((state) => state.store);
 
+  useEffect(() => {
+    dispatch(getStoresCategories());
+  }, [dispatch]);
+
+  const categoryOptions = useMemo(() => {
+    if (!storeCategoriesData) return [];
+    const categories = storeCategoriesData.map((cat) => ({
+      value: cat.id.toString(),
+      label: cat.name,
+    }));
+    return [{ value: "all", label: "All Categories" }, ...categories];
+  }, [storeCategoriesData]);
+
   const defaultValues: Partial<StoreFormValues> = useMemo(
     () => ({
       name: storeDetailData?.name || "",
@@ -96,6 +112,8 @@ export default function StoreRegistrationPage() {
       business_registration_number:
         storeDetailData?.business_registration_number || "",
       slogan: storeDetailData?.slogan || "",
+      store_category_ids:
+        storeDetailData?.store_category?.map((cat) => cat.id.toString()) || [],
     }),
     [storeDetailData]
   );
@@ -124,6 +142,8 @@ export default function StoreRegistrationPage() {
         business_registration_number:
           storeDetailData?.business_registration_number || "",
         slogan: storeDetailData?.slogan || "",
+        store_category_ids:
+          storeDetailData?.store_category?.map((cat) => cat.id.toString()) || [],
       });
     }
   }, [storeDetailData, form]);
@@ -166,7 +186,9 @@ export default function StoreRegistrationPage() {
     // Append all form fields to FormData
     Object.entries(data).forEach(([key, value]) => {
       if (value) {
-        if (value instanceof File) {
+        if (Array.isArray(value)) {
+          value.forEach((item) => payload.append(key, item));
+        } else if (value instanceof File) {
           payload.append(key, value);
         } else if (typeof value === "string") {
           payload.append(key, value);
@@ -250,9 +272,10 @@ export default function StoreRegistrationPage() {
                       </FormLabel>
                       <FormControl>
                         <Input
-
                           className="bg-background text-foreground border-input"
-                          placeholder="e.g. My Awesome Store" {...field} />
+                          placeholder="e.g. My Awesome Store"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -288,7 +311,25 @@ export default function StoreRegistrationPage() {
                     </FormItem>
                   )}
                 />
-
+                <FormField
+                  control={form.control}
+                  name="store_category_ids"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Store Categories</FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          placeholder="Select categories..."
+                          options={categoryOptions}
+                          selected={field.value || []}
+                          onChange={field.onChange}
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -298,9 +339,10 @@ export default function StoreRegistrationPage() {
                       <FormLabel className="text-foreground">City</FormLabel>
                       <FormControl>
                         <Input
-
                           className="bg-background text-foreground border-input"
-                          placeholder="Enter city" {...field} />
+                          placeholder="Enter city"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -317,9 +359,10 @@ export default function StoreRegistrationPage() {
                       </FormLabel>
                       <FormControl>
                         <Input
-
                           className="bg-background text-foreground border-input"
-                          placeholder="Enter district" {...field} />
+                          placeholder="Enter district"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -355,9 +398,10 @@ export default function StoreRegistrationPage() {
                       <FormLabel className="text-foreground">Address</FormLabel>
                       <FormControl>
                         <Input
-
                           className="bg-background text-foreground border-input"
-                          placeholder="Enter address" {...field} />
+                          placeholder="Enter address"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -372,9 +416,10 @@ export default function StoreRegistrationPage() {
                       <FormLabel className="text-foreground">Phone</FormLabel>
                       <FormControl>
                         <Input
-
                           className="bg-background text-foreground border-input"
-                          placeholder="Enter phone number" {...field} />
+                          placeholder="Enter phone number"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

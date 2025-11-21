@@ -69,9 +69,12 @@ export interface GetStoreDetailResponse {
   slogan: string;
   followers_count: number;
   social_medias: SocialMedia[];
+  is_veriried: boolean;
   branches: Branch[];
   owner: number;
+  store_category: StoreCategoryItem[]
 }
+
 
 //for store branches
 export interface BranchItem {
