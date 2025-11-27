@@ -95,7 +95,8 @@ export const getUser = createAsyncThunk<
     "user/getUser",
     async (_, thunkAPI) => {
       try {
-        const response = await authApi.get("http://20.244.10.187/api/v1/accounts/me/", {
+        const url = process.env.NEXT_PUBLIC_API_BASE_URL
+        const response = await authApi.get(`${url}accounts/me/`, {
           headers: { "Content-Type": "application/json" },
         });
 
