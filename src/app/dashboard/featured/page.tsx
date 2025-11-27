@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
 import { deleteLayout, } from '@/redux/features/layout/layout';

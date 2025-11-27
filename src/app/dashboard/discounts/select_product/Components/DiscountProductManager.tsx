@@ -6,8 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
+import { Label } from "@/components/ui/label"; import {
   Select,
   SelectContent,
   SelectItem,
@@ -18,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BrandItem,
   DiscountType,
+  ProductItem,
   RewardProduct,
   TargetType,
   ValueType,
@@ -34,7 +34,8 @@ import { useSearchParams } from "next/navigation";
 import { BOGODiscount, FixedAmountDiscount, PartialDiscountItem, PercentageDiscount, SpendGetDiscount } from "./types";
 import { RenderDiscountFields } from "./RenderFieldComponent";
 import DiscountAppliedProductListDialog from "./DiscountAppliedProductListDialog";
-import { clearRewardProductList, clearTempProductList, setDiscountAppliedProductList } from "@/redux/features/product/productSlice";
+import { clearRewardProductList, clearTempProductList, setDiscountAppliedProductList, } from "@/redux/features/product/productSlice";
+import { addProductOnDiscount, updateProductOnDiscount } from "@/redux/features/discount/discount";
 
 // Validation schemas
 const percentageSchema = z.object({
@@ -76,8 +77,23 @@ const DiscountManager = () => {
   const id = parseInt(param.get("id") ?? "0", 10)
   const dispatch = useAppDispatch()
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { tempDiscountProductList, rewardProductList } = useAppSelector((s) => s.product);
+  const { tempDiscountProductList, rewardProductList, offerAppliedProductsList } = useAppSelector((s) => s.product);
 
+  //function that will patch or create the offered products in discount
+  const handleAddProducts = (p: AddProductOnDiscountPayload[]) => {
+    if (id && storeDetailData) {
+      const payload = {
+        d_id: id,
+        s_id: storeDetailData.id,
+        payload: p,
+      }
+      if (offerAppliedProductsList.length > 0) {
+        dispatch(addProductOnDiscount(payload))
+      } else {
+        dispatch(updateProductOnDiscount(payload))
+      }
+    }
+  }
 
   const discountTypeOptions = [
     { value: "PERCENTAGE", label: "Percentage Off" },
@@ -117,10 +133,11 @@ const DiscountManager = () => {
       });
       return false;
     }
+
     //TODO: need to modify validation schema
     // Rule 1: Either percentageValue or discountValue must be present
     if (currentItem.discountType === "BOGO" || currentItem.discountType === "SPEND_GET") {
-      if (currentItem.percentageValue == null && currentItem.discountValue == null) {
+      if (currentItem.percentageValue == null && currentItem.discountValue == null && currentItem.rewardItems?.length == 0) {
         toast.info("at least the bonus value or disocunt value is requied", {
           richColors: true,
         });
@@ -128,7 +145,7 @@ const DiscountManager = () => {
       }
       // Rule 2: If percentageValue is present, maximumDiscount must also be present
       if (currentItem.percentageValue != null && currentItem.maximumDiscount == null) {
-        toast.info("at least the bonus value or disocunt value is requied1", {
+        toast.info("You have to mention maximum discount limit on percentage value.", {
           richColors: true,
         });
         return false;
@@ -156,7 +173,6 @@ const DiscountManager = () => {
       toast.info("At least one product is required", { richColors: true });
       return false;
     }
-
 
     try {
       switch (currentItem.discountType) {
@@ -203,6 +219,7 @@ const DiscountManager = () => {
 
   const handlePercentageDiscount = () => {
     let payload: AddProductOnDiscountPayload[] = []
+    let product: ProductItem
     if (currentItem.discountType == "PERCENTAGE") {
       //for currentItem.tartet type is "storeProduct"
       switch (currentItem.targetType) {
@@ -232,6 +249,7 @@ const DiscountManager = () => {
       }
       console.log({ payload });
       dispatch(setDiscountAppliedProductList(payload))
+      handleAddProducts(payload)
     }
   };
 
@@ -275,6 +293,7 @@ const DiscountManager = () => {
       // dispatch(addProductOnDiscount(dispatchData))
       console.log({ payload });
       dispatch(setDiscountAppliedProductList(payload))
+      handleAddProducts(payload)
     }
   };
 
@@ -323,6 +342,7 @@ const DiscountManager = () => {
 
       console.log({ payload });
       dispatch(setDiscountAppliedProductList(payload))
+      handleAddProducts(payload)
     }
   };
 
@@ -374,6 +394,7 @@ const DiscountManager = () => {
 
       console.log({ payload });
       dispatch(setDiscountAppliedProductList(payload))
+      handleAddProducts(payload)
     }
   };
 
@@ -525,7 +546,7 @@ const DiscountManager = () => {
 
         <Button onClick={addDiscountItem} className="w-full">
           <Plus className="mr-2 h-4 w-4" />
-          Add to list
+          Add to discount
         </Button>
       </CardContent>
     </Card>

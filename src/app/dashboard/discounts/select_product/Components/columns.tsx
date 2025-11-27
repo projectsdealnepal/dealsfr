@@ -3,8 +3,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductItem } from "@/redux/features/product/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "./data-table";
-import { useAppSelector } from "@/redux/hooks";
 
 export const columns: ColumnDef<ProductItem>[] = [
   {

@@ -1,8 +1,8 @@
 import { filterProducts, getBrandsList, getProducts } from "@/redux/features/product/product";
 import { AddProductOnDiscount, ApiResponse, BrandItem, DiscountedProductType, ProductItem, RewardProductItem, } from "@/redux/features/product/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AddProductOnDiscountPayload } from "../discount/types";
-import { getDiscountProductList } from "../discount/discount";
+import { AddProductOnDiscountPayload, OfferAppliedProducts } from "../discount/types";
+import { addProductOnDiscount, getDiscountProductList, updateProductOnDiscount } from "../discount/discount";
 
 interface ProductState {
   productList: ProductItem[] | null;
@@ -23,6 +23,9 @@ interface ProductState {
   //discounted applied Product list(this is like final list of products that are in the
   //discount)
   discountAppliedProductList: AddProductOnDiscountPayload[]
+  offerAppliedProductsList: OfferAppliedProducts[]
+
+
 
   //selected barnd
   selectedBrand: null | BrandItem
@@ -50,6 +53,8 @@ const initialState: ProductState = {
   //discounted applied Product list(this is like final list that are in the
   //discount)
   discountAppliedProductList: [],
+  offerAppliedProductsList: [],
+
   //selected barnd
   selectedBrand: null,
 };
@@ -128,14 +133,17 @@ const productSlice = createSlice({
     setDiscountAppliedProductList(state, action: PayloadAction<AddProductOnDiscountPayload[]>) {
       state.discountAppliedProductList = [...state.discountAppliedProductList, ...action.payload];
     },
+
     // deleteDiscountAppliedProductItem(state, action: PayloadAction<number>) {
     //   state.discountAppliedProductList = state.discountAppliedProductList.filter(
-    //     (item) => item!== action.payload
+    //     (item) => item !== action.payload
     //   );
     // },
     clearDiscountAppliedProductList(state) {
       state.discountAppliedProductList = [];
     },
+
+
     //for selected brand item
     setSelectedBrand(state, action: PayloadAction<BrandItem | null>) {
       state.selectedBrand = action.payload
@@ -187,9 +195,17 @@ const productSlice = createSlice({
       })
       //got get the list of product and store them in the discounted product list
       .addCase(getDiscountProductList.fulfilled, (state, action) => {
-        state.discountAppliedProductList = action.payload
+        // state.discountAppliedProductList = action.payload
+        state.offerAppliedProductsList = action.payload;
       })
 
+      //addProductOnDiscount  and updateProductOnDiscount success
+      .addCase(addProductOnDiscount.fulfilled, (state, action) => {
+        state.offerAppliedProductsList = action.payload;
+      })
+      .addCase(updateProductOnDiscount.fulfilled, (state, action) => {
+        state.offerAppliedProductsList = action.payload;
+      })
 
   },
 });
@@ -204,7 +220,7 @@ export const {
   setTempProductList,
   updateTempProductList,
   clearTempProductList,
-  addDiscountedProductList: addDiscountProductList,
+  addDiscountedProductList,
   clearDiscountProductList,
   setRewardProductList,
   clearRewardProductList,
@@ -213,6 +229,6 @@ export const {
   // deleteDiscountAppliedProductItem,
   clearDiscountAppliedProductList,
   setSelectedBrand,
-
+  //for offer applied product list
 } = productSlice.actions;
 export default productSlice.reducer;

@@ -39,6 +39,7 @@ import * as z from "zod";
 
 const storeTypes = ["DEPT", "SUPER", "LOCAL", "ONLINE"];
 
+// VALIDATION SCHEMA
 const storeFormSchema = z.object({
   name: z
     .string()
@@ -70,11 +71,13 @@ const storeFormSchema = z.object({
 
 type StoreFormValues = z.infer<typeof storeFormSchema>;
 
+// MAIN COMPONENT
+// ============================================================================
 export default function StoreRegistrationPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const params = useSearchParams();
-  const store_id = params.get("id");
+
+  // Redux Selectors
   const { userData } = useAppSelector((state) => state.userData);
   const {
     storeDetailData,
@@ -83,13 +86,21 @@ export default function StoreRegistrationPage() {
     storeUpdateData,
     storeUpdateError,
     storeCategoriesData,
-    storeCategoriesError,
   } = useAppSelector((state) => state.store);
 
-  useEffect(() => {
-    dispatch(getStoresCategories());
-  }, [dispatch]);
+  // Local State
+  const [logoPreview, setLogoPreview] = useState<string | null>(
+    storeDetailData?.logo || null
+  );
+  const [coverPreview, setCoverPreview] = useState<string | null>(
+    storeDetailData?.cover_image || null
+  );
+  const [success, setSuccess] = useState(false);
 
+  // --------------------------------------------------------------------------
+  // Memoized Values
+  // --------------------------------------------------------------------------
+  // Category Options for MultiSelect
   const categoryOptions = useMemo(() => {
     if (!storeCategoriesData) return [];
     const categories = storeCategoriesData.map((cat) => ({
@@ -99,6 +110,7 @@ export default function StoreRegistrationPage() {
     return [{ value: "all", label: "All Categories" }, ...categories];
   }, [storeCategoriesData]);
 
+  // Default Form Values
   const defaultValues: Partial<StoreFormValues> = useMemo(
     () => ({
       name: storeDetailData?.name || "",
@@ -118,11 +130,23 @@ export default function StoreRegistrationPage() {
     [storeDetailData]
   );
 
+  // --------------------------------------------------------------------------
+  // Form Initialization
+  // --------------------------------------------------------------------------
   const form = useForm<StoreFormValues>({
     resolver: zodResolver(storeFormSchema),
     defaultValues,
   });
 
+  // --------------------------------------------------------------------------
+  // Effects
+  // --------------------------------------------------------------------------
+  // Fetch Store Categories on Mount
+  useEffect(() => {
+    dispatch(getStoresCategories());
+  }, [dispatch]);
+
+  // Reset Form When Store Detail Data Changes
   useEffect(() => {
     if (storeDetailData) {
       form.reset({
@@ -143,20 +167,58 @@ export default function StoreRegistrationPage() {
           storeDetailData?.business_registration_number || "",
         slogan: storeDetailData?.slogan || "",
         store_category_ids:
-          storeDetailData?.store_category?.map((cat) => cat.id.toString()) || [],
+          storeDetailData?.store_category?.map((cat) => cat.id.toString()) ||
+          [],
       });
     }
   }, [storeDetailData, form]);
 
-  const [logoPreview, setLogoPreview] = React.useState<string | null>(
-    storeDetailData?.logo || null
-  );
-  const [coverPreview, setCoverPreview] = React.useState<string | null>(
-    storeDetailData?.cover_image || null
-  );
+  // Handle Store Create/Update Success and Errors
+  useEffect(() => {
+    if (storeUpdateData) {
+      toast.success("Successfully updated the store detail", {
+        richColors: true,
+      });
+      router.back();
+    }
 
-  const [success, setSuccess] = useState(false);
+    if (storeCreateData) {
+      toast.success("Successfully created the store.", {
+        richColors: true,
+      });
+      router.back();
+    }
 
+    if (storeCreateError) {
+      toast.error(storeCreateError, {
+        richColors: true,
+      });
+    }
+
+    if (storeUpdateError) {
+      toast.error(storeUpdateError, {
+        richColors: true,
+      });
+    }
+
+    return () => {
+      dispatch(clearStoreUpdateState());
+      dispatch(clearStoreCreateState());
+    };
+  }, [
+    storeDetailData,
+    storeCreateData,
+    storeCreateError,
+    storeUpdateData,
+    storeUpdateError,
+    dispatch,
+    router,
+  ]);
+
+  // --------------------------------------------------------------------------
+  // Event Handlers
+  // --------------------------------------------------------------------------
+  // Handle File Upload and Preview
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement> | null,
     fieldName: string
@@ -181,8 +243,10 @@ export default function StoreRegistrationPage() {
     }
   };
 
+  // Handle Form Submission
   async function onSubmit(data: StoreFormValues) {
     const payload = new FormData();
+
     // Append all form fields to FormData
     Object.entries(data).forEach(([key, value]) => {
       if (value) {
@@ -197,7 +261,8 @@ export default function StoreRegistrationPage() {
     });
 
     console.log({ payload });
-    //update the store if the user has one update(that is the limit) otherwise create
+
+    // Update store if user has one, otherwise create new store
     if (userData && userData?.managed_stores.length > 0) {
       dispatch(updateStore({ payload, id: userData?.managed_stores[0] }));
     } else {
@@ -205,41 +270,13 @@ export default function StoreRegistrationPage() {
     }
   }
 
-  //reacting to the store update status
-  useEffect(() => {
-    if (storeUpdateData) {
-      toast.success("Successfully updated the store detail", {
-        richColors: true,
-      });
-      router.back();
-    }
-    if (storeCreateData) {
-      toast.success("Successfully created the store.", {
-        richColors: true,
-      });
-      router.back();
-    }
-
-    if (storeCreateError) {
-      toast.error(storeCreateError, {
-        richColors: true,
-      });
-    }
-
-    if (storeUpdateError) {
-      toast.error(storeUpdateError, {
-        richColors: true,
-      });
-    }
-    return () => {
-      dispatch(clearStoreUpdateState());
-      dispatch(clearStoreCreateState());
-    };
-  }, [storeDetailData, storeCreateData, storeCreateError, storeUpdateError]);
-
+  // --------------------------------------------------------------------------
+  // Render
+  // --------------------------------------------------------------------------
   return (
     <div className="flex justify-center w-full">
       <div className="w-full max-w-5xl px-4">
+        {/* Back Button */}
         <Link
           href="/dashboard"
           className="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground mb-6 mt-8"
@@ -247,10 +284,13 @@ export default function StoreRegistrationPage() {
           <ArrowLeft size={20} />
           <span className="text-lg font-medium">Back to Dashboard</span>
         </Link>
+
+        {/* Page Title */}
         <h1 className="text-3xl font-bold text-foreground mb-6 mt-8 text-center">
           {storeDetailData ? "Update Your Store" : "Register Your Store"}
         </h1>
 
+        {/* Success Message or Form */}
         {success ? (
           <div className="text-green-600 dark:text-green-400 font-semibold text-center py-8">
             Store {storeDetailData ? "updated" : "registered"} successfully!
@@ -262,6 +302,11 @@ export default function StoreRegistrationPage() {
               className="space-y-6 max-w-5xl mx-auto p-4"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* ========================================================== */}
+                {/* Basic Information */}
+                {/* ========================================================== */}
+
+                {/* Store Name */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -282,6 +327,7 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* Store Type */}
                 <FormField
                   control={form.control}
                   name="store_type"
@@ -311,6 +357,8 @@ export default function StoreRegistrationPage() {
                     </FormItem>
                   )}
                 />
+
+                {/* Store Categories */}
                 <FormField
                   control={form.control}
                   name="store_category_ids"
@@ -331,6 +379,11 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* ========================================================== */}
+                {/* Location Information */}
+                {/* ========================================================== */}
+
+                {/* City */}
                 <FormField
                   control={form.control}
                   name="city"
@@ -349,6 +402,7 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* District */}
                 <FormField
                   control={form.control}
                   name="district"
@@ -369,6 +423,7 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* Location Link */}
                 <FormField
                   control={form.control}
                   name="location_link"
@@ -390,6 +445,7 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* Address */}
                 <FormField
                   control={form.control}
                   name="address"
@@ -408,6 +464,11 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* ========================================================== */}
+                {/* Contact Information */}
+                {/* ========================================================== */}
+
+                {/* Phone */}
                 <FormField
                   control={form.control}
                   name="phone"
@@ -426,6 +487,7 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* Email */}
                 <FormField
                   control={form.control}
                   name="email"
@@ -445,6 +507,11 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* ========================================================== */}
+                {/* Business Information */}
+                {/* ========================================================== */}
+
+                {/* Business Registration Number */}
                 <FormField
                   control={form.control}
                   name="business_registration_number"
@@ -465,6 +532,11 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* ========================================================== */}
+                {/* Media Upload */}
+                {/* ========================================================== */}
+
+                {/* Store Logo */}
                 <FormField
                   control={form.control}
                   name="logo"
@@ -499,6 +571,7 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* Cover Image */}
                 <FormField
                   control={form.control}
                   name="cover_image"
@@ -533,6 +606,11 @@ export default function StoreRegistrationPage() {
                   )}
                 />
 
+                {/* ========================================================== */}
+                {/* Additional Information */}
+                {/* ========================================================== */}
+
+                {/* Slogan */}
                 <FormField
                   control={form.control}
                   name="slogan"
@@ -554,6 +632,7 @@ export default function StoreRegistrationPage() {
                 />
               </div>
 
+              {/* Submit Button */}
               <Button type="submit" className="w-full mt-6">
                 {userData && userData?.managed_stores?.length > 0
                   ? "Update"

@@ -95,3 +95,45 @@ export interface ProductsOnDiscount {
   bundle_discounts?: BundleDiscount[];
   reward_products?: RewardProduct[];
 }
+
+//Types of products which have offer applied to them and attached to the
+//discount
+
+export interface OfferAppliedProducts {
+  id: number;
+  discount_type: string;
+  value: string;
+  value_type: string;
+  buy_quantity: number;
+  min_spend_amount: number | null;
+  max_discount_amount: number | null;
+  brand: number | null;
+  category: number | null;
+  store_product: StoreProduct;
+  bundle_discounts: any[];
+  reward_products: ResponseRewardProduct[];
+  created_at: string;
+}
+
+export interface StoreProduct {
+  id: number;
+  store: number;
+  store_name: string;
+  price: string;
+  image: string;
+  is_available: boolean;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  description: string;
+  category: number;
+  brand: number | null;
+}
+
+export interface ResponseRewardProduct {
+  id: number;
+  product_discount: number;
+  store_product: StoreProduct;
+  get_quantity: number;
+  created_at: string;
+}

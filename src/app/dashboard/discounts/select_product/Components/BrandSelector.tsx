@@ -14,12 +14,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { setSelectedBrand } from "@/redux/features/product/productSlice";
 import { BrandItem } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Virtuoso } from "react-virtuoso";
 
 interface BrandSelectorProps {

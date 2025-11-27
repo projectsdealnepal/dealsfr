@@ -11,7 +11,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight, ChevronDown, Check } from "lucide-react";
 import { CategoryItem } from "@/redux/features/category/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { filterProducts } from "@/redux/features/product/product";
 
 
 interface CategorySelectorModalProps {
@@ -27,10 +26,7 @@ export function CategorySelectorSheet({
   categories,
   onSelect,
 }: CategorySelectorModalProps) {
-  const dispatch = useAppDispatch()
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
-  const [search, setSearch] = useState("");
-  const { storeDetailData } = useAppSelector(s => s.store)
 
   const getAllChildIds = (cat: CategoryItem): number[] => {
     let ids: number[] = [cat.id];

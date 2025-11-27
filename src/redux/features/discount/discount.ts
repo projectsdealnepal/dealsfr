@@ -1,7 +1,7 @@
 import api from "@/lib/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload, AddProductOnDiscountPayload } from "./types";
+import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload, AddProductOnDiscountPayload, OfferAppliedProducts } from "./types";
 
 export const getDiscount = createAsyncThunk<
   DiscountItem[],
@@ -76,13 +76,31 @@ export const deleteDiscount = createAsyncThunk<
 //=====================================
 
 export const addProductOnDiscount = createAsyncThunk<
-  any,
+  OfferAppliedProducts[],
   { payload: AddProductOnDiscountPayload[], s_id: number, d_id: number },
   { rejectValue: string }
 >("addProductOnDiscount", async ({ payload, s_id, d_id }, thunkAPI) => {
   try {
     const response = await api.post(`/products/${s_id}/discount/${d_id}/products/`, payload);
-    return response;
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to add products on discount."
+    );
+  }
+});
+
+
+export const updateProductOnDiscount = createAsyncThunk<
+  OfferAppliedProducts[],
+  { payload: AddProductOnDiscountPayload[], s_id: number, d_id: number },
+  { rejectValue: string }
+>("updateProductOnDiscount", async ({ payload, s_id, d_id }, thunkAPI) => {
+  try {
+    const response = await api.patch(`/products/${s_id}/discount/${d_id}/products/`, payload);
+    return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
@@ -93,7 +111,7 @@ export const addProductOnDiscount = createAsyncThunk<
 });
 
 export const getDiscountProductList = createAsyncThunk<
-  AddProductOnDiscountPayload[],
+  OfferAppliedProducts[],
   { s_id: number, d_id: number },
   { rejectValue: string }
 >("getDiscountProductList ", async ({ s_id, d_id }, thunkAPI) => {

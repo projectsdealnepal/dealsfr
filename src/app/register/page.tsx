@@ -185,7 +185,7 @@ export default function RegisterPage({ userType }: RegisterPageProps) {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="Your Password"
                     value={formData.password}
                     onChange={handleInputChange}
                     required
@@ -208,7 +208,7 @@ export default function RegisterPage({ userType }: RegisterPageProps) {
                     id="confirm_password"
                     name="confirm_password"
                     type={showConfirmPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="Confirm Pasword"
                     value={formData.confirm_password}
                     onChange={handleInputChange}
                     required

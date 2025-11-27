@@ -16,7 +16,7 @@ const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsD
   const param = useSearchParams()
   const id = param.get("id")
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { discountAppliedProductList } = useAppSelector((s) => s.product);
+  const { discountAppliedProductList, offerAppliedProductsList } = useAppSelector((s) => s.product);
 
   const handleRemoveSelectedItem = () => {
     console.log("tried to delete::")
@@ -41,7 +41,7 @@ const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsD
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <TableProperties className="h-4 w-4" />
-          Product List {discountAppliedProductList.length}
+          Product List {offerAppliedProductsList.length}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl p-0">
@@ -52,41 +52,31 @@ const DiscountAppliedProductListDialog = ({ open, onOpenChange }: AddedProductsD
               Discount Applied Products
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
-              List of product where offer is applied, you need to add these into discount to make them live.
+              List of product where offer is applied and live.
             </DialogDescription>
           </div>
-          <Button size="sm" variant="default" onClick={handleAddToTempProductList}>
-            Add to discount.
-          </Button>
         </div>
 
         {/* Scrollable Content */}
         <div className="max-h-[70vh] overflow-y-auto px-6 py-4 space-y-4">
-          {discountAppliedProductList.map((product, index) => (
+          {offerAppliedProductsList.map((product, index) => (
             <Card
               key={index.toString()}
               className="p-4 flex items-center justify-between"
             >
               <div className="flex items-center gap-4">
                 <div>
-                  <h3 className="font-medium">{product.discount_type}</h3>
+                  <h3 className="font-medium">{product.store_product.name}</h3>
+                  <h3 className="font-medium">{product.store_product.price}</h3>
                   <p className="text-sm text-muted-foreground">
                     Price: ${product.value}
                   </p>
                 </div>
               </div>
-              <Button
-                onClick={() => handleRemoveSelectedItem()}
-                variant="ghost"
-                size="icon"
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-5 w-5" />
-              </Button>
             </Card>
           ))}
 
-          {discountAppliedProductList.length === 0 && (
+          {offerAppliedProductsList.length === 0 && (
             <p className="text-center text-muted-foreground py-8">
               No products selected yet
             </p>
