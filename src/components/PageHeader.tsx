@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 
 export interface PageHeaderProps {
+  hasButton?: boolean;
   title: string;
   subtitle: string;
-  herf: string;
+  herf?: string;
 }
 
-const PageHeader = ({ title, subtitle, herf }: PageHeaderProps) => {
+const PageHeader = ({ title, subtitle, herf, hasButton = true }: PageHeaderProps) => {
   const router = useRouter()
   return (
     <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center  text-foreground mb-4">
@@ -21,7 +22,7 @@ const PageHeader = ({ title, subtitle, herf }: PageHeaderProps) => {
           {subtitle}
         </h3>
       </div>
-      <Button variant="default" className="flex-1 md:flex-none px-8" onClick={() => router.push(`${herf}`)}>Create New</Button>
+      {hasButton && <Button variant="default" className="flex-1 md:flex-none px-8" onClick={() => router.push(`${herf}`)}>Create New</Button>}
     </div>
   )
 }

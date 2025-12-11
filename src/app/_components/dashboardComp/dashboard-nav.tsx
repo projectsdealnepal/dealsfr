@@ -15,8 +15,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -37,6 +35,7 @@ import {
   Package,
   Percent,
   Settings,
+  Sparkles,
   Store,
 } from "lucide-react";
 import Image from "next/image";
@@ -77,9 +76,19 @@ const navigationItems = [
     href: "/dashboard/product",
   },
   {
+    title: "Orders",
+    icon: Package,
+    href: "/dashboard/orders",
+  },
+  {
     title: "Featured Products",
     icon: Package,
     href: "/dashboard/featured",
+  },
+  {
+    title: "Virtual Try on",
+    icon: Sparkles,
+    href: "/dashboard/vto",
   },
 ];
 

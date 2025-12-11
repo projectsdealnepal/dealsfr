@@ -5,6 +5,7 @@ import layoutReducer from "@/redux/features/layout/layoutSlice";
 import userReducer from "@/redux/features/user/userSlice";
 import categoryReducer from "@/redux/features/category/categorySlice";
 import productReducer from '@/redux/features/product/productSlice'
+import orderReducer from '@/redux/features/order/orderSlice'
 import storeReducer from '@/redux/features/store/storeSlice'
 
 export const makeStore = () => {
@@ -17,6 +18,7 @@ export const makeStore = () => {
       category: categoryReducer,
       product: productReducer,
       store: storeReducer,
+      order: orderReducer,
     },
   });
 };
