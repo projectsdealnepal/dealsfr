@@ -1,8 +1,13 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import authApi from "@/lib/interceptor";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 import api from "../../../lib/axios";
-import Cookies from 'js-cookie'
-import { GetUserResponse, UserLoginPayload, UserLoginResponse, UserRegisterPayload } from "./types";
+import {
+  GetUserResponse,
+  UserLoginPayload,
+  UserLoginResponse,
+  UserRegisterPayload,
+} from "./types";
 
 export const registerUser = createAsyncThunk<
   { message: string },
@@ -10,7 +15,6 @@ export const registerUser = createAsyncThunk<
   { rejectValue: string }
 >("user/registerUser", async (userData, thunkAPI) => {
   try {
-
     const response = await api.post("/accounts/register/", userData, {
       headers: { "Content-Type": "application/json" },
     });
@@ -29,22 +33,26 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string }
 >("user/loginUser", async (loginData, thunkAPI) => {
   try {
-    const response = await api.post<UserLoginResponse>("/accounts/login/", loginData, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await api.post<UserLoginResponse>(
+      "/accounts/login/",
+      loginData,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
     // Save tokens
     if (typeof window !== "undefined") {
       localStorage.setItem("access_token", response.data.data.access);
       localStorage.setItem("refresh_token", response.data.data.refresh);
       // Make sure cookies are accessible to the server
-      Cookies.set('access_token', response.data.data.access, {
-        path: '/',
-        sameSite: 'lax'
+      Cookies.set("access_token", response.data.data.access, {
+        path: "/",
+        sameSite: "lax",
       });
-      Cookies.set('refresh_token', response.data.data.refresh, {
-        path: '/',
-        sameSite: 'lax'
+      Cookies.set("refresh_token", response.data.data.refresh, {
+        path: "/",
+        sameSite: "lax",
       });
     }
 
@@ -55,7 +63,6 @@ export const loginUser = createAsyncThunk<
     );
   }
 });
-
 
 export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   "user/logoutUser",
@@ -91,22 +98,22 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
 export const getUser = createAsyncThunk<
   GetUserResponse,
   void,
-  { rejectValue: string }>(
-    "user/getUser",
-    async (_, thunkAPI) => {
-      try {
-        const url = process.env.NEXT_PUBLIC_API_BASE_URL
-        const response = await authApi.get(`${url}accounts/me/`, {
-          headers: { "Content-Type": "application/json" },
-        });
+  { rejectValue: string }
+>("user/getUser", async (_, thunkAPI) => {
+  try {
+    const url = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const response = await authApi.get(`${url}accounts/me/`, {
+      headers: { "Content-Type": "application/json" },
+    });
 
-        return response.data;
-      } catch (error: any) {
-        return thunkAPI.rejectWithValue(
-          error.response?.data?.message ||
-          error.message ||
-          "Error while getting user detial"
-        );
-      }
-    }
-  );
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+        error.message ||
+        "Error while getting user detial"
+    );
+  }
+});
+
+//for getting the uuid for websocket connection

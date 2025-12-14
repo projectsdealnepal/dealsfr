@@ -5,6 +5,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { updateOrderStatus } from "@/redux/features/order/order";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useState } from "react";
 
 const ORDER_STATES = [
   { label: "Pending", value: "pending" },
@@ -17,22 +20,29 @@ const ORDER_STATES = [
 
 interface StatusSelectProps {
   value: string;
+  id: number;
 }
 
-export function StatusSelect({ value }: StatusSelectProps) {
+export function StatusSelect({ value, id }: StatusSelectProps) {
+  const [selectedStatus, setSelectedStatus] = useState(value);
+  const dispatch = useAppDispatch();
+  const { storeDetailData } = useAppSelector((s) => s.store);
+
   const handleChange = async (newValue: string) => {
-    try {
-      const res = await fetch(`/api/orders?status=${newValue}`);
-      const data = await res.json();
-      console.log("API result:", data);
-    } catch (error) {
-      console.error("Failed to fetch:", error);
-    }
+    setSelectedStatus(newValue)
+    storeDetailData &&
+      dispatch(
+        updateOrderStatus({
+          s_id: storeDetailData?.id,
+          o_id: id,
+          status: newValue,
+        })
+      );
   };
 
   return (
     <Select
-      value={value}          // show parent value
+      value={selectedStatus} // show parent value
       onValueChange={handleChange} // internal API call
     >
       <SelectTrigger className="w-[150px]">

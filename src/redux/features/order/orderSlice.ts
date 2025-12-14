@@ -1,19 +1,28 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { OrderDetail, OrderItem, OrderSummary } from "./types";
-import { getOrderDetail, getOrderList, getOrderSummary } from "./order";
 import { DummyOrders } from "@/app/dashboard/orders/components/DummyData";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { toast } from "sonner";
+import {
+  getOrderDetail,
+  getOrderList,
+  getOrderSummary,
+  updateOrderStatus,
+} from "./order";
+import { OrderDetail, OrderItem, OrderSummary } from "./types";
 
 interface OrderState {
   orderLoading: boolean;
-  orderListData: OrderItem[] | null
-  orderError: string | null
+  orderListData: OrderItem[] | null;
+  orderError: string | null;
 
   orderSummaryData: OrderSummary | null;
 
   orderDetailLoading: boolean;
-  orderDetailData: OrderDetail | null
-  orderDetailError: string | null
+  orderDetailData: OrderDetail | null;
+  orderDetailError: string | null;
 
+  //update order status response
+  UpdateOrderStatusData: { message: string } | null;
+  UpdateOrderStatusError: string | null;
 }
 
 const initialState: OrderState = {
@@ -28,7 +37,11 @@ const initialState: OrderState = {
   orderDetailLoading: false,
   orderDetailData: null,
   orderDetailError: null,
-}
+
+  //update order status response
+  UpdateOrderStatusData: null,
+  UpdateOrderStatusError: null,
+};
 
 const OrderSlice = createSlice({
   name: "orderslice",
@@ -47,56 +60,93 @@ const OrderSlice = createSlice({
       state.orderDetailLoading = false;
       state.orderDetailData = null;
       state.orderDetailError = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(getOrderList.pending, (state) => {
         state.orderError = null;
-        state.orderLoading = false
+        state.orderLoading = false;
       })
-      .addCase(getOrderList.fulfilled, (state, action: PayloadAction<OrderItem[]>) => {
-        state.orderError = null;
-        state.orderLoading = false
-        state.orderListData = action.payload
-      })
-      .addCase(getOrderList.rejected, (state, action: PayloadAction<string | undefined>) => {
-        state.orderLoading = false
-        state.orderListData = null
-        state.orderError = action.payload as string;
-      })
+      .addCase(
+        getOrderList.fulfilled,
+        (state, action: PayloadAction<OrderItem[]>) => {
+          state.orderError = null;
+          state.orderLoading = false;
+          state.orderListData = action.payload;
+        }
+      )
+      .addCase(
+        getOrderList.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.orderLoading = false;
+          state.orderListData = null;
+          state.orderError = action.payload as string;
+        }
+      )
 
       //for order summary
       .addCase(getOrderSummary.pending, (state) => {
-        state.orderLoading = false
+        state.orderLoading = false;
       })
-      .addCase(getOrderSummary.fulfilled, (state, action: PayloadAction<OrderSummary>) => {
-        state.orderError = null;
-        state.orderLoading = false
-        state.orderSummaryData = action.payload
-      })
-      .addCase(getOrderSummary.rejected, (state, action: PayloadAction<string | undefined>) => {
-        state.orderLoading = false
-        state.orderSummaryData = null
-        state.orderError = action.payload as string;
-      })
+      .addCase(
+        getOrderSummary.fulfilled,
+        (state, action: PayloadAction<OrderSummary>) => {
+          state.orderError = null;
+          state.orderLoading = false;
+          state.orderSummaryData = action.payload;
+        }
+      )
+      .addCase(
+        getOrderSummary.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.orderLoading = false;
+          state.orderSummaryData = null;
+          state.orderError = action.payload as string;
+        }
+      )
 
       //for getting orderDetail
       .addCase(getOrderDetail.pending, (state) => {
-        state.orderDetailLoading = false
+        state.orderDetailLoading = false;
       })
-      .addCase(getOrderDetail.fulfilled, (state, action: PayloadAction<OrderDetail>) => {
-        state.orderDetailError = null;
-        state.orderDetailLoading = false
-        state.orderDetailData = action.payload
+      .addCase(
+        getOrderDetail.fulfilled,
+        (state, action: PayloadAction<OrderDetail>) => {
+          state.orderDetailError = null;
+          state.orderDetailLoading = false;
+          state.orderDetailData = action.payload;
+        }
+      )
+      .addCase(
+        getOrderDetail.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.orderDetailLoading = false;
+          state.orderDetailData = null;
+          state.orderDetailError = action.payload as string;
+        }
+      )
+      //for order status update
+      .addCase(updateOrderStatus.pending, (state) => {
+        state.UpdateOrderStatusError = null;
       })
-      .addCase(getOrderDetail.rejected, (state, action: PayloadAction<string | undefined>) => {
-        state.orderDetailLoading = false
-        state.orderDetailData = null
-        state.orderDetailError = action.payload as string;
-      })
-  }
-})
+      .addCase(
+        updateOrderStatus.fulfilled,
+        (state, action: PayloadAction<{ message: string }>) => {
+          state.UpdateOrderStatusError = null;
+          state.UpdateOrderStatusData = action.payload;
+          toast.success("Order status updated successfully");
+        }
+      )
+      .addCase(
+        updateOrderStatus.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.UpdateOrderStatusData = null;
+          state.UpdateOrderStatusError = action.payload as string;
+        }
+      );
+  },
+});
 
-export const { clearOrderListState } = OrderSlice.actions
-export default OrderSlice.reducer
+export const { clearOrderListState } = OrderSlice.actions;
+export default OrderSlice.reducer;

@@ -22,6 +22,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import useWebSocket from "@/hooks/use-websocket";
 import { clearTokens } from "@/lib/auth";
 import { RootState } from "@/redux/store";
 import {
@@ -95,13 +96,17 @@ const navigationItems = [
 function DashboardSidebar() {
   const { userData } = useSelector((state: RootState) => state.userData);
   const { state } = useSidebar();
+  console.log("Sidebar state:", state);
+  useWebSocket();
 
   const handleLogout = () => {
     clearTokens();
-    window.location.href = "/loginUser";
+    window.location.href = "/";
   };
 
-  const userInitials = `${userData?.first_name?.[0] || ''}${userData?.last_name?.[0] || ''}`;
+  const userInitials = `${userData?.first_name?.[0] || ""}${
+    userData?.last_name?.[0] || ""
+  }`;
 
   return (
     <Sidebar collapsible="icon" className="pt-16">
@@ -194,7 +199,10 @@ function DashboardSidebar() {
               Support
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-destructive"
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
@@ -232,10 +240,12 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
 
   const handleLogout = () => {
     clearTokens();
-    window.location.href = "/loginUser";
+    window.location.href = "/";
   };
 
-  const userInitials = `${userData.first_name?.[0] || ''}${userData.last_name?.[0] || ''}`;
+  const userInitials = `${userData.first_name?.[0] || ""}${
+    userData.last_name?.[0] || ""
+  }`;
 
   return (
     <SidebarProvider>

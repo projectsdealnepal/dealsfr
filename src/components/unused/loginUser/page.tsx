@@ -12,8 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getUser } from "@/redux/features/user/user";
-import { loginUser } from "@/redux/features/user/user";
+import { getUser, loginUser } from "@/redux/features/user/user";
 import { resetLoginState } from "@/redux/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Eye, EyeOff, Loader2, Store, User } from "lucide-react";
@@ -40,9 +39,8 @@ export default function LoginPage() {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { userStateLoading, isAuthenticated, userLoginError, userLoginData } = useAppSelector(
-    (state) => state.userData
-  );
+  const { userStateLoading, isAuthenticated, userLoginError, userLoginData } =
+    useAppSelector((state) => state.userData);
 
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -61,8 +59,8 @@ export default function LoginPage() {
     }
 
     return () => {
-      dispatch(resetLoginState())
-    }
+      dispatch(resetLoginState());
+    };
   }, [isAuthenticated, userLoginData, userLoginError]);
 
   useEffect(() => {
@@ -92,7 +90,11 @@ export default function LoginPage() {
   };
 
   // Loading state
-  if (isAuthenticating || (isAuthenticated && !userLoginData) || userStateLoading) {
+  if (
+    isAuthenticating ||
+    (isAuthenticated && !userLoginData) ||
+    userStateLoading
+  ) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="w-full max-w-sm space-y-6">
@@ -150,9 +152,7 @@ export default function LoginPage() {
         <Card>
           <CardHeader className="text-center space-y-2">
             <CardTitle className="text-xl">Welcome Back</CardTitle>
-            <CardDescription>
-              Sign in to your account
-            </CardDescription>
+            <CardDescription>Sign in to your account</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -174,7 +174,10 @@ export default function LoginPage() {
                   <Store className="w-4 h-4" />
                   Store
                 </TabsTrigger>
-                <TabsTrigger value="customer" className="flex items-center gap-2">
+                <TabsTrigger
+                  value="customer"
+                  className="flex items-center gap-2"
+                >
                   <User className="w-4 h-4" />
                   Customer
                 </TabsTrigger>
@@ -229,9 +232,15 @@ export default function LoginPage() {
                     size="sm"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -262,13 +271,11 @@ export default function LoginPage() {
             </form>
 
             <div className="text-center text-sm">
-              <span className="text-muted-foreground">{` Don't have an account?`} </span>
+              <span className="text-muted-foreground">
+                {` Don't have an account?`}{" "}
+              </span>
               <Link
-                href={
-                  loginType === "store"
-                    ? "/register/registerStoreAdmin"
-                    : "/register/registerCustomer"
-                }
+                href={"/register"}
                 className="text-primary hover:underline font-medium"
               >
                 Create account

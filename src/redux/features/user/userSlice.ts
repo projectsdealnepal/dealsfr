@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { loginUser, logoutUser, registerUser } from "./user";
-import { getUser } from "./user";
 import { GetUserResponse, UserLoginResponse } from "./types";
+import { getUser, loginUser, logoutUser, registerUser } from "./user";
 
 interface UserSliceInitialState {
   userStateLoading: boolean;
@@ -17,6 +16,9 @@ interface UserSliceInitialState {
 
   userData: GetUserResponse | null;
   userError: string | null;
+
+  //for websocket notifications
+  initialLoad: boolean;
 }
 
 const initialState: UserSliceInitialState = {
@@ -33,6 +35,9 @@ const initialState: UserSliceInitialState = {
 
   userData: null,
   userError: null,
+
+  //for websocket notifications
+  initialLoad: true,
 };
 
 const userSlice = createSlice({
@@ -56,6 +61,11 @@ const userSlice = createSlice({
       state.userData = null;
       state.userError = null;
     },
+
+    //for websocket notifications
+    setInitialLoad: (state, action: PayloadAction<boolean>) => {
+      state.initialLoad = action.payload;
+    },
   },
   extraReducers(builder) {
     builder
@@ -64,7 +74,8 @@ const userSlice = createSlice({
         state.userStateLoading = true;
         state.userRegisterError = null;
       })
-      .addCase(registerUser.fulfilled,
+      .addCase(
+        registerUser.fulfilled,
         (state, action: PayloadAction<{ message: string }>) => {
           state.userStateLoading = false;
           state.userRegisterData = action.payload;
@@ -72,7 +83,8 @@ const userSlice = createSlice({
       )
       .addCase(registerUser.rejected, (state, action) => {
         state.userStateLoading = false;
-        state.userRegisterError = (action.payload as string) || "Registration failed";
+        state.userRegisterError =
+          (action.payload as string) || "Registration failed";
       })
 
       // Login
@@ -80,7 +92,8 @@ const userSlice = createSlice({
         state.userStateLoading = true;
         state.userLoginError = null;
       })
-      .addCase(loginUser.fulfilled,
+      .addCase(
+        loginUser.fulfilled,
         (state, action: PayloadAction<UserLoginResponse>) => {
           state.userStateLoading = false;
           state.userLoginData = action.payload;
@@ -112,7 +125,8 @@ const userSlice = createSlice({
         state.userStateLoading = true;
         state.userError = null;
       })
-      .addCase(getUser.fulfilled,
+      .addCase(
+        getUser.fulfilled,
         (state, action: PayloadAction<GetUserResponse>) => {
           state.userStateLoading = false;
           state.userData = action.payload;
@@ -120,7 +134,8 @@ const userSlice = createSlice({
       )
       .addCase(getUser.rejected, (state, action) => {
         state.userStateLoading = false;
-        state.userError = (action.payload as string) || "Failed to fetch user data";
+        state.userError =
+          (action.payload as string) || "Failed to fetch user data";
       });
   },
 });
@@ -131,6 +146,7 @@ export const {
   resetLoginState,
   resetLogoutState,
   resetGetUserInfoState,
+  setInitialLoad,
 } = userSlice.actions;
 
 export default userSlice.reducer;
