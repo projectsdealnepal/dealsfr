@@ -410,7 +410,7 @@ const DiscountManager = () => {
           handleFixedDiscount();
           break;
         case "BOGO":
-          console.log("aaaaaaaaaaaaaaaaaaaBOGO");
+          console.log("BOGO");
           handleBOGODiscount();
           break;
 
@@ -461,21 +461,21 @@ const DiscountManager = () => {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           {/*Choose the discount type, based on this different fields will show up*/}
-          <div className="space-y-2">
-            <Label htmlFor="discountType">Discount Type</Label>
+          <div className="space-y-4 mb-4 ">
+            <Label htmlFor="discountType" className="font-semibold text-base text-foreground/70">Discount Type</Label>
             <Select
               value={currentItem.discountType}
               onValueChange={(value) =>
                 handleDiscountTypeChange(value as DiscountType)
               }
             >
-              <SelectTrigger id="discountType" className="w-full">
+              <SelectTrigger id="discountType" className="w-full py-5">
                 <SelectValue placeholder="Select discount type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent  >
                 {discountTypeOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -488,11 +488,11 @@ const DiscountManager = () => {
             )}
           </div>
           {/*Select targets type (products/brands)*/}
-          <div className="space-y-2">
-            <Label htmlFor="targetType">Discount On</Label>
+          <div className="space-y-2 ">
+            <Label htmlFor="targetType" className="font-semibold text-base text-foreground/70">Discount On</Label>
             <Tabs
               defaultValue="storeproduct"
-              className="w-full bg-accent"
+              className="w-full  "
               onValueChange={(v) => {
                 // setSelectedTargetType(v as TargetType)
                 setCurrentItem({
@@ -502,15 +502,13 @@ const DiscountManager = () => {
                 });
               }}
             >
-              <TabsList className="flex w-full justify-start gap-6 border-b border-primary/10  rounded-none p-0">
+              <TabsList className="flex w-full justify-start gap-6  border-primary/10 ">
                 <TabsTrigger
                   value="storeproduct"
                   style={{
                     boxShadow: "none",
                   }}
-                  className="relative rounded-none border-none bg-transparent 
-                  after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary after:opacity-0
-                 data-[state=active]:after:opacity-100"
+                  className="data-[state=active]:after:opacity-100 border-none data-[state=active]:text-primary  py-4"
                 >
                   Product
                 </TabsTrigger>
@@ -520,11 +518,9 @@ const DiscountManager = () => {
                   style={{
                     boxShadow: "none",
                   }}
-                  className="relative rounded-none border-none bg-transparent 
-                  after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary after:opacity-0
-                 data-[state=active]:after:opacity-100"
+                  className="data-[state=active]:after:opacity-100 border-none data-[state=active]:text-primary  py-4"
                 >
-                  brand
+                  Brand
                 </TabsTrigger>
               </TabsList>
 
@@ -544,7 +540,7 @@ const DiscountManager = () => {
           errors={errors}
         />
 
-        <Button onClick={addDiscountItem} className="w-full">
+        <Button onClick={addDiscountItem} className="w-full py-5!">
           <Plus className="mr-2 h-4 w-4" />
           Add to discount
         </Button>

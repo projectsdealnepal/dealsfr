@@ -4,26 +4,64 @@ import { Badge } from "@/components/ui/badge";
 import { OrderItem } from "@/redux/features/order/types";
 import { OrderDetailSheet } from "./OrderDetailSheet";
 import { StatusSelect } from "./StatusSelect";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { updateOrderStatus } from "@/redux/features/order/order";
 
 interface OrdersTableProps {
   orders: OrderItem[] | null;
 }
 
 const OrdersTable = ({ orders }: OrdersTableProps) => {
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toISOString().slice(0, 10);
-
-  // const getStatusVariant = (status: string) => {
-  //   if (status === "completed" || status === "success") return "default";
-  //   if (status === "cancelled") return "destructive";
-  //   return "secondary"; // pending, processing, etc
-  // };
+  const [statusMap, setStatusMap] = useState<Record<number, string>>({});
+  const formatDate = (dateStr: string) => new Date(dateStr).toISOString().slice(0, 10);
+  const dispatch = useAppDispatch();
+  const { storeDetailData } = useAppSelector((s) => s.store);
 
   const getFulfillmentType = (summary: any) => {
     if (summary.pickup === 1) return "Pickup";
     if (summary.delivery === 1) return "Delivery";
     return "Unknown";
   };
+
+  useEffect(() => {
+    if (orders) {
+      const initialStatusMap: Record<number, string> = {};
+      orders.forEach(order => {
+        initialStatusMap[order.id] = order.status;
+      });
+      setStatusMap(initialStatusMap);
+    }
+
+  }, [orders])
+
+
+  const handleStatusChange = (id: number, newValue: string) => {
+
+    storeDetailData &&
+      dispatch(
+        updateOrderStatus({
+          s_id: storeDetailData?.id,
+          o_id: id,
+          status: newValue,
+        })
+      );
+    setStatusMap(prev => ({
+      ...prev,
+      [id]: newValue,
+    }));
+
+
+    console.log("Order ID:", id);
+    console.log("Status changed to:", newValue);
+  };
+
+
+  // const handleStatusChange = (id: number, newValue: string) => {
+  //   setStatusValue(newValue)
+  //   console.log("Order ID:", id);
+  //   console.log("Status changed to:", newValue);
+  // }
 
   return (
     <div className="rounded-lg border overflow-x-auto">
@@ -93,7 +131,10 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
                 </td>
 
                 <td className="px-4 py-4">
-                  <StatusSelect value={order.status} id={order.id} />
+                  <StatusSelect
+                    value={statusMap[order.id] ?? ""}
+                    id={order.id}
+                    onChange={(value: string) => handleStatusChange(order.id, value)} />
                 </td>
 
                 <td className="px-4 py-4">

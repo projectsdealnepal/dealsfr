@@ -21,9 +21,10 @@ const ORDER_STATES = [
 interface StatusSelectProps {
   value: string;
   id: number;
+  onChange: (newValue: string) => void;
 }
 
-export function StatusSelect({ value, id }: StatusSelectProps) {
+export function StatusSelect({ value, id, onChange }: StatusSelectProps) {
   const [selectedStatus, setSelectedStatus] = useState(value);
   const dispatch = useAppDispatch();
   const { storeDetailData } = useAppSelector((s) => s.store);
@@ -42,8 +43,8 @@ export function StatusSelect({ value, id }: StatusSelectProps) {
 
   return (
     <Select
-      value={selectedStatus} // show parent value
-      onValueChange={handleChange} // internal API call
+      value={value}
+      onValueChange={onChange}
     >
       <SelectTrigger className="w-[150px]">
         <SelectValue placeholder="Select status" />

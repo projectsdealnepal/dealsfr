@@ -29,10 +29,6 @@ export default function Orders() {
   const dispatch = useAppDispatch()
 
 
-  const statsData = Object.entries(statsMap).map(([key, title]) => ({
-    title,
-    value: (orderSummaryData as Record<string, any>)?.[key] ?? 0,
-  }));
 
   useEffect(() => {
     if (storeDetailData) {

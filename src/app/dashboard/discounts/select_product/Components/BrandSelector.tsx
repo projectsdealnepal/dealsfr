@@ -46,7 +46,7 @@ export function BrandSelector({ value, onSelect }: BrandSelectorProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px] justify-between py-5"
         >
           {value?.name || "Select Brand..."}
           <ChevronsUpDown className="opacity-50" />

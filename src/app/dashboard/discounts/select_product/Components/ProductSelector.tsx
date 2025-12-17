@@ -28,7 +28,7 @@ export default function SelectProductDialog() {
         {tempDiscountProductList && tempDiscountProductList.length > 0 && (
           <>
             <Card
-              className="flex bg-primary/20 flex-row items-center justify-between cursor-pointer flex-1 p-3 hover:bg-accent/30 transition"
+              className="flex bg-primary/20 flex-row items-center justify-between cursor-pointer flex-1 p-4 hover:bg-accent/30 transition"
             >
               <span className="text-sm font-medium">Products Selected</span>
               <Badge variant="secondary">
@@ -45,17 +45,18 @@ export default function SelectProductDialog() {
         >
           <DialogTitle asChild>
             <DialogTrigger asChild>
-              <Card className="flex flex-row items-center justify-center gap-2 cursor-pointer p-3 flex-1 hover:bg-accent/30 transition">
+              <Card className="flex flex-row items-center justify-center gap-2 border-2 border-red-300 border-dashed cursor-pointer p-3 flex-1 hover:bg-accent/30 transition">
                 {tempDiscountProductList.length > 0 ? (
-                  <>
+                  <div className="flex flex-row  p-1  gap-2 justify-between items-center " >
                     <RotateCcw size={16} />
                     <span className="text-sm font-medium">Replace</span>
-                  </>
+                  </div>
                 ) : (
-                  <>
+                  <div className="py-6 space-y-2 flex flex-col justify-center items-center">
                     <PlusCircle size={16} />
-                    <span className="text-sm font-medium">Add Products</span>
-                  </>
+                    <span className="text-sm font-semibold">Add Products</span>
+                    <span className="text-sm font-medium text-foreground/80">Search and select product to apply discount</span>
+                  </div>
                 )}
               </Card>
             </DialogTrigger>
