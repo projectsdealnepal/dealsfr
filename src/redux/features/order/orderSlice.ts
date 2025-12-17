@@ -1,4 +1,3 @@
-import { DummyOrders } from "@/app/dashboard/orders/components/DummyData";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
@@ -13,6 +12,8 @@ interface OrderState {
   orderLoading: boolean;
   orderListData: OrderItem[] | null;
   orderError: string | null;
+  //for storing filtered orderListData
+  filteredOrderList: OrderItem[] | null;
 
   orderSummaryData: OrderSummary | null;
 
@@ -29,6 +30,8 @@ const initialState: OrderState = {
   orderLoading: false,
   orderListData: null,
   orderError: null,
+  //for storing filtered orderListData
+  filteredOrderList: null,
 
   //for order summary
   orderSummaryData: null,
@@ -61,6 +64,49 @@ const OrderSlice = createSlice({
       state.orderDetailData = null;
       state.orderDetailError = null;
     },
+
+
+    filterOrders: (state, action: PayloadAction<string>) => {
+      if (state.orderListData) {
+        // const filters = [
+        //   { label: "All", value: "all" },
+        //   { label: "Pending", value: "pending" },
+        //   { label: "Confirmed", value: "confirmed" },
+        //   { label: "Ready", value: "ready_for_pickup" },
+        //   { label: "Picked Up", value: "picked_up" },
+        //   { label: "Cancelled", value: "cancelled" },
+        //   { label: "Completed", value: "completed" },
+        // ];
+        switch (action.payload) {
+          case "all":
+            state.filteredOrderList = state.orderListData
+            break;
+          case "pending":
+            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
+            break;
+          case "confirmed":
+            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
+            break;
+          case "ready_for_pickup":
+            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
+            break;
+          case "picked_up":
+            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
+            break;
+          case "cancelled":
+            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
+            break;
+          case "completed":
+            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
+            break;
+          default:
+            state.filteredOrderList = state.orderListData
+            break;
+        }
+      }
+
+    }
+
   },
   extraReducers: (builder) => {
     builder
@@ -74,6 +120,7 @@ const OrderSlice = createSlice({
           state.orderError = null;
           state.orderLoading = false;
           state.orderListData = action.payload;
+          state.filteredOrderList = action.payload;
         }
       )
       .addCase(
@@ -81,6 +128,7 @@ const OrderSlice = createSlice({
         (state, action: PayloadAction<string | undefined>) => {
           state.orderLoading = false;
           state.orderListData = null;
+          state.filteredOrderList = null;
           state.orderError = action.payload as string;
         }
       )
@@ -148,5 +196,5 @@ const OrderSlice = createSlice({
   },
 });
 
-export const { clearOrderListState } = OrderSlice.actions;
+export const { clearOrderListState, filterOrders } = OrderSlice.actions;
 export default OrderSlice.reducer;

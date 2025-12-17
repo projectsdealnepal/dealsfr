@@ -5,7 +5,7 @@ import {
   TargetType,
   ValueType,
 } from "@/redux/features/product/types";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import SelectRewardDialog from "./SelectRewardDialog";
 import { BOGODiscount, BundleDiscount, FixedAmountDiscount, PartialDiscountItem, PercentageDiscount, SpendGetDiscount } from "./types";
 

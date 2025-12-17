@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { BrandItem } from "@/redux/features/product/types";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from "@/redux/hooks";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -27,7 +27,6 @@ interface BrandSelectorProps {
 
 export function BrandSelector({ value, onSelect }: BrandSelectorProps) {
   const [open, setOpen] = useState(false);
-  const dispatch = useAppDispatch()
   const { brandListData } = useAppSelector((state) => state.product);
   const filteredBrands = useMemo(() => brandListData ?? [], [brandListData]);
 

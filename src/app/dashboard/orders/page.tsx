@@ -1,8 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { FileDown } from 'lucide-react';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { getOrderList, getOrderSummary } from '@/redux/features/order/order';
@@ -10,22 +8,11 @@ import OrdersTable from './components/OrdersTable';
 import StatsCard from './components/StatsCard';
 import FilterTabs from './components/FilterTabs';
 
-const statsMap: Record<string, string> = {
-  total_orders: "Total Orders",
-  pending: "Pending",
-  confirmed: "Confirmed",
-  ready_for_pickup: "Ready For Pickup",
-  picked_up: "Picked Up",
-  delivered: "Delivered",
-  cancelled: "Cancelled",
-  completed: "Completed",
-  total_revenue: "Total Revenue",
-};
 
 export default function Orders() {
   const [activeFilter, setActiveFilter] = useState('all');
   const { storeDetailData } = useAppSelector(s => s.store)
-  const { orderSummaryData, orderListData } = useAppSelector(s => s.order)
+  const { orderSummaryData, filteredOrderList } = useAppSelector(s => s.order)
   const dispatch = useAppDispatch()
 
 
@@ -92,7 +79,7 @@ export default function Orders() {
               activeFilter={activeFilter}
               setActiveFilter={setActiveFilter}
             />
-            <OrdersTable orders={orderListData} />
+            <OrdersTable orders={filteredOrderList} />
 
             {/* Pagination */}
             {/* <div className="flex justify-between items-center pt-2"> */}

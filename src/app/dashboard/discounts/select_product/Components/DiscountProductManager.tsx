@@ -17,7 +17,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BrandItem,
   DiscountType,
-  ProductItem,
   RewardProduct,
   TargetType,
   ValueType,
@@ -219,7 +218,6 @@ const DiscountManager = () => {
 
   const handlePercentageDiscount = () => {
     let payload: AddProductOnDiscountPayload[] = []
-    let product: ProductItem
     if (currentItem.discountType == "PERCENTAGE") {
       //for currentItem.tartet type is "storeProduct"
       switch (currentItem.targetType) {
@@ -285,11 +283,11 @@ const DiscountManager = () => {
           break;
       }
 
-      const dispatchData = {
-        payload,
-        d_id: id,
-        s_id: storeDetailData?.id ?? 0
-      }
+      // const dispatchData = {
+      //   payload,
+      //   d_id: id,
+      //   s_id: storeDetailData?.id ?? 0
+      // }
       // dispatch(addProductOnDiscount(dispatchData))
       console.log({ payload });
       dispatch(setDiscountAppliedProductList(payload))
