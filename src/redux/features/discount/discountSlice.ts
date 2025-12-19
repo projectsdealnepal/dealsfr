@@ -3,9 +3,10 @@ import {
   createDiscount,
   deleteDiscount,
   getDiscount,
+  getDiscountDetail,
   updateDiscount,
 } from "@/redux/features/discount/discount";
-import { DiscountItem } from "@/redux/features/discount/types";
+import { PreviewDiscountDetailResponse, DiscountItem } from "@/redux/features/discount/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
@@ -30,6 +31,10 @@ interface DiscountState {
   //add Products on disocunts
   addProductOnDiscountData: any | null;
   addProductOnDiscoutLoading: boolean;
+
+  //for discount detail
+  discountDetailData: PreviewDiscountDetailResponse | null;
+  discountDetailLoading: boolean;
 }
 
 // Initial state
@@ -54,6 +59,10 @@ const initialState: DiscountState = {
   //add Products on disocunts
   addProductOnDiscountData: null,
   addProductOnDiscoutLoading: false,
+
+  //for discount detail
+  discountDetailData: null,
+  discountDetailLoading: false,
 };
 
 const discountSlice = createSlice({
@@ -70,6 +79,10 @@ const discountSlice = createSlice({
       state.updateDiscountLoading = false;
       state.deleteDiscountData = null;
       state.deleteDiscountLoading = false;
+    },
+    clearDiscountDetailState: (state) => {
+      state.discountDetailData = null;
+      state.discountDetailLoading = false;
     },
     clearGetDiscountState: (state) => {
       state.discountError = null;
@@ -198,6 +211,23 @@ const discountSlice = createSlice({
           state.discountError =
             action.payload || "Failed to add products on discount";
         }
+      )
+      .addCase(getDiscountDetail.pending, (state) => {
+        state.discountDetailLoading = true;
+        state.discountError = null;
+      })
+      .addCase(getDiscountDetail.fulfilled, (state, action) => {
+        state.discountDetailLoading = false;
+        state.discountDetailData = action.payload;
+        state.discountError = null;
+      })
+      .addCase(getDiscountDetail.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          state.discountDetailData = null;
+          state.discountDetailLoading = false;
+          state.discountError =
+            action.payload || "Failed to get discount detail";
+        }
       );
   },
 });
@@ -208,6 +238,7 @@ export const {
   clearDeleteDiscountState,
   clearGetDiscountState,
   clearUpdateDiscountState,
+  clearDiscountDetailState,
 } = discountSlice.actions;
 
 export default discountSlice.reducer;

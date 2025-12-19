@@ -1,7 +1,7 @@
 import api from "@/lib/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload, AddProductOnDiscountPayload, OfferAppliedProducts } from "./types";
+import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload, AddProductOnDiscountPayload, OfferAppliedProducts, PreviewDiscountDetailResponse } from "./types";
 
 export const getDiscount = createAsyncThunk<
   DiscountItem[],
@@ -110,6 +110,25 @@ export const updateProductOnDiscount = createAsyncThunk<
   }
 });
 
+//get the discount detail (literally all details)
+//https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/discount/{id}/
+export const getDiscountDetail = createAsyncThunk<
+  PreviewDiscountDetailResponse,
+  { s_id: number, d_id: number },
+  { rejectValue: string }>("getPreviewDiscountDetail", async ({ s_id, d_id }, thunkAPI) => {
+    try {
+      const response = await api.get(`products/${s_id}/discount/${d_id}/`);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to get detail of the "
+      );
+    }
+  });
+
+//get the list of product on the discount for listing in the 
 export const getDiscountProductList = createAsyncThunk<
   OfferAppliedProducts[],
   { s_id: number, d_id: number },

@@ -4,7 +4,7 @@ import { DashboardNav } from "@/app/_components/dashboardComp/dashboard-nav";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getBanner } from "@/redux/features/banner/banner";
 import { getCategories } from "@/redux/features/category/category";
-import { getDiscount } from "@/redux/features/discount/discount";
+import { getDiscount, getDiscountDetail } from "@/redux/features/discount/discount";
 import { getLayout } from "@/redux/features/layout/layout";
 import { getBrandsList } from "@/redux/features/product/product";
 import {
@@ -49,6 +49,10 @@ export default function DashboardLayout({
       dispatch(getCategories());
       dispatch(getBrandsList());
       dispatch(getStoresCategories())
+      dispatch(getDiscountDetail({
+        s_id: storeId,
+        d_id: 22,
+      }))
     }
   }, [userData]);
 
