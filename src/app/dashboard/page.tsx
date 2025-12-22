@@ -70,7 +70,7 @@ const DashboardPage = () => {
           Welcome back, {userData.first_name}
         </h1>
         <p className="text-muted-foreground">
-          Here's what's happening with your store today.
+          {`Here's what's happening with your store today.`}
         </p>
       </div>
 
