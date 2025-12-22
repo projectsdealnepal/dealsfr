@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({
   const [selected, setSelected] = useState<CategoryItem>();
   const { categoryData } = useAppSelector((s) => s.category);
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { productData, productLoading, selectedProductList, rowSelection } =
+  const { productData, productLoading, rowSelection } =
     useAppSelector((s) => s.product);
   const dispatch = useAppDispatch();
   //for dialog that give preview of selected products

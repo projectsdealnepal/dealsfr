@@ -1,33 +1,31 @@
 "use client";
-
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppSelector } from "@/redux/hooks";
-import { ChevronRight } from "lucide-react";
+import {
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
+import QuickAction from "../_components/dashboardComp/QuickActions";
+import StoreInsight from "../_components/dashboardComp/StoreInsights";
 
-export default function DashboardPage() {
-  const { userData, userStateLoading, userError } = useAppSelector(
-    (state) => state.userData
-  );
-  const { storeDetailData } = useAppSelector((state) => state.store);
+const DashboardPage = () => {
+  const {
+    userData,
+    userStateLoading,
+    userError
+  } = useAppSelector((s) => s.userData);
+  const { storeDetailData } = useAppSelector((s) => s.store);
 
-  // Load store details and branches if user has managed stores
-  // useEffect(() => {
-  //   if (userData && userData.managed_stores.length > 0) {
-  //     dispatch(getStoreDetail(userData.managed_stores[0]));
-  //     dispatch(getBranchesList(userData.managed_stores[0]));
-  //   }
-  // }, []);
 
   // Loading skeleton
   if (userStateLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="space-y-4 w-full max-w-md">
+        <div className="space-y-4 w-full max-w-4xl">
           <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-8 w-1/2" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
         </div>
       </div>
     );
@@ -57,7 +55,6 @@ export default function DashboardPage() {
           </div>
         </Link>
       )}
-
       {!storeDetailData && (
         <Link href="/dashboard/store_setup">
           <div className="cursor-pointer flex justify-between items-center px-5 py-3 rounded-md bg-primary/10 text-foreground hover:bg-primary/20 transition-colors">
@@ -70,14 +67,24 @@ export default function DashboardPage() {
       {/* Welcome Section */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold text-foreground">
-          Welcome back, {userData.first_name}!
+          Welcome back, {userData.first_name}
         </h1>
         <p className="text-muted-foreground">
-          {` Here's what's happening with your store today. `}
+          Here's what's happening with your store today.
         </p>
       </div>
 
-      {/* TODO: Add dashboard widgets, stats, etc. here */}
+      {/* Quick Actions */}
+      <div>
+        <QuickAction />
+      </div>
+
+      {/* Store Insights */}
+      <div>
+        <StoreInsight />
+      </div>
     </div>
   );
-}
+};
+
+export default DashboardPage;

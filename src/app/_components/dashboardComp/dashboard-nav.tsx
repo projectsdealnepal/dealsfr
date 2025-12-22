@@ -26,22 +26,21 @@ import useWebSocket from "@/hooks/use-websocket";
 import { clearTokens } from "@/lib/auth";
 import { RootState } from "@/redux/store";
 import {
-  BarChart3,
   Bell,
+  Brackets,
   HelpCircle,
   Home,
   Layers,
+  LayoutPanelTop,
   LogOut,
   Menu,
   Package,
   Percent,
   Settings,
-  Sparkles,
   Store,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -53,12 +52,12 @@ const navigationItems = [
   },
   {
     title: "Store Management",
-    icon: BarChart3,
+    icon: Store,
     href: "/dashboard/store_management",
   },
   {
     title: "Layout",
-    icon: Store,
+    icon: LayoutPanelTop,
     href: "/dashboard/layout",
   },
   {
@@ -78,19 +77,19 @@ const navigationItems = [
   },
   {
     title: "Orders",
-    icon: Package,
+    icon: Brackets,
     href: "/dashboard/orders",
   },
-  {
-    title: "Featured Products",
-    icon: Package,
-    href: "/dashboard/featured",
-  },
-  {
-    title: "Virtual Try on",
-    icon: Sparkles,
-    href: "/dashboard/vto",
-  },
+  // {
+  //   title: "Featured Products",
+  //   icon: Package,
+  //   href: "/dashboard/featured",
+  // },
+  // {
+  //   title: "Virtual Try on",
+  //   icon: Sparkles,
+  //   href: "/dashboard/vto",
+  // },
 ];
 
 function DashboardSidebar() {
@@ -104,9 +103,8 @@ function DashboardSidebar() {
     window.location.href = "/";
   };
 
-  const userInitials = `${userData?.first_name?.[0] || ""}${
-    userData?.last_name?.[0] || ""
-  }`;
+  const userInitials = `${userData?.first_name?.[0] || ""}${userData?.last_name?.[0] || ""
+    }`;
 
   return (
     <Sidebar collapsible="icon" className="pt-16">
@@ -214,7 +212,6 @@ function DashboardSidebar() {
 }
 
 export function DashboardNav({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const { userData, userStateLoading: loading } = useSelector(
     (state: RootState) => state.userData
   );
@@ -243,9 +240,8 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
     window.location.href = "/";
   };
 
-  const userInitials = `${userData.first_name?.[0] || ""}${
-    userData.last_name?.[0] || ""
-  }`;
+  const userInitials = `${userData.first_name?.[0] || ""}${userData.last_name?.[0] || ""
+    }`;
 
   return (
     <SidebarProvider>

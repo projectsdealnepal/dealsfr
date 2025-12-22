@@ -68,8 +68,7 @@ export default function CreateBranchPage() {
   const params = useSearchParams();
   const action = params.get("action");
   const { userData } = useAppSelector((s) => s.userData);
-  const { createBranchError, creteBranchData, branchDetailsData } =
-    useAppSelector((s) => s.store);
+  const { creteBranchData, branchDetailsData } = useAppSelector((s) => s.store);
 
   const defaultValues: Partial<BranchFormValues> = {
     id: branchDetailsData?.id || 0,

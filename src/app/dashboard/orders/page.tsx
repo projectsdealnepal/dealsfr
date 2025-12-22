@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { getOrderList, getOrderSummary } from '@/redux/features/order/order';
+import { getOrderList } from '@/redux/features/order/order';
 import OrdersTable from './components/OrdersTable';
 import StatsCard from './components/StatsCard';
 import FilterTabs from './components/FilterTabs';
@@ -20,7 +20,6 @@ export default function Orders() {
   useEffect(() => {
     if (storeDetailData) {
       dispatch(getOrderList(storeDetailData.id))
-      dispatch(getOrderSummary(storeDetailData.id))
     }
   }, [storeDetailData])
 
