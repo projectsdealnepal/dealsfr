@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import OtpDialog from "./components/OtpDialog";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -28,30 +30,35 @@ export default function RegisterPage() {
     password: "",
     confirm_password: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [otpOpen, setOtpOpen] = useState(false);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
+
   const { userStateLoading, userRegisterError, userRegisterData } =
     useAppSelector((state) => state.userData);
 
+  /*  Registration error */
   useEffect(() => {
-    if (userRegisterError) toast.error(userRegisterError, { richColors: true });
+    if (userRegisterError) {
+      toast.error(userRegisterError);
+    }
   }, [userRegisterError]);
 
+  /*  Registration success => open OTP dialog */
   useEffect(() => {
     if (userRegisterData) {
       toast.success(
-        "Account created successfully! Redirecting to store login...",
+        "Account created successfully! OTP sent to your email.",
         { richColors: true }
       );
-      setTimeout(() => {
-        router.push("/loginUser");
-        dispatch(resetAllUserState());
-      }, 2000);
+      setOtpOpen(true);
+      dispatch(resetAllUserState());
     }
-  }, [userRegisterData, router, dispatch]);
+  }, [userRegisterData, dispatch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -66,16 +73,11 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!formData.email) {
-      toast.error("Email is required", { richColors: true });
-      return;
-    }
-
     dispatch(registerUser(formData));
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -93,26 +95,20 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <Card className="bg-card border border-border shadow-md">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-semibold text-foreground">
-              Create Store Account
-            </CardTitle>
-            <CardDescription className="text-muted-foreground">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Create Store Account</CardTitle>
+            <CardDescription>
               Register your store and start showcasing deals.
             </CardDescription>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* First & Last Name */}
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label>First Name</Label>
                 <Input
-                  id="first_name"
                   name="first_name"
-                  type="text"
-                  placeholder="John"
                   value={formData.first_name}
                   onChange={handleInputChange}
                   required
@@ -120,41 +116,32 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label>Last Name</Label>
                 <Input
-                  id="last_name"
                   name="last_name"
-                  type="text"
-                  placeholder="Doe"
                   value={formData.last_name}
                   onChange={handleInputChange}
                   required
                 />
               </div>
 
-              {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label>Email</Label>
                 <Input
-                  id="email"
-                  name="email"
                   type="email"
-                  placeholder="store@example.com"
+                  name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   required
                 />
               </div>
 
-              {/* Password */}
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label>Password</Label>
                 <div className="relative">
                   <Input
-                    id="password"
-                    name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Your Password"
+                    name="password"
                     value={formData.password}
                     onChange={handleInputChange}
                     required
@@ -162,30 +149,29 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
 
-              {/* Confirm Password */}
               <div className="space-y-2">
-                <Label htmlFor="confirm_password">Confirm Password</Label>
+                <Label>Confirm Password</Label>
                 <div className="relative">
                   <Input
-                    id="confirm_password"
-                    name="confirm_password"
                     type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
+                    name="confirm_password"
                     value={formData.confirm_password}
                     onChange={handleInputChange}
                     required
                   />
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    onClick={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
                   >
                     {showConfirmPassword ? (
                       <EyeOff size={16} />
@@ -196,11 +182,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={userStateLoading}
-              >
+              <Button className="w-full" disabled={userStateLoading}>
                 {userStateLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -212,7 +194,7 @@ export default function RegisterPage() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm text-muted-foreground">
+            <div className="mt-6 text-center text-sm">
               Already have an account?{" "}
               <Link href="/" className="text-primary hover:underline">
                 Sign in
@@ -221,6 +203,17 @@ export default function RegisterPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* ✅ OTP Dialog */}
+      <OtpDialog
+        open={otpOpen}
+        onOpenChange={setOtpOpen}
+        email={formData.email}
+        onSuccess={() => {
+          setOtpOpen(false);
+          router.push("/");
+        }}
+      />
     </div>
   );
 }

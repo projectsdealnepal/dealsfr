@@ -79,7 +79,7 @@ export default function DashboardLayout({
           <h2 className="text-xl font-semibold text-foreground">Authentication Error</h2>
           <p className="text-muted-foreground">{userError}</p>
           <button
-            onClick={() => router.push("/loginUser")}
+            onClick={() => router.push("/")}
             className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             Go to Login

@@ -1,5 +1,6 @@
 "use client";
 
+import { ForgotPasswordDialog } from "@/app/_components/ForgotPasswordDialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,7 +55,7 @@ export default function LoginPage() {
       setIsAuthenticating(false);
     }
     if (userLoginError) {
-      router.push("/loginUser");
+      router.push("/");
       setIsAuthenticating(false);
     }
 
@@ -246,12 +247,11 @@ export default function LoginPage() {
               </div>
 
               <div className="text-right">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Forgot password?
-                </Link>
+                <ForgotPasswordDialog>
+                  <Button variant="link" type="button" className="text-sm text-primary hover:underline p-0 h-auto">
+                    Forgot password?
+                  </Button>
+                </ForgotPasswordDialog>
               </div>
 
               <Button

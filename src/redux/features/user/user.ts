@@ -15,7 +15,7 @@ export const registerUser = createAsyncThunk<
   { rejectValue: string }
 >("user/registerUser", async (userData, thunkAPI) => {
   try {
-    const response = await api.post("/accounts/register/", userData, {
+    const response = await api.post("/accounts/register/admin/", userData, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -59,7 +59,7 @@ export const loginUser = createAsyncThunk<
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
-      error.response?.data?.message || error.message || "Login failed"
+      error.response?.data
     );
   }
 });
@@ -110,10 +110,9 @@ export const getUser = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-        error.message ||
-        "Error while getting user detial"
+      error.message ||
+      "Error while getting user detial"
     );
   }
 });
 
-//for getting the uuid for websocket connection

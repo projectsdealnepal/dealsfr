@@ -17,7 +17,6 @@ const DashboardPage = () => {
   } = useAppSelector((s) => s.userData);
   const { storeDetailData } = useAppSelector((s) => s.store);
 
-
   // Loading skeleton
   if (userStateLoading) {
     return (

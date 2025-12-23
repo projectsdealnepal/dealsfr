@@ -6,7 +6,7 @@ interface UserSliceInitialState {
   userStateLoading: boolean;
 
   userLoginData: UserLoginResponse | null;
-  userLoginError: string | null;
+  userLoginError: any | null;
   isAuthenticated: boolean;
 
   userRegisterData: { message: string } | null;
@@ -102,7 +102,7 @@ const userSlice = createSlice({
       )
       .addCase(loginUser.rejected, (state, action) => {
         state.userStateLoading = false;
-        state.userLoginError = (action.payload as string) || "Login failed";
+        state.userLoginError = (action.payload) || "Login failed";
       })
 
       // Logout

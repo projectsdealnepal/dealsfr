@@ -1,5 +1,6 @@
 "use client";
 
+import { ForgotPasswordDialog } from "@/app/_components/ForgotPasswordDialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import OtpDialog from "./register/components/OtpDialog";
+import { toast } from "sonner";
+import api from "@/lib/axios";
 
 interface LoginFormType {
   email: string;
@@ -27,7 +31,7 @@ interface LoginFormType {
 }
 
 export default function LoginPage() {
-  const [loginType, setLoginType] = useState<"store" | "customer">("store");
+  const [otpOpen, setOtpOpen] = useState(false);
   const [formData, setFormData] = useState<LoginFormType>({
     email: "",
     phone_number: "",
@@ -44,8 +48,20 @@ export default function LoginPage() {
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLocalError(userLoginError);
+    setLocalError(userLoginError?.error);
   }, [userLoginError]);
+
+  //function to send otp if the user still not verified their email.
+  const sendOtp = async () => {
+    try {
+      const url = process.env.NEXT_PUBLIC_API_BASE_URL;
+      await api.post(`${url}accounts/resend-otp/`, { email: formData.email });
+      toast.success("OTP resent successfully");
+    } catch {
+      toast.error("Failed to resend OTP");
+    } finally {
+    }
+  };
 
   useEffect(() => {
     if (userLoginData != null) {
@@ -53,8 +69,12 @@ export default function LoginPage() {
       setIsAuthenticating(false);
     }
     if (userLoginError) {
-      router.push("/loginUser");
       setIsAuthenticating(false);
+      if (userLoginError?.step == "VERIFY_EMAIL") {
+        sendOtp()
+        toast.error("Please verify your email to continue.");
+        setOtpOpen(true);
+      }
     }
 
     return () => {
@@ -161,57 +181,19 @@ export default function LoginPage() {
               </Alert>
             )}
 
-            {/* Login Type Tabs */}
-            {/* <Tabs
-              value={loginType}
-              onValueChange={(value) =>
-                setLoginType(value as "store" | "customer")
-              }
-            >
-              <TabsList className="grid  w-full grid-cols-2 gap-5">
-                <TabsTrigger value="store" className="flex items-center gap-2">
-                  <Store className="w-4 h-4" />
-                  Store
-                </TabsTrigger>
-                <TabsTrigger
-                  value="customer"
-                  className="flex items-center gap-2"
-                >
-                  <User className="w-4 h-4" />
-                  Customer
-                </TabsTrigger>
-              </TabsList>
-            </Tabs> */}
-
             <form onSubmit={handleSubmit} className="space-y-4">
-              {loginType === "store" ? (
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="store@example.com"
-                    required
-                  />
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Label htmlFor="phone_number">Phone Number</Label>
-                  <Input
-                    id="phone_number"
-                    name="phone_number"
-                    type="tel"
-                    value={formData.phone_number}
-                    onChange={handleInputChange}
-                    placeholder="+9779800000000"
-                    required
-                  />
-                </div>
-              )}
-
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="store@example.com"
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -245,12 +227,11 @@ export default function LoginPage() {
               </div>
 
               <div className="text-right">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Forgot password?
-                </Link>
+                <ForgotPasswordDialog>
+                  <Button variant="link" type="button" className="text-sm text-primary hover:underline p-0 h-auto">
+                    Forgot password?
+                  </Button>
+                </ForgotPasswordDialog>
               </div>
 
               <Button
@@ -282,7 +263,18 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
+        {/* OTP Dialog :for specific condition where user didn't verify their account after registration and came to login*/}
+        <OtpDialog
+          open={otpOpen}
+          onOpenChange={setOtpOpen}
+          email={formData.email}
+          onSuccess={() => {
+            setOtpOpen(false);
+            router.push("/");
+          }}
+        />
       </div>
+
     </div>
   );
 }
