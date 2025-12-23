@@ -341,11 +341,11 @@ export default function StoreRegistrationPage() {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-background text-foreground border-input w-full">
                             <SelectValue placeholder="Select store type" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent >
                           {storeTypes.map((type) => (
                             <SelectItem key={type} value={type}>
                               {type}
@@ -545,27 +545,36 @@ export default function StoreRegistrationPage() {
                       <FormLabel className="text-foreground">
                         Store Logo
                       </FormLabel>
+
                       <FormControl>
-                        <Input
-                          type="file"
-                          className="bg-background text-foreground border-input"
-                          accept="image/*"
-                          onChange={(e) => {
-                            handleFileChange(e, "logo");
-                            const file = e.target.files?.[0] ?? null;
-                            field.onChange(file);
-                          }}
-                        />
+                        <div className="relative">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            onChange={(e) => {
+                              handleFileChange(e, "logo");
+                              const file = e.target.files?.[0] ?? null;
+                              field.onChange(file);
+                            }}
+                          />
+
+                          <div className="flex h-10 items-center justify-center rounded-md border border-input bg-background text-sm text-muted-foreground">
+                            {field.value?.name ?? "Choose logo"}
+                          </div>
+                        </div>
                       </FormControl>
+
                       {logoPreview && (
                         <div className="mt-2">
                           <img
                             src={logoPreview}
                             alt="Logo preview"
-                            className="h-20 w-auto object-contain rounded"
+                            className="h-20 w-auto rounded object-contain"
                           />
                         </div>
                       )}
+
                       <FormMessage />
                     </FormItem>
                   )}
@@ -581,16 +590,21 @@ export default function StoreRegistrationPage() {
                         Cover Image
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          type="file"
-                          className="bg-background text-foreground border-input"
-                          accept="image/*"
-                          onChange={(e) => {
-                            handleFileChange(e, "cover_image");
-                            const file = e.target.files?.[0] ?? null;
-                            field.onChange(file);
-                          }}
-                        />
+                        <div className="relative">
+                          <Input
+                            type="file"
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            accept="image/*"
+                            onChange={(e) => {
+                              handleFileChange(e, "cover_image");
+                              const file = e.target.files?.[0] ?? null;
+                              field.onChange(file);
+                            }}
+                          />
+                          <div className="flex h-10 items-center justify-center rounded-md border border-input bg-background text-sm text-muted-foreground">
+                            {field.value?.name ?? "Choose cover image"}
+                          </div>
+                        </div>
                       </FormControl>
                       {coverPreview && (
                         <div className="mt-2">

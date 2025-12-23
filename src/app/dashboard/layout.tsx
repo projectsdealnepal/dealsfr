@@ -51,10 +51,6 @@ export default function DashboardLayout({
       dispatch(getBrandsList());
       dispatch(getStoresCategories())
       dispatch(getOrderSummary(storeId))
-      dispatch(getDiscountDetail({
-        s_id: storeId,
-        d_id: 22,
-      }))
     }
   }, [userData]);
 
