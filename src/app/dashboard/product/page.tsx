@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { JSX } from "react/jsx-runtime";
 import { DataTable } from "../discounts/select_product/Components/data-table";
 import { columns } from "../discounts/select_product/Components/columns";
+import PageHeader from "@/components/PageHeader";
 
 export default function ProductsPage(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -15,17 +16,17 @@ export default function ProductsPage(): JSX.Element {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl p-6">
-        <header className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Products
-          </h1>
-        </header>
+    <div className="container mx-auto p-4">
+      <div className="max-w-7xl space-y-8">
+        {/* Header */}
+        <PageHeader
+          title="Products"
+          subtitle="Manage and review your store products."
+          hasButton={false}
+        />
 
         {/* Form */}
         <div className="">
-
           {productList && (
             <DataTable
               mode="reward"
@@ -33,6 +34,11 @@ export default function ProductsPage(): JSX.Element {
               columns={columns}
               data={productList}
             />
+          )}
+          {productList?.length === 0 && (
+            <p className="text-center text-muted-foreground">
+              No products available.
+            </p>
           )}
         </div>
 

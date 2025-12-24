@@ -7,6 +7,7 @@ import { getOrderList } from '@/redux/features/order/order';
 import OrdersTable from './components/OrdersTable';
 import StatsCard from './components/StatsCard';
 import FilterTabs from './components/FilterTabs';
+import PageHeader from '@/components/PageHeader';
 
 
 export default function Orders() {
@@ -24,55 +25,17 @@ export default function Orders() {
   }, [storeDetailData])
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="container mx-auto p-4">
+      <div className="max-w-7xl space-y-8">
         {/* Header */}
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight mb-2">Orders</h1>
-            <p className="text-sm text-muted-foreground">Jan 1 - Jan 30, 2024</p>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Top Overview Stats */}
-          <StatsCard title="Total Orders" value={orderSummaryData?.total_orders ?? 0} />
-          <StatsCard title="Total Revenue" value={`$${orderSummaryData?.total_revenue ?? 0}`} />
-        </div>
-
-        {/* Status Breakdown */}
-        <Card className="mt-4">
-          <CardHeader>
-            <CardTitle className="text-base">Order Status Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {[
-                { label: "Pending", key: "pending" },
-                { label: "Confirmed", key: "confirmed" },
-                { label: "Ready For Pickup", key: "ready_for_pickup" },
-                { label: "Picked Up", key: "picked_up" },
-                { label: "Delivered", key: "delivered" },
-                { label: "Cancelled", key: "cancelled" },
-                { label: "Completed", key: "completed" },
-              ].map((item) => (
-                <div
-                  key={item.key}
-                  className="p-4 border rounded-lg bg-muted/20 flex flex-col items-center"
-                >
-                  <p className="text-sm text-muted-foreground">{item.label}</p>
-                  <p className="text-2xl font-semibold">
-                    {(orderSummaryData as Record<string, any>)?.[item.key] ?? 0}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <PageHeader
+          title="Orders"
+          subtitle="Manage and review your store orders."
+          hasButton={false}
+        />
 
         {/* Orders Section */}
-        <Card>
+        < Card >
           <CardContent className="pt-6 space-y-4">
             <FilterTabs
               activeFilter={activeFilter}

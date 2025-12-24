@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Eye, Pencil, Percent, Play, Plus, Trash2 } from "lucide-react";
+import { Calendar, Eye, Pencil, Play, Plus, Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Button } from "@/components/ui/button";
 import { DiscountItem, DiscountUpdatePayload } from "@/redux/features/discount/types";

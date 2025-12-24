@@ -277,8 +277,12 @@ const CreateBannerPage = () => {
                             accept="image/*"
                             ref={mobileFileInputRef}
                             onChange={(e) => handleImageChange(e, "mobile")}
-                            className="h-12 bg-background/50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                            className="absolute inset-0 opacity-0 cursor-pointer"
                           />
+
+                          <div className="flex items-center justify-center rounded-md bg-background text-sm text-muted-foreground">
+                            {mobBannerImage?.name}
+                          </div>
                         </div>
 
                         {mobilePreview && (
@@ -358,8 +362,11 @@ const CreateBannerPage = () => {
                             accept="image/*"
                             ref={webFileInputRef}
                             onChange={(e) => handleImageChange(e, "web")}
-                            className="h-12 bg-background/50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                            className="absolute inset-0 opacity-0 cursor-pointer"
                           />
+                          <div className="flex items-center justify-center rounded-md bg-background text-sm text-muted-foreground">
+                            {webBannerImage?.name}
+                          </div>
                         </div>
 
                         {webPreview && (

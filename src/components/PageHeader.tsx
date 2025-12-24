@@ -15,10 +15,10 @@ const PageHeader = ({ title, subtitle, herf, hasButton = true }: PageHeaderProps
   return (
     <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center  text-foreground mb-4">
       <div>
-        <h1 className="text-lg md:text-xl font-bold">
+        <h1 className="text-lg md:text-xl font-bold mb-2">
           {title}
         </h1>
-        <h3 className="text-xs md:text-sm font-light">
+        <h3 className="text-xs md:text-sm text-muted-foreground">
           {subtitle}
         </h3>
       </div>
