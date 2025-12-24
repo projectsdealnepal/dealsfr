@@ -38,7 +38,7 @@ const QuickAction = () => {
         {quickActions.map((action) => (
           <Link key={action.title} href={action.href}>
             <Card className={`cursor-pointer transition-all hover:shadow-lg ${action.color} border-0`}>
-              <CardContent className="p-6">
+              <CardContent className="p-6 py-2">
                 <div className="flex items-start justify-center space-x-4">
                   <div className=" rounded-lg  bg-background/50">
                     <action.icon className="h-6 w-6" />

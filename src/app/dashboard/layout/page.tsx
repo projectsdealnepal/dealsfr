@@ -80,7 +80,7 @@ export default function LayoutsPage() {
 
     if (!layouts || layouts.length === 0) {
       return (
-        <div className="text-center py-12 border-dashed border-2 rounded-lg">
+        <div className="text-center mt-8 py-12 border-dashed border-2 rounded-lg">
           <h3 className="text-xl font-semibold">No Layouts Available</h3>
           <p className="text-muted-foreground mt-2 mb-4">
             Get started by creating a new layout for your store.

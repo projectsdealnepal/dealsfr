@@ -389,7 +389,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Main Content with top padding to prevent overlap */}
-        <main className="pt-20 md:pt-24 flex-1 bg-background text-foreground px-2 md:px-4">
+        <main className="pt-24 text-foreground px-2 md:px-4">
           {children}
         </main>
       </div>

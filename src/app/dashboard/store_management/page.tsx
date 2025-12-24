@@ -50,11 +50,11 @@ const StoreManager = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-foreground">
-          Store Management
-        </h1>
-      </div>
+      {/* <div className="flex justify-between items-center mb-4"> */}
+      {/*   <h1 className="text-2xl font-semibold text-foreground"> */}
+      {/*     Store Management */}
+      {/*   </h1> */}
+      {/* </div> */}
       {!storeDetailData && (
         <Card className="justify-center p-20 border-0  gap-4">
           <CardContent className="flex flex-col items-center text-card-foreground mx-auto gap-4 text-xl  mb-2">
@@ -70,11 +70,11 @@ const StoreManager = () => {
       )}
 
       {storeDetailData && (
-        <Card className="w-full transition-colors border-0 shadow-none rounded-none">
+        <Card className="w-full py-4  bg-none transition-colors border-0 shadow-none rounded-none">
           <CardHeader>
             <div className="flex justify-between items-start flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
+                <Avatar className="h-16 w-16 border-2 border-gray-400! p-2">
                   <AvatarImage
                     src={storeDetailData.logo || undefined}
                     alt={storeDetailData.name}
@@ -138,17 +138,13 @@ const StoreManager = () => {
                   <Mail className="h-4 w-4 text-primary" />
                   <span>{storeDetailData.email}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Globe className="h-4 w-4 text-primary" />
-                  <span>{storeDetailData.website}</span>
-                </div>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-card-foreground mb-2">
                   Description
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {storeDetailData.description}
+                  {storeDetailData.slogan}
                 </p>
               </div>
             </div>

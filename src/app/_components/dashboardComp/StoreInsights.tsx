@@ -24,7 +24,7 @@ const StoreInsight = () => {
 
       {/* Overview Cards */}
       {orderSummaryData && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -57,17 +57,19 @@ const StoreInsight = () => {
           <CardTitle className="text-lg font-semibold">Order Status Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {orderStatusItems.map((item) => (
               <div
                 key={item.label}
-                className="flex flex-col items-center justify-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                className="flex flex-row items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
               >
-                <item.icon className={`h-6 w-6 mb-2 ${item.color}`} />
-                <div className="text-sm text-muted-foreground text-center mb-1">
-                  {item.label}
+                <div>
+                  <item.icon className={`h-6 w-6 mb-2 ${item.color}`} />
+                  <div className="text-sm text-foreground text-center mb-1">
+                    {item.label}
+                  </div>
                 </div>
-                <p className="text-2xl font-semibold">
+                <p className={`text-3xl font-semibold `}>
                   {(orderSummaryData as Record<string, any>)?.[item.key] ?? 0}
                 </p>
               </div>

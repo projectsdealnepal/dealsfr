@@ -44,30 +44,32 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="p-6 space-y-6 bg-background min-h-screen">
+    <div className="p-2 space-y-6">
       {/* Alerts */}
-      <div >
-        {storeDetailData && storeDetailData.branches?.length < 1 && (
+      {storeDetailData && storeDetailData.branches?.length < 1 && (
+        <div >
           <Link href="/dashboard/create_branch">
             <div className="cursor-pointer flex justify-between items-center px-5 py-3 rounded-md bg-primary/10 text-foreground hover:bg-primary/20 transition-colors">
               You need to setup at least one store branch to publish Discounts.
               <ChevronRight />
             </div>
           </Link>
-        )}
-        {!storeDetailData && (
+        </div >
+      )}
+      {!storeDetailData && (
+        <div>
           <Link href="/dashboard/store_setup">
             <div className="cursor-pointer flex justify-between items-center px-5 py-3 rounded-md bg-primary/10 text-foreground hover:bg-primary/20 transition-colors">
               Complete your store registration process.
               <ChevronRight />
             </div>
           </Link>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Welcome Section */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">
+      <div className="space-y-2 ">
+        <h1 className="text-3xl font-bold ">
           Welcome back, {userData.first_name}
         </h1>
         <p className="text-muted-foreground">
