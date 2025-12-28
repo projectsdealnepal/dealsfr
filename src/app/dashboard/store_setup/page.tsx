@@ -189,12 +189,6 @@ export default function StoreRegistrationPage() {
       router.back();
     }
 
-    if (storeCreateError) {
-      toast.error(storeCreateError, {
-        richColors: true,
-      });
-    }
-
     if (storeUpdateError) {
       toast.error(storeUpdateError, {
         richColors: true,
@@ -208,7 +202,6 @@ export default function StoreRegistrationPage() {
   }, [
     storeDetailData,
     storeCreateData,
-    storeCreateError,
     storeUpdateData,
     storeUpdateError,
     dispatch,

@@ -23,6 +23,7 @@ import {
   StoreCategoryItem,
   StoreItem,
 } from "./types";
+import { showApiErrors } from "@/utils/showToast";
 
 interface StoreInitialState {
   storeStateLoading: boolean;
@@ -130,8 +131,6 @@ const initialState: StoreInitialState = {
   //social media delete data
   socialMediaDeleteData: null,
   socialMediaDeleteError: null,
-
-
   //for getting the list of categories for store 
   storeCategoriesData: null,
   storeCategoriesError: null
@@ -259,10 +258,14 @@ const storeSlice = createSlice({
       )
       .addCase(
         createStore.rejected,
-        (state, action: PayloadAction<string | undefined>) => {
+        (state, action) => {
           state.storeCreateData = null;
           state.storeStateLoading = false;
-          state.storeCreateError = action.payload || "Failed to create store";
+          state.storeCreateError = action.payload?.errors[0].message || "Failed to create store";
+          if (action.payload) {
+            showApiErrors(action.payload);
+          }
+
         }
       )
       //update store detail

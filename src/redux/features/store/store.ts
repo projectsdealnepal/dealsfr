@@ -10,6 +10,8 @@ import {
   SocialMediaResp,
   StoreCategoryItem,
 } from "./types";
+import { ApiErrorResponse } from "@/types/apiError";
+import { extractApiErrors } from "@/utils/extractApiErrors";
 
 // =============================================
 // STORE
@@ -17,7 +19,7 @@ import {
 export const createStore = createAsyncThunk<
   GetStoreDetailResponse,
   FormData,
-  { rejectValue: string }
+  { rejectValue: ApiErrorResponse }
 >("storeDetail/create", async (formData, thunkAPI) => {
   try {
     const response = await api.post(`/stores/`, formData, {
@@ -26,12 +28,8 @@ export const createStore = createAsyncThunk<
       },
     });
     return response.data;
-  } catch (error: any) {
-    return thunkAPI.rejectWithValue(
-      error.response?.data.message ||
-      error.message ||
-      "Failed to create the store"
-    );
+  } catch (error) {
+    return thunkAPI.rejectWithValue(extractApiErrors(error));
   }
 });
 
