@@ -1,19 +1,23 @@
 "use client";
-import { getSubCategory } from "@/redux/features/category/category";
+import { getCategories, getSubCategory } from "@/redux/features/category/category";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import React, { useEffect } from "react";
 import { JSX } from "react/jsx-runtime";
 import { DataTable } from "../discounts/select_product/Components/data-table";
 import { columns } from "../discounts/select_product/Components/columns";
 import PageHeader from "@/components/PageHeader";
+import { getProducts } from "@/redux/features/product/product";
 
 export default function ProductsPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const { productList } = useAppSelector(s => s.product);
+  const { storeDetailData } = useAppSelector(s => s.store);
 
   useEffect(() => {
-    dispatch(getSubCategory());
-  }, []);
+    if (storeDetailData) {
+      dispatch(getProducts(storeDetailData?.id));
+    }
+  }, [storeDetailData]);
 
   return (
     <div className="container mx-auto p-4">

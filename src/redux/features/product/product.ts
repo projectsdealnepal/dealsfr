@@ -18,6 +18,22 @@ export const getProducts = createAsyncThunk<
   }
 });
 
+//get all products( which includes all the products from all stores)
+
+export const getAllProducts = createAsyncThunk<
+  ApiResponse,
+  string,
+  { rejectValue: string }
+>("product/getall", async (filter, thunkAPI) => {
+  try {
+    const response = await api.get(`/products/?${filter}`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || error.message || "Registration failed"
+    );
+  }
+});
 
 export const filterProducts = createAsyncThunk<
   ApiResponse,

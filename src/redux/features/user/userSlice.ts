@@ -102,7 +102,7 @@ const userSlice = createSlice({
       )
       .addCase(loginUser.rejected, (state, action) => {
         state.userStateLoading = false;
-        state.userLoginError = (action.payload) || "Login failed";
+        state.userLoginError = action.payload;
       })
 
       // Logout

@@ -45,12 +45,6 @@ export default function LoginPage() {
   const { userStateLoading, isAuthenticated, userLoginError, userLoginData } =
     useAppSelector((state) => state.userData);
 
-  const [localError, setLocalError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLocalError(userLoginError?.error);
-  }, [userLoginError]);
-
   //function to send otp if the user still not verified their email.
   const sendOtp = async () => {
     try {
@@ -69,6 +63,7 @@ export default function LoginPage() {
       setIsAuthenticating(false);
     }
     if (userLoginError) {
+      toast.error(userLoginError.error)
       setIsAuthenticating(false);
       if (userLoginError?.step == "VERIFY_EMAIL") {
         sendOtp()
@@ -77,9 +72,6 @@ export default function LoginPage() {
       }
     }
 
-    return () => {
-      dispatch(resetLoginState());
-    };
   }, [isAuthenticated, userLoginData, userLoginError]);
 
   useEffect(() => {
@@ -87,6 +79,13 @@ export default function LoginPage() {
       dispatch(getUser());
     }
   }, [isAuthenticated, userLoginData, userStateLoading, dispatch]);
+
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetLoginState());
+    };
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -99,7 +98,6 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsAuthenticating(true);
-    setLocalError(null);
 
     const payload = {
       password: formData.password,
@@ -175,12 +173,6 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {localError && (
-              <Alert variant="destructive">
-                <AlertDescription>{localError}</AlertDescription>
-              </Alert>
-            )}
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>

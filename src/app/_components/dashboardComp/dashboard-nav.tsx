@@ -103,8 +103,7 @@ function DashboardSidebar() {
     window.location.href = "/";
   };
 
-  const userInitials = `${userData?.first_name?.[0] || ""}${userData?.last_name?.[0] || ""
-    }`;
+  const userInitials = `${userData?.first_name?.[0] || ""}${userData?.last_name?.[0] || ""}`;
 
   return (
     <Sidebar collapsible="icon" className="pt-16">

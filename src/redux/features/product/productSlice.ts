@@ -25,8 +25,6 @@ interface ProductState {
   discountAppliedProductList: AddProductOnDiscountPayload[]
   offerAppliedProductsList: OfferAppliedProducts[]
 
-
-
   //selected barnd
   selectedBrand: null | BrandItem
 }
