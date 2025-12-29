@@ -88,9 +88,10 @@ const DiscountManager = () => {
         payload: p,
       }
       if (offerAppliedProductsList.length > 0) {
+        // dispatch(updateProductOnDiscount(payload))
         dispatch(addProductOnDiscount(payload))
       } else {
-        dispatch(updateProductOnDiscount(payload))
+        dispatch(addProductOnDiscount(payload))
       }
     }
   }
@@ -486,6 +487,7 @@ const DiscountManager = () => {
               <p className="text-sm text-red-500">{errors.discountType}</p>
             )}
           </div>
+
           {/*Select targets type (products/brands)*/}
           <div className="space-y-2 ">
             <Label htmlFor="targetType" className="font-semibold text-base text-foreground/70">Discount On</Label>
