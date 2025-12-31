@@ -6,11 +6,11 @@ import { AxiosResponse } from "axios";
 // https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/products/
 export const getProducts = createAsyncThunk<
   ApiResponse,
-  { s_id: number, filter: string },
+  number,
   { rejectValue: string }
->("product/get", async ({ s_id, filter }, thunkAPI) => {
+>("product/get", async (s_id, thunkAPI) => {
   try {
-    const response = await api.get(`/products/${s_id}/products/?${filter}`);
+    const response = await api.get(`/products/${s_id}/products/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -42,7 +42,7 @@ export const filterProducts = createAsyncThunk<
   { rejectValue: string }
 >("product/filter/get", async ({ s_id, filter }, thunkAPI) => {
   try {
-    const response = await api.get(`/products/store/${s_id}/?${filter}`);
+    const response = await api.get(`/products/${s_id}/products/?${filter}`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
@@ -71,9 +71,9 @@ export const fetchProducts = createAsyncThunk<
 // https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/create/
 export const createProduct = createAsyncThunk<
   ProductItem,
-  {store_pk:number,userData:FormData},
+  { store_pk: number, userData: FormData },
   { rejectValue: string }
->("product/create", async ({store_pk,userData}, thunkAPI) => {
+>("product/create", async ({ store_pk, userData }, thunkAPI) => {
   try {
     const response = await api.post(`/products/${store_pk}/create/`, userData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -90,9 +90,9 @@ export const createProduct = createAsyncThunk<
 // https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/bulk-update/
 export const updateBulkProducts = createAsyncThunk<
   ProductItem[],
-  {store_pk:number,userData:FormData},
+  { store_pk: number, userData: FormData },
   { rejectValue: string }
->("product/bulk-update", async ({store_pk,userData}, thunkAPI) => {
+>("product/bulk-update", async ({ store_pk, userData }, thunkAPI) => {
   try {
     const response = await api.patch(`/products/${store_pk}/bulk-update/`, userData, {
       headers: { "Content-Type": "multipart/form-data" },

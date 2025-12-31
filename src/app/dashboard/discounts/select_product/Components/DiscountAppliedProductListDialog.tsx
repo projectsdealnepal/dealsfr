@@ -1,3 +1,6 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,12 +9,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { TableProperties, Package, Percent, DollarSign, Gift } from "lucide-react";
 import { OfferAppliedProducts } from "@/redux/features/discount/types";
 import { useAppSelector } from "@/redux/hooks";
-
+import {
+  DollarSign,
+  Gift,
+  Package,
+  Percent,
+  Store,
+  TableProperties,
+  Tag,
+} from "lucide-react";
 
 interface AddedProductsDialogProp {
   open: boolean;
@@ -32,40 +41,42 @@ const getDiscountIcon = (type: string) => {
   }
 };
 
-const formatDiscountValue = (product: OfferAppliedProducts) => {
-  if (product.value_type === "percentage") {
-    return `${product.value}% off`;
+const formatDiscountValue = (item: OfferAppliedProducts) => {
+  if (item.value_type === "percentage") {
+    return `${item.value}% off`;
   }
-  return `$${product.value} off`;
+  return `$${item.value} off`;
 };
 
 const DiscountAppliedProductListDialog = ({
   open,
   onOpenChange,
 }: AddedProductsDialogProp) => {
-  const { offerAppliedProductsList } = useAppSelector(p => p.product)
+  const { offerAppliedProductsList } = useAppSelector((p) => p.product);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <TableProperties className="h-4 w-4" />
           Product List
-          {offerAppliedProductsList?.length > 0 && (
+          {offerAppliedProductsList.length > 0 && (
             <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
-              {offerAppliedProductsList?.length}
+              {offerAppliedProductsList.length}
             </Badge>
           )}
         </Button>
       </DialogTrigger>
+
       <DialogContent className="max-w-2xl p-0 gap-0">
         {/* Header */}
         <div className="px-6 py-5 border-b">
           <DialogTitle className="text-lg font-semibold tracking-tight">
-            Discount Applied Products
+            Discount Coverage
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground mt-1">
-            {offerAppliedProductsList.length} product
-            {offerAppliedProductsList.length !== 1 ? "s" : ""} with active offers
+            {offerAppliedProductsList.length} active discount
+            {offerAppliedProductsList.length !== 1 ? "s" : ""}
           </DialogDescription>
         </div>
 
@@ -73,84 +84,110 @@ const DiscountAppliedProductListDialog = ({
         <div className="max-h-[65vh] overflow-y-auto">
           {offerAppliedProductsList.length > 0 ? (
             <div className="divide-y">
-              {offerAppliedProductsList.map((product) => (
-                <div
-                  key={product.id}
-                  className="px-6 py-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex gap-4">
-                    {/* Product Image */}
-                    <div className="h-16 w-16 rounded-lg border bg-muted/30 flex-shrink-0 overflow-hidden">
-                      {product.store_product.image ? (
-                        <img
-                          src={product.store_product.image}
-                          alt={product.store_product.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center">
+              {offerAppliedProductsList.map((item) => {
+                const isProduct = !!item.store_product;
+                const isBrand = !!item.brand;
+
+                return (
+                  <div
+                    key={item.id}
+                    className="px-6 py-4 transition-colors hover:bg-muted/50"
+                  >
+                    <div className="flex gap-4">
+                      {/* Left Visual */}
+                      <div className="h-16 w-16 rounded-lg border bg-muted/30 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                        {isProduct && item.store_product?.image ? (
+                          <img
+                            src={item.store_product.image}
+                            alt={item.store_product.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : isBrand ? (
+                          <Tag className="h-6 w-6 text-muted-foreground" />
+                        ) : (
                           <Package className="h-6 w-6 text-muted-foreground/50" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <h3 className="font-medium text-sm leading-tight truncate">
-                            {product.store_product.name}
-                          </h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {product.store_product.store_name}
-                          </p>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="flex-shrink-0 gap-1 text-xs font-normal"
-                        >
-                          {getDiscountIcon(product.value_type)}
-                          {formatDiscountValue(product)}
-                        </Badge>
-                      </div>
-
-                      {/* Price Row */}
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className="text-sm font-medium">
-                          ${product.store_product.price}
-                        </span>
-                        {product.buy_quantity > 1 && (
-                          <>
-                            <Separator orientation="vertical" className="h-3" />
-                            <span className="text-xs text-muted-foreground">
-                              Min qty: {product.buy_quantity}
-                            </span>
-                          </>
-                        )}
-                        {product.min_spend_amount && (
-                          <>
-                            <Separator orientation="vertical" className="h-3" />
-                            <span className="text-xs text-muted-foreground">
-                              Min spend: ${product.min_spend_amount}
-                            </span>
-                          </>
                         )}
                       </div>
 
-                      {/* Reward Products */}
-                      {product.reward_products.length > 0 && (
-                        <div className="mt-2 flex items-center gap-1.5">
-                          <Gift className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
-                            +{product.reward_products.length} reward product
-                            {product.reward_products.length > 1 ? "s" : ""}
-                          </span>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h3 className="font-medium text-sm truncate">
+                              {isProduct
+                                ? item.store_product!.name
+                                : item.brand!.name}
+                            </h3>
+
+                            <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                              {isProduct ? (
+                                <>
+                                  <Store className="h-3 w-3" />
+                                  {item.store_product!.store_name}
+                                </>
+                              ) : (
+                                "Brand-wide discount"
+                              )}
+                            </p>
+                          </div>
+
+                          <Badge
+                            variant="outline"
+                            className="gap-1 text-xs font-normal"
+                          >
+                            {getDiscountIcon(item.value_type)}
+                            {formatDiscountValue(item)}
+                          </Badge>
                         </div>
-                      )}
+
+                        {/* Meta */}
+                        <div className="flex items-center gap-3 mt-2 flex-wrap">
+                          {isProduct && (
+                            <span className="text-sm font-medium">
+                              ${item.store_product!.price}
+                            </span>
+                          )}
+
+                          {item.buy_quantity > 1 && (
+                            <>
+                              <Separator
+                                orientation="vertical"
+                                className="h-3"
+                              />
+                              <span className="text-xs text-muted-foreground">
+                                Min qty: {item.buy_quantity}
+                              </span>
+                            </>
+                          )}
+
+                          {item.min_spend_amount && (
+                            <>
+                              <Separator
+                                orientation="vertical"
+                                className="h-3"
+                              />
+                              <span className="text-xs text-muted-foreground">
+                                Min spend: ${item.min_spend_amount}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Rewards */}
+                        {item.reward_products.length > 0 && (
+                          <div className="mt-2 flex items-center gap-1.5">
+                            <Gift className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              +{item.reward_products.length} reward product
+                              {item.reward_products.length > 1 ? "s" : ""}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="px-6 py-16 text-center">
@@ -158,7 +195,7 @@ const DiscountAppliedProductListDialog = ({
                 <Package className="h-6 w-6 text-muted-foreground/50" />
               </div>
               <p className="text-sm text-muted-foreground">
-                No products with active discounts
+                No active discounts found
               </p>
             </div>
           )}

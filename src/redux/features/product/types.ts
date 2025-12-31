@@ -29,9 +29,9 @@ export interface GenericProductItem {
   brand: Brand;
   images: ProductImages[] | string[];
   image_urls?: string[];
-  price?:string;
-  store_id?:number;
-  is_available?:boolean;
+  price?: string;
+  store_id?: number;
+  is_available?: boolean;
   created_at: string;
 }
 

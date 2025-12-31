@@ -126,9 +126,9 @@ export interface OfferAppliedProducts {
   buy_quantity: number;
   min_spend_amount: number | null;
   max_discount_amount: number | null;
-  brand: number | null;
+  brand: BrandItem | null;
   category: number | null;
-  store_product: StoreProduct;
+  store_product: StoreProduct | null;
   bundle_discounts: any[];
   reward_products: ResponseRewardProduct[];
   created_at: string;
