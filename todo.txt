@@ -1,4 +1,11 @@
+TODO:
+    Backend: 
+        - Notification and also feature to show the blinking or something just to
+         let the user there is now order on store.
 
-1. Problem in the banner create( need to validat the weather the banner is
-created successfully or not, right now it navigated without validation even in
-error it shows the successs)
+
+Frontend:
+    - Remove requirement of banner and layout on creating discount, ( may be we just place )
+    - Add number of products that are in the discount card in the discount list.
+    - Show the error toast message when there is an error while changing the status of order.
+    - Add breadcrump on all pages.

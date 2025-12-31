@@ -45,7 +45,7 @@ const StoreInsight = () => {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold text-foreground">
-                Rs. {orderSummaryData.total_revenue}
+                NPR. {orderSummaryData.total_revenue}
               </div>
             </CardContent>
           </Card>

@@ -1,3 +1,5 @@
+import { CategoryItem } from "../category/types";
+
 export interface ApiResponse {
   count: number;
   next: string | null;
@@ -5,11 +7,40 @@ export interface ApiResponse {
   results: ProductItem[];
 }
 
+export interface ProductImages {
+  id: number;
+  image: string;
+}
+
+export interface GenericProductsApiResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: GenericProductItem[];
+}
+
+
+//this is the combinaitn of generic product that we will get on api and store product that we will create .
+export interface GenericProductItem {
+  id: number;
+  name: string;
+  description: string;
+  category: CategoryItem;
+  brand: Brand;
+  images: ProductImages[] | string[];
+  image_urls?: string[];
+  price?:string;
+  store_id?:number;
+  is_available?:boolean;
+  created_at: string;
+}
+
+
 export interface ProductItem {
   id: number;
   name: string;
   description: string;
-  category: Category;
+  category: CategoryItem;
   brand: Brand;
   price: string;
   image: string;

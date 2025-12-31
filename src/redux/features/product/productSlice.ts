@@ -1,8 +1,8 @@
-import { filterProducts, getBrandsList, getProducts } from "@/redux/features/product/product";
-import { AddProductOnDiscount, ApiResponse, BrandItem, DiscountedProductType, ProductItem, RewardProductItem, } from "@/redux/features/product/types";
+import { addProductsToStore, createProduct, filterProducts, getAllProducts, getBrandsList, getProducts, updateBulkProducts } from "@/redux/features/product/product";
+import { AddProductOnDiscount, ApiResponse, BrandItem, DiscountedProductType, GenericProductItem, ProductItem, RewardProductItem, } from "@/redux/features/product/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AddProductOnDiscountPayload, OfferAppliedProducts } from "../discount/types";
 import { addProductOnDiscount, getDiscountProductList, updateProductOnDiscount } from "../discount/discount";
+import { AddProductOnDiscountPayload, OfferAppliedProducts } from "../discount/types";
 
 interface ProductState {
   productList: ProductItem[] | null;
@@ -25,8 +25,30 @@ interface ProductState {
   discountAppliedProductList: AddProductOnDiscountPayload[]
   offerAppliedProductsList: OfferAppliedProducts[]
 
+  //for getting the list of all products ( from all stores)
+  allProductList: GenericProductItem[] | null
+  allProductPagination: number;
+
+  //these temporary product list are the selected products when admin 
+  // adding the product to his/her store(before confirmaiton).
+  tempAddedProductList: GenericProductItem[];
+
+  //for add product to store
+  addProductToStoreData: ProductItem[] | null;
+  addProductToStoreLoading: boolean;
+  addProductToStoreError: string | null;
+
   //selected barnd
   selectedBrand: null | BrandItem
+
+  //product create and update
+  createProductData: null|ProductItem,
+  createProductLoading: boolean;
+  createProductError: string | null;
+
+  bulkProductUpdateData: null|ProductItem[],
+  bulkProductUpdateLoading: boolean;
+  bulkProductUpdateError: string | null;
 }
 
 // Initial state
@@ -53,8 +75,30 @@ const initialState: ProductState = {
   discountAppliedProductList: [],
   offerAppliedProductsList: [],
 
+  //for getting the list of all products ( from all stores)
+  allProductList: null,
+  allProductPagination: 1,
+
+  //these temporary product list are the selected products when admin 
+  // adding the product to his/her store(before confirmaiton).
+  tempAddedProductList: [],
+
+  //for add product to store
+  addProductToStoreData: null,
+  addProductToStoreLoading: false,
+  addProductToStoreError: null,
+
   //selected barnd
   selectedBrand: null,
+
+  //product create and update
+  createProductData: null,
+  createProductLoading: false,
+  createProductError: null,
+
+  bulkProductUpdateData: null,
+  bulkProductUpdateLoading: false,
+  bulkProductUpdateError: null,
 };
 
 
@@ -141,15 +185,48 @@ const productSlice = createSlice({
       state.discountAppliedProductList = [];
     },
 
-
     //for selected brand item
     setSelectedBrand(state, action: PayloadAction<BrandItem | null>) {
       state.selectedBrand = action.payload
-    }
+    },
+
+    //for temporary added products which are the selected products when admin 
+    // adding the product to his/her store(before confirmation).
+    setTempAddedProducts(state, action: PayloadAction<GenericProductItem>) {
+      state.tempAddedProductList = [...state.tempAddedProductList, action.payload]
+    },
+    updateTempAddedProduct(state, action: PayloadAction<Partial<GenericProductItem>>) {
+      state.tempAddedProductList = state.tempAddedProductList.map((item) =>
+        item.id === action.payload.id ? {
+          ...item, ...action.payload
+        } : item
+      );
+    },
+    clearTempAddedProducts(state) {
+      state.tempAddedProductList = []
+    },
+    removeTempAddedProduct(state, action: PayloadAction<number>) {
+      state.tempAddedProductList = state.tempAddedProductList.filter(
+        (item) => item.id !== action.payload
+      );
+    },
+
+    //for product create and update state
+    clearProductCreadteState(state) {
+      state.createProductData = null;
+      state.createProductLoading = false;
+      state.createProductError = null;
+    },
+    clearBulkProductUpdateState(state) {
+      state.bulkProductUpdateData = null;
+      state.bulkProductUpdateLoading = false;
+      state.bulkProductUpdateError = null;
+    },
 
   },
   extraReducers: (builder) => {
     builder
+    //ge the list of products
       .addCase(getProducts.pending, (state) => {
         state.productLoading = true;
         state.productError = null;
@@ -169,6 +246,8 @@ const productSlice = createSlice({
           state.productError = action.payload || "Failed to fetch products";
         }
       )
+
+      //get the products with the filters(page size, search, etc)
       .addCase(filterProducts.pending, (state) => {
         state.productLoading = true;
         state.productError = null;
@@ -187,13 +266,14 @@ const productSlice = createSlice({
           state.productError = action.payload || "Failed to fetch filter products";
         }
       )
+
       //get the list of brands
       .addCase(getBrandsList.fulfilled, (state, action) => {
         state.brandListData = action.payload;
       })
+
       //got get the list of product and store them in the discounted product list
       .addCase(getDiscountProductList.fulfilled, (state, action) => {
-        // state.discountAppliedProductList = action.payload
         state.offerAppliedProductsList = action.payload;
       })
 
@@ -205,6 +285,54 @@ const productSlice = createSlice({
         state.offerAppliedProductsList = action.payload;
       })
 
+      //for getting the list of all products( from all store)
+      .addCase(getAllProducts.pending, (state) => {
+        state.productLoading = true
+      })
+      .addCase(getAllProducts.fulfilled, (state, action) => {
+        state.allProductList = action.payload.results;
+        state.productLoading = false
+        state.allProductPagination = action.payload.count;
+      })
+
+      //for add product to store
+      .addCase(addProductsToStore.pending, (state) => {
+        state.addProductToStoreLoading = true
+      })
+      .addCase(addProductsToStore.fulfilled, (state, action) => {
+        state.addProductToStoreData = action.payload;
+        state.addProductToStoreLoading = false
+      })
+      .addCase(addProductsToStore.rejected, (state, action: PayloadAction<string | undefined>) => {
+        state.addProductToStoreError = action.payload || "Failed to add product to store";
+        state.addProductToStoreLoading = false
+      })
+
+      //for creating product on store( adding product to store)
+      .addCase(createProduct.pending, (state) => {
+        state.createProductLoading = true
+      })
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.createProductData= action.payload;
+        state.createProductLoading = false
+      })
+      .addCase(createProduct.rejected, (state, action: PayloadAction<string | undefined>) => {
+        state.createProductError = action.payload || "Failed to create product";
+        state.createProductLoading = false
+      })
+
+      //for bulk updating product on store( adding product to store)
+      .addCase(updateBulkProducts.pending, (state) => {
+        state.bulkProductUpdateLoading = true
+      })
+      .addCase(updateBulkProducts.fulfilled, (state, action) => {
+        state.bulkProductUpdateData = action.payload;
+        state.bulkProductUpdateLoading = false
+      })
+      .addCase(updateBulkProducts.rejected, (state, action: PayloadAction<string | undefined>) => {
+        state.bulkProductUpdateError = action.payload || "Failed to update product";
+        state.bulkProductUpdateLoading = false
+      })
   },
 });
 
@@ -227,6 +355,13 @@ export const {
   // deleteDiscountAppliedProductItem,
   clearDiscountAppliedProductList,
   setSelectedBrand,
-  //for offer applied product list
+  //for temporary added product list during adding the new products to the store
+  setTempAddedProducts,
+  clearTempAddedProducts,
+  removeTempAddedProduct,
+  updateTempAddedProduct,
+  clearProductCreadteState,
+  clearBulkProductUpdateState,
+
 } = productSlice.actions;
 export default productSlice.reducer;

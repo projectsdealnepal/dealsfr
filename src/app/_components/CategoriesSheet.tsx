@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -10,7 +10,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight, ChevronDown, Check } from "lucide-react";
 import { CategoryItem } from "@/redux/features/category/types";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 
 interface CategorySelectorModalProps {

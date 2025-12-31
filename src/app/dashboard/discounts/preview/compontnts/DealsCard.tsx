@@ -35,18 +35,18 @@ const DealsCard: React.FC<DealsCardProps> = ({ product }) => {
                 <p>
                   Buy {product.buy_quantity},{" "}
                   {valueType === "fixed_amount"
-                    ? `Get Rs. ${value} OFF`
+                    ? `Get NPR. ${value} OFF`
                     : `Get ${value}% OFF`}
                 </p>
               )}
 
               {discountType === "percentage" && <p>{value}% OFF</p>}
 
-              {discountType === "fixed_amount" && <p>Rs. {value} OFF</p>}
+              {discountType === "fixed_amount" && <p>NPR. {value} OFF</p>}
 
               {discountType === "spend_get" && (
                 <p>
-                  Spend Rs. {minSpend}, Get{" "}
+                  Spend NPR. {minSpend}, Get{" "}
                   {valueType === "percentage"
                     ? `${value}% OFF`
                     : `Rs. ${value} OFF`}
@@ -72,7 +72,7 @@ const DealsCard: React.FC<DealsCardProps> = ({ product }) => {
                 )}
               </div>
               <div className="w-[40%] flex flex-col items-end">
-                <p className="text-sm opacity-70 line-through">Rs. 450</p>
+                <p className="text-sm opacity-70 line-through">NPR. 450</p>
                 <p className="text-lg font-extrabold text-primary">
                   Rs. {product.store_product.price}
                 </p>

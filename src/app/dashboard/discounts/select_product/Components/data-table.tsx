@@ -49,8 +49,8 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { CategorySelectorSheet } from "./CategoriesSheet";
 import Filter from "./filter";
+import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
 
 interface DataTableProps<TData, TValue> {
   mode?: "reward" | "default"
