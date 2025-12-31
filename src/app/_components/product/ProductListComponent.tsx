@@ -14,14 +14,12 @@ interface ProductListTableProps {
   products: ProductItem[] | GenericProductItem[];
   onView: (product: ProductItem | GenericProductItem) => void;
   onEdit: (product: ProductItem | GenericProductItem) => void;
-  onDelete: (product: ProductItem | GenericProductItem) => void;
 }
 
 const ProductListTable: React.FC<ProductListTableProps> = ({
   products,
   onView,
   onEdit,
-  onDelete,
 }) => {
   const { storeDetailData } = useAppSelector(s => s.store)
   // Type guard to check if product is ProductItem
@@ -177,13 +175,13 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
                         <Pencil className="h-4 w-4" />
                       </button>
 
-                      <button
-                        onClick={() => onDelete(product)}
-                        className="rounded-md p-2 text-red-600 hover:bg-red-50"
-                        title="Delete product"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {/* <button */}
+                      {/*   onClick={() => onDelete(product)} */}
+                      {/*   className="rounded-md p-2 text-red-600 hover:bg-red-50" */}
+                      {/*   title="Delete product" */}
+                      {/* > */}
+                      {/*   <Trash2 className="h-4 w-4" /> */}
+                      {/* </button> */}
                     </div>
                   </TableCell>
                 </TableRow>

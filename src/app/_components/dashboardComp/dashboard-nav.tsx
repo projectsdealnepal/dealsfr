@@ -96,7 +96,7 @@ function DashboardSidebar() {
   const { userData } = useSelector((state: RootState) => state.userData);
   const { state } = useSidebar();
   console.log("Sidebar state:", state);
-  useWebSocket();
+  // useWebSocket();
 
   const handleLogout = () => {
     clearTokens();

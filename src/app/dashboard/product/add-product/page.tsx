@@ -1,18 +1,13 @@
 "use client";
 import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
 import { EditFormData, ProductEditSheet } from "@/app/_components/product/ProductEditSheet";
-import ProductListTable from "@/app/_components/product/ProductListComponent";
 import ProductListPagination from "@/app/_components/product/ProductListPagination";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -24,42 +19,25 @@ import {
 } from "@/components/ui/table";
 import { CategoryItem } from "@/redux/features/category/types";
 import {
-  addProductsToStore,
   createProduct,
   getAllProducts,
-  updateBulkProducts,
 } from "@/redux/features/product/product";
 import {
   clearBulkProductUpdateState,
   clearProductCreadteState,
-  clearTempAddedProducts,
-  removeTempAddedProduct,
-  setTempAddedProducts,
-  updateTempAddedProduct,
 } from "@/redux/features/product/productSlice";
-import { GenericProductItem, ProductItem } from "@/redux/features/product/types";
+import { GenericProductItem } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   ArrowRight,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
   Package,
-  Pencil,
-  Plus,
   Search,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { set } from "zod";
-
-export interface ProductImageFile {
-  product_id: number;
-  files: File[];
-}
 
 const AddProduct = () => {
   const dispatch = useAppDispatch();
@@ -70,14 +48,12 @@ const AddProduct = () => {
     allProductPagination,
     productLoading,
     addProductToStoreData,
-    addProductToStoreLoading,
-    addProductToStoreError,
   } = useAppSelector((state) => state.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
 
-  const [imageFiles, setImageFiles] = useState<ProductImageFile[]>([])
   const [catSheetOpen, setCatSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState<GenericProductItem | null>(null);
@@ -86,8 +62,8 @@ const AddProduct = () => {
   );
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const pageSize = 10;
-  const { createProductData, createProductLoading, createProductError } = useAppSelector((state) => state.product)
-  const { bulkProductUpdateData, bulkProductUpdateLoading, bulkProductUpdateError } = useAppSelector((state) => state.product)
+  const { createProductData, createProductError } = useAppSelector((state) => state.product)
+  const { bulkProductUpdateData, bulkProductUpdateError } = useAppSelector((state) => state.product)
 
   // Debounce search input
   useEffect(() => {
@@ -120,33 +96,18 @@ const AddProduct = () => {
 
   //actions for selecting and removing temp added products(products to be added to the
   //store)
-  const handleSelectProduct = (product: GenericProductItem, checked: boolean) => {
-    if (checked) {
-      dispatch(setTempAddedProducts(product));
-    } else {
-      console.log("Removing product:", product);
-      dispatch(removeTempAddedProduct(product.id));
-    }
-  };
 
   const isProductSelected = (productId: number) => {
     return tempAddedProductList.some((p) => p.id === productId);
   };
 
-  const handleRemoveSelected = (productId: number) => {
-    dispatch(removeTempAddedProduct(productId));
-  };
-
-  const handleClearAll = () => {
-    dispatch(clearTempAddedProducts());
-  };
 
   const handleAddToStore = (p: GenericProductItem) => {
     setSelectedProduct(p)
     setIsEditSheetOpen(true)
   };
 
-  const handleSave = (formData: EditFormData, productId: number, newImages: File[], imageUrls: string[]) => {
+  const handleSave = (formData: EditFormData, newImages: File[], imageUrls: string[]) => {
     const form = new FormData()
     form.append("name", formData.name)
     form.append("description", formData.description)
@@ -207,56 +168,24 @@ const AddProduct = () => {
         <PageHeader
           title="Add Products"
           subtitle="Search and select products to add to your store"
-          buttonText="Add Manual"
-          onClick={() => console.log("Add Manual")}
+          buttonText="Create New product "
+          onClick={() => setIsAddSheetOpen(true)}
         />
 
-        {/* Selected Products Badge */}
-        {tempAddedProductList.length > 0 ? (
-          <Card className="bg-muted rounded-none">
-            {/* Card Header */}
-            <CardHeader>
-              <CardTitle>New Selected Products</CardTitle>
-            </CardHeader>
+        {/* //sheet for adding new product to the store (manually) */}
+        <ProductEditSheet
+          title={"Add New Product"}
+          description="Enter the product details to add a new product to your store"
+          buttonText={"Add to store"}
+          product={null}
+          open={isAddSheetOpen}
+          onClose={() => setIsAddSheetOpen(false)}
+          onSave={(formData, _, newImages, imageUrls) => {
+            handleSave(formData, newImages, imageUrls)
+            console.timeLog("formData", formData)
+          }}
+        />
 
-            {/* Card Content */}
-            <CardContent className="space-y-4 ">
-
-
-              {tempAddedProductList.length > 0 ? (
-                <>
-                  <ProductListTable
-                    products={tempAddedProductList}
-                    onView={(product) => console.log("View product:", product)}
-                    onEdit={(product) => {
-                      setSelectedProduct(product as GenericProductItem);
-                      setIsEditSheetOpen(true);
-                    }}
-                    onDelete={(product) => handleRemoveSelected(product.id)}
-                  />
-                </>
-              ) : (
-                <p className="text-muted-foreground">
-                  No products selected yet.
-                </p>
-              )}
-            </CardContent>
-
-            {/* Card Footer */}
-            <CardFooter className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                className="text-red-600"
-                onClick={handleClearAll}
-              >
-                Clear All <X className="ml-1 w-4 h-4" />
-              </Button>
-              <Button variant="default" onClick={() => console.log("Add to store")}>
-                Add to Store
-              </Button>
-            </CardFooter>
-          </Card>
-        ) : null}
 
         {/* Search + Category selector (compact, inline) */}
         <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -336,13 +265,13 @@ const AddProduct = () => {
                 <Table>
                   <TableHeader className="px-2">
                     <TableRow className="bg-slate-50 hover:bg-slate-50">
-                      <TableHead className="w-12">
-                        <div className="flex items-center justify-center">
-                          <span className="text-slate-600 font-semibold">
-                            Select
-                          </span>
-                        </div>
-                      </TableHead>
+                      {/* <TableHead className="w-12"> */}
+                      {/*   <div className="flex items-center justify-center"> */}
+                      {/*     <span className="text-slate-600 font-semibold"> */}
+                      {/*       Select */}
+                      {/*     </span> */}
+                      {/*   </div> */}
+                      {/* </TableHead> */}
                       <TableHead className="font-semibold text-slate-700 w-20">
                         Image
                       </TableHead>
@@ -367,17 +296,17 @@ const AddProduct = () => {
                         className={`hover:bg-blue-50/50 transition-colors ${isProductSelected(product.id) ? "bg-blue-50/70" : ""
                           }`}
                       >
-                        <TableCell>
-                          <div className="flex items-center justify-center">
-                            <Checkbox
-                              checked={isProductSelected(product.id)}
-                              onCheckedChange={(checked) =>
-                                handleSelectProduct(product, checked as boolean)
-                              }
-                              className="w-5 h-5"
-                            />
-                          </div>
-                        </TableCell>
+                        {/* <TableCell> */}
+                        {/*   <div className="flex items-center justify-center"> */}
+                        {/*     <Checkbox */}
+                        {/*       checked={isProductSelected(product.id)} */}
+                        {/*       onCheckedChange={(checked) => */}
+                        {/*         handleSelectProduct(product, checked as boolean) */}
+                        {/*       } */}
+                        {/*       className="w-5 h-5" */}
+                        {/*     /> */}
+                        {/*   </div> */}
+                        {/* </TableCell> */}
                         <TableCell>
                           <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-100">
                             {product.images.length ? (
@@ -449,8 +378,8 @@ const AddProduct = () => {
               product={selectedProduct}
               open={isEditSheetOpen}
               onClose={() => setIsEditSheetOpen(false)}
-              onSave={(formData, productId, newImages, imageUrls) => {
-                handleSave(formData, productId, newImages, imageUrls)
+              onSave={(formData, _, newImages, imageUrls) => {
+                handleSave(formData, newImages, imageUrls)
               }}
             />
           </CardContent>

@@ -9,7 +9,14 @@ const nextConfig: NextConfig = {
         hostname: "192.168.100.133",
         pathname: "/**",
       },
+
       {
+        protocol: "http",
+        hostname: "192.168.100.70",
+        pathname: "/**",
+      },
+      {
+
         protocol: "https",
         hostname: "api.thedealsfr.com",
         pathname: "/**",

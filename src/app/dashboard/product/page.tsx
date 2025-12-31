@@ -1,13 +1,12 @@
 "use client";
-import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
+import { EditFormData, ProductEditSheet } from "@/app/_components/product/ProductEditSheet";
 import ProductListTable from "@/app/_components/product/ProductListComponent";
 import PageHeader from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CategoryItem } from "@/redux/features/category/types";
-import { getProducts } from "@/redux/features/product/product";
+import { filterProducts, updateBulkProducts } from "@/redux/features/product/product";
+import { ProductItem } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ChevronDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { JSX } from "react/jsx-runtime";
 
@@ -15,10 +14,11 @@ export default function ProductsPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const { productList } = useAppSelector(s => s.product);
   const { storeDetailData } = useAppSelector(s => s.store);
-  const { categoryData } = useAppSelector(s => s.category)
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null)
   const pageSize = 10
 
   // Debounce search input
@@ -38,12 +38,43 @@ export default function ProductsPage(): JSX.Element {
     queryParams.append('page_size', pageSize.toString())
 
     if (storeDetailData) {
-      dispatch(getProducts({ s_id: storeDetailData?.id, filter: queryParams.toString() }));
+      dispatch(filterProducts({ s_id: storeDetailData?.id, filter: queryParams.toString() }));
     }
   }, [debouncedSearch, currentPage, dispatch, storeDetailData, pageSize])
 
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
+  }
+
+
+  const handleEdit = (formData: EditFormData, productId: number, newImages: File[], imageUrls: string[]) => {
+    const form = new FormData()
+    console.log("productId", formData)
+    form.append("id", productId.toString());
+    form.append("name", formData.name);
+    form.append("description", formData.description);
+    form.append("price", formData.price);
+    form.append("brand", formData.brand_id.toString());
+    form.append("category", formData.category_id.toString());
+    if (formData.is_available != undefined) {
+      form.append("is_available", formData.is_available.toString());
+    }
+
+    newImages.forEach((image) => {
+      form.append("images", image);
+    });
+
+    imageUrls.forEach((url) => {
+      form.append("image_urls", url);
+    });
+
+    if (storeDetailData) {
+      const payload = {
+        store_pk: storeDetailData.id,
+        userData: form,
+      }
+      dispatch(updateBulkProducts(payload))
+    }
   }
 
   return (
@@ -92,12 +123,18 @@ export default function ProductsPage(): JSX.Element {
         {/* Form */}
         <div className="">
           {productList && (
-            <ProductListTable
-              products={productList}
-              onView={(product) => console.log("View product:", product)}
-              onEdit={(product) => console.log("Edit product:", product)}
-              onDelete={(product) => console.log("Delete product:", product)}
-            />
+            <>
+              <ProductListTable
+                products={productList}
+                onView={(product) => console.log("View product:", product)}
+                onEdit={(product) => {
+                  console.log("Edit product:", product)
+                  setIsEditSheetOpen(true)
+                  setSelectedProduct(product as ProductItem)
+                }}
+              />
+
+            </>
           )}
           {productList?.length === 0 && (
             <p className="text-center text-muted-foreground">
@@ -106,6 +143,18 @@ export default function ProductsPage(): JSX.Element {
           )}
         </div>
 
+        <ProductEditSheet
+          title={"Edit Product"}
+          description="Make changes to the product details below."
+          buttonText={"Save Changes"}
+          product={selectedProduct}
+          open={isEditSheetOpen}
+          onClose={() => setIsEditSheetOpen(false)}
+          onSave={(formData, productId, newImages, imageUrls) => {
+            handleEdit(formData, productId, newImages, imageUrls)
+            console.timeLog("formData", formData)
+          }}
+        />
       </div>
     </div>
   );

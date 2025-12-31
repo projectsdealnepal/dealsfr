@@ -1,11 +1,10 @@
 "use client";
 
-import { ProductImageFile } from "@/app/dashboard/product/add-product/page";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -14,10 +13,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { GenericProductItem, ProductItem } from "@/redux/features/product/types";
 import { useAppSelector } from "@/redux/hooks";
-import { ChevronDown, Image as ImageIcon, Loader2, Upload, X } from "lucide-react";
+import { ChevronDown, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -30,6 +30,7 @@ export interface EditFormData {
   price: string;
   brand_id: number;
   category_id: number;
+  is_available?: boolean;
 }
 
 interface ProductEditSheetProps {
@@ -57,13 +58,13 @@ export function ProductEditSheet({
     price: (product && product.price?.toString()) ?? "",
     brand_id: product?.brand.id || 0,
     category_id: product?.category.id || 0,
+    is_available: product?.is_available || false,
   });
   const [catSheetOpen, setCatSheetOpen] = useState(false);
   const [brand, setBrand] = useState(product?.brand)
   const [category, setCategory] = useState(product?.category)
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const { createProductLoading, bulkProductUpdateLoading } = useAppSelector((s) => s.product)
   const { categoryData } = useAppSelector((s) => s.category)
 
@@ -88,6 +89,7 @@ export function ProductEditSheet({
         price: isProductItem(product) ? product.price : product.price?.toString() || "",
         brand_id: product.brand.id || 0,
         category_id: product.category.id || 0,
+        is_available: product.is_available || false,
       });
       setCategory(product.category)
       setBrand(product.brand)
@@ -105,7 +107,6 @@ export function ProductEditSheet({
 
       // Clear new images when product changes
       setNewImages([]);
-      setImagePreviews([]);
     }
   }, [product]);
 
@@ -127,13 +128,6 @@ export function ProductEditSheet({
     setNewImages((prev) => [...prev, ...fileArray]);
 
     // Create previews for new images
-    fileArray.forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreviews((prev) => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    });
   };
 
   const handleRemoveExistingImage = (index: number) => {
@@ -142,15 +136,13 @@ export function ProductEditSheet({
 
   const handleRemoveNewImage = (index: number) => {
     setNewImages((prev) => prev.filter((_, i) => i !== index));
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
 
   const handleSave = () => {
-    if (!product) return;
 
     console.log(formData)
-    console.log(product.id)
+    console.log(product?.id)
     console.log(newImages)
     console.log(existingImages)
     console.log("===============")
@@ -158,18 +150,17 @@ export function ProductEditSheet({
     if (!validateForm()) {
       return;
     }
-    onSave(formData, product.id, newImages, existingImages);
+    onSave(formData, product?.id ?? 0, newImages, existingImages);
   };
 
   const hasChanges = () => {
-    if (!product) return false;
 
     const hasNewImages = newImages.length > 0;
-    const nameChanged = formData.name !== product.name;
-    const descChanged = formData.description !== product.description;
+    const nameChanged = formData.name !== product?.name;
+    const descChanged = formData.description !== product?.description;
     const priceChanged = isProductItem(product)
       ? formData.price !== product.price
-      : formData.price !== (product.price || "");
+      : formData.price !== (product?.price || "");
 
     return nameChanged || descChanged || priceChanged || hasNewImages;
   };
@@ -350,15 +341,19 @@ export function ProductEditSheet({
             </div>
 
             {/* Product Info (Read-only) */}
-            {product && (
-              <div className="space-y-2 pt-4 border-t">
+            {(
+              <div className="space-y-4 pt-4 border-t">
                 <p className="text-sm font-medium text-gray-700">
                   Product Information
                 </p>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Category:</span>
-                    {/* Category sheet */}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  {/* Category */}
+                  <div className="space-y-1.5">
+                    <Label className="text-muted-foreground">
+                      Category
+                    </Label>
+
                     {categoryData && (
                       <CategorySelectorSheet
                         open={catSheetOpen}
@@ -366,54 +361,86 @@ export function ProductEditSheet({
                         categories={categoryData}
                         onSelect={(item) => {
                           setCategory(item)
-                          setFormData((prev) => {
-                            return {
-                              ...prev,
-                              category_id: item.id
-                            }
-                          })
+                          setFormData((prev) => ({
+                            ...prev,
+                            category_id: item.id,
+                          }))
                         }}
                       />
                     )}
+
                     <Button
+                      type="button"
                       variant="outline"
+                      className="w-full justify-between"
                       onClick={() => setCatSheetOpen(true)}
                     >
-                      {category?.name || "Select Category"}
-                      <ChevronDown />
+                      <span>{category?.name || "Select category"}</span>
+                      <ChevronDown className="h-4 w-4 opacity-50" />
                     </Button>
-
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Brand:</span>
+
+                  {/* Brand */}
+                  <div className="space-y-1.5">
+                    <Label className="text-muted-foreground">
+                      Brand
+                    </Label>
+
                     <BrandSelector
                       value={brand}
                       onSelect={(brand) => {
                         setBrand(brand)
-                        setFormData((prev) => {
-                          return {
-                            ...prev,
-                            brand_id: brand?.id ?? 0
-                          }
-                        })
-                      }} />
+                        setFormData((prev) => ({
+                          ...prev,
+                          brand_id: brand?.id ?? 0,
+                        }))
+                      }}
+                    />
                   </div>
+
                   {isProductItem(product) && (
                     <>
-                      <div>
-                        <span className="text-muted-foreground">Store:</span>
-                        <p className="font-medium">{product.store}</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Status:</span>
-                        <p className="font-medium">
-                          {product.is_available ? "Available" : "Unavailable"}
+                      {/* Store */}
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground">
+                          Store
+                        </Label>
+                        <p className="font-medium leading-9">
+                          {product.store}
                         </p>
                       </div>
+
+                      {/* Status */}
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground">Availability</Label>
+
+                        <div
+                          className="flex items-center justify-between rounded-md border p-3 cursor-pointer hover:bg-muted/50 transition"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              is_available: !prev.is_available,
+                            }))
+                          }
+                        >
+                          <div>
+                            <p className="font-medium">
+                              {product.is_available ? "Available" : "Unavailable"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Click to change availability
+                            </p>
+                          </div>
+
+                          <Switch checked={formData.is_available} />
+                        </div>
+                      </div>
+
                     </>
                   )}
                 </div>
               </div>
+
             )}
           </div>
         </ScrollArea>
@@ -424,13 +451,12 @@ export function ProductEditSheet({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={!hasChanges() || !formData.name || !formData.description}
+          // disabled={!hasChanges() || !formData.name || !formData.description}
           >
+            {buttonText}
             {bulkProductUpdateLoading || createProductLoading && (
               <Loader2 className="w-4 h-4 animate-spin" />
             )}
-            {buttonText}
-
           </Button>
         </SheetFooter>
       </SheetContent>
