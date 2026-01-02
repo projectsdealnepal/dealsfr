@@ -1,6 +1,7 @@
 import { addProductsToStore, createProduct, filterProducts, getAllProducts, getBrandsList, getProducts, updateBulkProducts } from "@/redux/features/product/product";
 import { AddProductOnDiscount, ApiResponse, BrandItem, DiscountedProductType, GenericProductItem, ProductItem, RewardProductItem, } from "@/redux/features/product/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { toast } from "sonner";
 import { addProductOnDiscount, getDiscountProductList, updateProductOnDiscount } from "../discount/discount";
 import { AddProductOnDiscountPayload, OfferAppliedProducts } from "../discount/types";
 
@@ -315,10 +316,12 @@ const productSlice = createSlice({
       .addCase(createProduct.fulfilled, (state, action) => {
         state.createProductData= action.payload;
         state.createProductLoading = false
+        toast.success("Product created successfully")
       })
       .addCase(createProduct.rejected, (state, action: PayloadAction<string | undefined>) => {
         state.createProductError = action.payload || "Failed to create product";
         state.createProductLoading = false
+        toast.error(action.payload)
       })
 
       //for bulk updating product on store( adding product to store)
@@ -328,10 +331,12 @@ const productSlice = createSlice({
       .addCase(updateBulkProducts.fulfilled, (state, action) => {
         state.bulkProductUpdateData = action.payload;
         state.bulkProductUpdateLoading = false
+        toast.success("Product updated successfully")
       })
       .addCase(updateBulkProducts.rejected, (state, action: PayloadAction<string | undefined>) => {
         state.bulkProductUpdateError = action.payload || "Failed to update product";
         state.bulkProductUpdateLoading = false
+        toast.error(action.payload)
       })
   },
 });

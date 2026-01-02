@@ -20,17 +20,17 @@ const ChildRouteHeader = ({
 }: ChildRouteHeaderProps) => {
   return (
     <div className="flex flex-col gap-4">
-      <Button
-        variant="ghost"
-        size="sm"
-        asChild
-        className="w-fit hover:bg-muted"
-      >
-        <Link href={backLink} className="flex items-center gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          {backText}
-        </Link>
-      </Button>
+      {/* <Button */}
+      {/*   variant="ghost" */}
+      {/*   size="sm" */}
+      {/*   asChild */}
+      {/*   className="w-fit hover:bg-muted" */}
+      {/* > */}
+      {/*   <Link href={backLink} className="flex items-center gap-2"> */}
+      {/*     <ArrowLeft className="h-4 w-4" /> */}
+      {/*     {backText} */}
+      {/*   </Link> */}
+      {/* </Button> */}
 
       <div className="space-y-2">
         <div className="flex items-center gap-3">

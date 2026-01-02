@@ -2,6 +2,7 @@
 import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
 import { EditFormData, ProductEditSheet } from "@/app/_components/product/ProductEditSheet";
 import ProductListPagination from "@/app/_components/product/ProductListPagination";
+import { AppBreadcrumbs } from "@/components/PageBreadcumbs";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,10 +23,6 @@ import {
   createProduct,
   getAllProducts,
 } from "@/redux/features/product/product";
-import {
-  clearBulkProductUpdateState,
-  clearProductCreadteState,
-} from "@/redux/features/product/productSlice";
 import { GenericProductItem } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -62,8 +59,6 @@ const AddProduct = () => {
   );
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const pageSize = 10;
-  const { createProductData, createProductError } = useAppSelector((state) => state.product)
-  const { bulkProductUpdateData, bulkProductUpdateError } = useAppSelector((state) => state.product)
 
   // Debounce search input
   useEffect(() => {
@@ -136,29 +131,29 @@ const AddProduct = () => {
     }
   }, [addProductToStoreData]);
 
-  useEffect(() => {
-    if (createProductData) {
-      toast.success("Product created successfully");
-    }
-    if (createProductError) {
-      toast.error("Failed to create product");
-    }
-    return () => {
-      dispatch(clearProductCreadteState())
-    }
-  }, [createProductData, createProductError]);
+  // useEffect(() => {
+  //   if (createProductData) {
+  //     toast.success("Product created successfully");
+  //   }
+  //   if (createProductError) {
+  //     toast.error("Failed to create product");
+  //   }
+  //   return () => {
+  //     dispatch(clearProductCreadteState())
+  //   }
+  // }, [createProductData, createProductError]);
 
-  useEffect(() => {
-    if (bulkProductUpdateData) {
-      toast.success("Products updated successfully");
-    }
-    if (bulkProductUpdateError) {
-      toast.error("Failed to update products");
-    }
-    return () => {
-      dispatch(clearBulkProductUpdateState())
-    }
-  }, [bulkProductUpdateData, bulkProductUpdateError]);
+  // useEffect(() => {
+  //   if (bulkProductUpdateData) {
+  //     toast.success("Products updated successfully");
+  //   }
+  //   if (bulkProductUpdateError) {
+  //     toast.error("Failed to update products");
+  //   }
+  //   return () => {
+  //     dispatch(clearBulkProductUpdateState())
+  //   }
+  // }, [bulkProductUpdateData, bulkProductUpdateError]);
 
 
   return (

@@ -1,4 +1,5 @@
 "use client";
+import { AppBreadcrumbs } from "@/components/PageBreadcumbs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import useWebSocket from "@/hooks/use-websocket";
 import { clearTokens } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 import { RootState } from "@/redux/store";
 import {
   Bell,
@@ -41,7 +43,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import { usePathname } from "next/navigation";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 const navigationItems = [
@@ -95,8 +98,16 @@ const navigationItems = [
 function DashboardSidebar() {
   const { userData } = useSelector((state: RootState) => state.userData);
   const { state } = useSidebar();
-  console.log("Sidebar state:", state);
-  // useWebSocket();
+  const pathname = usePathname();
+  // console.log("Sidebar state:", state);
+
+  const activeHref = useMemo(() => {
+    const matchingItems = navigationItems.filter(
+      (item) => pathname === item.href || pathname?.startsWith(`${item.href}/`)
+    );
+    if (matchingItems.length === 0) return "/dashboard";
+    return matchingItems.sort((a, b) => b.href.length - a.href.length)[0].href;
+  }, [pathname]);
 
   const handleLogout = () => {
     clearTokens();
@@ -112,19 +123,24 @@ function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
               {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link
-                      href={item.href}
-                      className="flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-all duration-200 group"
-                    >
-                      <item.icon />
-                      <span className="font-medium text-sm md:text-base truncate">
-                        {item.title}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton asChild tooltip={item.title}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 rounded-lg transition-all duration-200 group",
+                          activeHref === item.href
+                            ? "bg-accent text-accent-foreground font-semibold"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        )}
+                      >
+                        <item.icon />
+                        <span className="font-medium text-sm md:text-base truncate">
+                          {item.title}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -178,8 +194,7 @@ function DashboardSidebar() {
                   <span className="truncate font-semibold">
                     {userData?.first_name} {userData?.last_name}
                   </span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {userData?.email}
+                  <span className="truncate text-xs text-muted-foreground"> {userData?.email}
                   </span>
                 </div>
               </div>
@@ -215,6 +230,15 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
     (state: RootState) => state.userData
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const activeHref = useMemo(() => {
+    const matchingItems = navigationItems.filter(
+      (item) => pathname === item.href || pathname?.startsWith(`${item.href}/`)
+    );
+    if (matchingItems.length === 0) return "/dashboard";
+    return matchingItems.sort((a, b) => b.href.length - a.href.length)[0].href;
+  }, [pathname]);
 
   // Show loading state while user data is being fetched
   if (loading) {
@@ -324,7 +348,12 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center space-x-3 px-3 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-all duration-200 text-lg"
+                  className={cn(
+                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 text-lg",
+                    activeHref === item.href
+                      ? "bg-accent text-accent-foreground font-semibold"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <item.icon className="h-5 w-5 text-primary" />
@@ -389,6 +418,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
 
         {/* Main Content with top padding to prevent overlap */}
         <main className="pt-24 text-foreground px-2 md:px-4">
+          <AppBreadcrumbs />
           {children}
         </main>
       </div>

@@ -65,7 +65,10 @@ export function ProductEditSheet({
   const [category, setCategory] = useState(product?.category)
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
-  const { createProductLoading, bulkProductUpdateLoading } = useAppSelector((s) => s.product)
+  const {
+    createProductLoading,
+    bulkProductUpdateLoading,
+  } = useAppSelector((s) => s.product)
   const { categoryData } = useAppSelector((s) => s.category)
 
   // Type guard to check if product is ProductItem
@@ -140,7 +143,6 @@ export function ProductEditSheet({
 
 
   const handleSave = () => {
-
     console.log(formData)
     console.log(product?.id)
     console.log(newImages)
@@ -154,7 +156,6 @@ export function ProductEditSheet({
   };
 
   const hasChanges = () => {
-
     const hasNewImages = newImages.length > 0;
     const nameChanged = formData.name !== product?.name;
     const descChanged = formData.description !== product?.description;
