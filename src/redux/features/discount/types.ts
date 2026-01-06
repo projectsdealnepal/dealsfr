@@ -1,5 +1,10 @@
 import { CategoryItem } from "../category/types";
-import { BrandItem, DiscountType, ValueType } from "../product/types";
+import {
+  BrandItem,
+  DiscountType,
+  RewardProduct,
+  ValueType,
+} from "../product/types";
 import { BranchItem } from "../store/types";
 
 export interface DiscountCreatePayload {
@@ -38,31 +43,7 @@ export interface DiscountUpdatePayload {
 }
 
 //to add the products on the discount
-interface BundleDiscount {
-  store_product_id: number;
-  buy_quantity: number;
-}
-
-interface RewardProduct {
-  store_product_id: number;
-  get_quantity: number;
-}
-
 export interface AddProductOnDiscountPayload {
-  discount_type: "PERCENTAGE" | "FIXED_AMOUNT" | "SPEND_GET" | "BUNDLE";
-  value?: number;
-  value_type: "PERCENTAGE" | "FIXED_AMOUNT";
-  buy_quantity?: number;
-  min_spend_amount?: string;
-  max_discount_amount?: string;
-  brand?: number;
-  category?: number;
-  store_product?: number;
-  bundle_discounts?: BundleDiscount[];
-  reward_products?: RewardProduct[];
-}
-
-export interface ProductsOnDiscount {
   discount_type: "PERCENTAGE" | "FIXED_AMOUNT" | "SPEND_GET" | "BUNDLE";
   value?: number;
   value_type: "PERCENTAGE" | "FIXED_AMOUNT";
@@ -94,18 +75,18 @@ export interface StoreProduct {
   brand: number | null;
 }
 
-export interface OfferAppliedProducts {
+export interface OfferAppliedProduct {
   id: number;
-  discount_type: string;
+  discount_type: DiscountType;
   value: string;
-  value_type: string;
+  value_type: ValueType;
   buy_quantity: number;
-  min_spend_amount: number | null;
-  max_discount_amount: number | null;
+  min_spend_amount: string;
+  max_discount_amount: string;
   brand: BrandItem | null;
-  category: number | null;
+  category: CategoryItem | null;
   store_product: StoreProduct | null;
-  bundle_discounts: any[];
+  bundle_discounts: BundleDiscount[];
   reward_products: ResponseRewardProduct[];
   created_at: string;
 }
@@ -119,82 +100,55 @@ export interface ResponseRewardProduct {
 }
 
 // collection of type for disocunt detail (for disocunt preview) response
-
-export interface PreviewProductItem {
+export interface BundleDiscount {
   id: number;
-  name: string;
-  description: string;
-  category: number;
-  brand: number | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PreviewStoreProduct {
-  id: number;
-  store: number;
-  store_name: string;
-  price: string;
-  image: string;
-  is_available: boolean;
-  created_at: string;
-  updated_at: string;
-  delivery_available: boolean;
-  name: string;
-  description: string;
-  category: number;
-  brand: number | null;
-}
-
-export interface PreviewBundleDiscount {
-  id: number;
-  store_product: Partial<PreviewStoreProduct>;
+  store_product: StoreProduct;
   buy_quantity: number;
 }
 
-export interface PreviewRewardProduct {
+export interface ResponseRewardProduct {
   id: number;
   product_discount: number;
-  store_product: Partial<PreviewStoreProduct>;
+  store_product: StoreProduct;
   get_quantity: number;
   created_at: string;
 }
 
-export interface PreviewDiscountedProduct {
-  id: number;
-  discount_type: "PERCENTAGE" | "FLAT";
-  value: string;
-  value_type: "PERCENTAGE" | "FLAT";
-  buy_quantity: number;
-  min_spend_amount: string;
-  max_discount_amount: string;
-  brand: BrandItem | null;
-  category: CategoryItem | null;
-  store_product: PreviewStoreProduct | null;
-  bundle_discounts: BundleDiscount[];
-  reward_products: PreviewRewardProduct[];
-  created_at: string;
-}
+// export interface DiscountedProduct {
+//   id: number;
+//   discount_type: DiscountType;
+//   value: string;
+//   value_type: ValueType;
+//   buy_quantity: number;
+//   min_spend_amount: string;
+//   max_discount_amount: string;
+//   brand: BrandItem | null;
+//   category: CategoryItem | null;
+//   store_product: StoreProduct | null;
+//   bundle_discounts: BundleDiscount[];
+//   reward_products: ResponseRewardProduct[];
+//   created_at: string;
+// }
 
-export interface OffearAppliedProducts {
-  id: number;
-  discount_type: DiscountType;
-  value: string;
-  value_type: ValueType;
-  buy_quantity: number;
-  min_spend_amount: string;
-  max_discount_amount: string;
-  brand: BrandItem | null;
-  category: CategoryItem | null;
-  store_product: StoreProduct | null;
-  bundle_discounts: any[];
-  reward_products: ResponseRewardProduct[];
-  created_at: string;
-}
+// export interface OfferAppliedProducts {
+//   id: number;
+//   discount_type: DiscountType;
+//   value: string;
+//   value_type: ValueType;
+//   buy_quantity: number;
+//   min_spend_amount: string;
+//   max_discount_amount: string;
+//   brand: BrandItem | null;
+//   category: CategoryItem | null;
+//   store_product: StoreProduct | null;
+//   bundle_discounts: any[];
+//   reward_products: ResponseRewardProduct[];
+//   created_at: string;
+// }
 
-export interface PreviewDiscountDetailResponse {
+export interface DiscountDetailResponse {
   id: number;
-  discount_products: PreviewDiscountedProduct[];
+  discount_products: OfferAppliedProduct[];
   applicable_branches: BranchItem[];
   is_currently_active: boolean;
   product_count: number;
@@ -230,4 +184,34 @@ export interface PreviewDiscountDetailResponse {
 //   updated_at: string;
 //   store: number;
 //   created_by: number;
+// }
+
+// export interface PreviewStoreProduct {
+//   id: number;
+//   store: number;
+//   store_name: string;
+//   price: string;
+//   image: string;
+//   is_available: boolean;
+//   created_at: string;
+//   updated_at: string;
+//   delivery_available: boolean;
+//   name: string;
+//   description: string;
+//   category: number;
+//   brand: number | null;
+// }
+
+// export interface ProductsOnDiscount {
+//   discount_type: "PERCENTAGE" | "FIXED_AMOUNT" | "SPEND_GET" | "BUNDLE";
+//   value?: number;
+//   value_type: "PERCENTAGE" | "FIXED_AMOUNT";
+//   buy_quantity?: number;
+//   min_spend_amount?: string;
+//   max_discount_amount?: string;
+//   brand?: number;
+//   category?: number;
+//   store_product?: number;
+//   bundle_discounts?: BundleDiscount[];
+//   reward_products?: ResponseRewardProduct[];
 // }

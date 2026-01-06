@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,14 +13,21 @@ import {
   deleteDiscount,
   updateDiscount,
 } from "@/redux/features/discount/discount";
-import { PreviewDiscountDetailResponse } from "@/redux/features/discount/types";
+import { DiscountDetailResponse } from "@/redux/features/discount/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Badge, Edit, Power, PowerOff, Trash2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Edit,
+  Power,
+  PowerOff,
+  Trash2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 interface DiscountDetailHeaderProps {
-  data: PreviewDiscountDetailResponse;
+  data: DiscountDetailResponse;
   storeId: number;
 }
 
@@ -74,8 +82,13 @@ export const DiscountDetailHeader: React.FC<DiscountDetailHeaderProps> = ({
               data.status === "active"
                 ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
                 : "bg-amber-500/10 text-amber-700 border-amber-500/20"
-            } capitalize`}
+            } capitalize flex items-center gap-1.5`}
           >
+            {data.status === "active" ? (
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            ) : (
+              <AlertCircle className="h-3.5 w-3.5" />
+            )}
             {data.status}
           </Badge>
         </div>

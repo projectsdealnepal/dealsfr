@@ -1,15 +1,14 @@
+import { OfferAppliedProduct } from "@/redux/features/discount/types";
 import Image from "next/image";
 import React from "react";
 import { RewardBadge } from "./RewardBadge";
 import { capitalizeName } from "./utils";
-import { PreviewDiscountedProduct } from "@/redux/features/discount/types";
 
 interface DealsCardProps {
-  product: PreviewDiscountedProduct;
+  product: OfferAppliedProduct;
 }
 
 const DealsCard: React.FC<DealsCardProps> = ({ product }) => {
-
   const discountType = product.discount_type?.toLowerCase();
   const value = Math.round(Number(product.value));
   const minSpend = Math.round(Number(product.min_spend_amount));
@@ -18,9 +17,7 @@ const DealsCard: React.FC<DealsCardProps> = ({ product }) => {
   return (
     <>
       {product.store_product ? (
-        <div
-          className="relative shadow-sm rounded-3xl bg-card cursor-pointer"
-        >
+        <div className="relative shadow-sm rounded-3xl bg-card cursor-pointer">
           <div className="relative rounded-t-3xl overflow-hidden">
             <Image
               src={product.store_product.image}
@@ -78,10 +75,9 @@ const DealsCard: React.FC<DealsCardProps> = ({ product }) => {
                 </p>
               </div>
             </div>
-            {product.reward_products &&
-              product.reward_products.length > 0 && (
-                <RewardBadge rewards={product.reward_products} />
-              )}
+            {product.reward_products && product.reward_products.length > 0 && (
+              <RewardBadge rewards={product.reward_products} />
+            )}
           </div>
         </div>
       ) : (
@@ -99,8 +95,8 @@ const DealsCard: React.FC<DealsCardProps> = ({ product }) => {
               {valueType === "percentage"
                 ? `${value}% OFF`
                 : valueType === "fixed_amount"
-                  ? `Rs. ${value} OFF`
-                  : ""}
+                ? `Rs. ${value} OFF`
+                : ""}
             </p>
           </div>
         </div>

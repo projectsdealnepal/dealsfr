@@ -3,7 +3,7 @@ import { AddProductOnDiscount, ApiResponse, BrandItem, DiscountedProductType, Ge
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import { addProductOnDiscount, getDiscountProductList, updateProductOnDiscount } from "../discount/discount";
-import { AddProductOnDiscountPayload, OfferAppliedProducts } from "../discount/types";
+import { AddProductOnDiscountPayload, OfferAppliedProduct } from "../discount/types";
 
 interface ProductState {
   productList: ProductItem[] | null;
@@ -24,7 +24,7 @@ interface ProductState {
   //discounted applied Product list(this is like final list of products that are in the
   //discount)
   discountAppliedProductList: AddProductOnDiscountPayload[]
-  offerAppliedProductsList: OfferAppliedProducts[]
+  offerAppliedProductsList: OfferAppliedProduct[]
 
   //for getting the list of all products ( from all stores)
   allProductList: GenericProductItem[] | null
@@ -43,11 +43,11 @@ interface ProductState {
   selectedBrand: null | BrandItem
 
   //product create and update
-  createProductData: null|ProductItem,
+  createProductData: null | ProductItem,
   createProductLoading: boolean;
   createProductError: string | null;
 
-  bulkProductUpdateData: null|ProductItem[],
+  bulkProductUpdateData: null | ProductItem[],
   bulkProductUpdateLoading: boolean;
   bulkProductUpdateError: string | null;
 }
@@ -227,7 +227,7 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    //ge the list of products
+      //ge the list of products
       .addCase(getProducts.pending, (state) => {
         state.productLoading = true;
         state.productError = null;
@@ -314,7 +314,7 @@ const productSlice = createSlice({
         state.createProductLoading = true
       })
       .addCase(createProduct.fulfilled, (state, action) => {
-        state.createProductData= action.payload;
+        state.createProductData = action.payload;
         state.createProductLoading = false
         toast.success("Product created successfully")
       })

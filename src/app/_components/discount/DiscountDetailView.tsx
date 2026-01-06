@@ -1,26 +1,8 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
-import {
-  deleteDiscount,
-  updateDiscount,
-} from "@/redux/features/discount/discount";
-import { PreviewDiscountDetailResponse } from "@/redux/features/discount/types";
+import { DiscountDetailResponse } from "@/redux/features/discount/types";
 import { getProducts } from "@/redux/features/product/product";
 import { DiscountType, TargetType } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Calendar, Edit, Power, PowerOff, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DiscountDetailCard } from "./DiscountDetailCard";
@@ -30,7 +12,7 @@ import { DiscountProductsList } from "./DiscountProductsList";
 import { TypeSelectionComponent } from "./TypeSelectionComponent";
 
 interface DiscountDetailViewProps {
-  data: PreviewDiscountDetailResponse;
+  data: DiscountDetailResponse;
   storeId: number;
 }
 

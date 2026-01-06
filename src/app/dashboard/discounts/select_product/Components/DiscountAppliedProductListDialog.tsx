@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { OfferAppliedProducts } from "@/redux/features/discount/types";
+import { OfferAppliedProduct } from "@/redux/features/discount/types";
 import { useAppSelector } from "@/redux/hooks";
 import {
   DollarSign,
@@ -41,8 +41,8 @@ const getDiscountIcon = (type: string) => {
   }
 };
 
-const formatDiscountValue = (item: OfferAppliedProducts) => {
-  if (item.value_type === "percentage") {
+const formatDiscountValue = (item: OfferAppliedProduct) => {
+  if (item.discount_type === "PERCENTAGE") {
     return `${item.value}% off`;
   }
   return `$${item.value} off`;

@@ -2,26 +2,30 @@ import {
   addProductOnDiscount,
   createDiscount,
   deleteDiscount,
+  deleteProductOnDiscount,
   getDiscount,
   getDiscountDetail,
   updateDiscount,
 } from "@/redux/features/discount/discount";
-import { PreviewDiscountDetailResponse } from "@/redux/features/discount/types";
+import {
+  DiscountDetailResponse,
+  OfferAppliedProduct,
+} from "@/redux/features/discount/types";
 import { createSlice, PayloadAction, TaskAbortError } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
 
 interface DiscountState {
-  discountData: PreviewDiscountDetailResponse[] | null;
+  discountData: DiscountDetailResponse[] | null;
   discountStateLoading: boolean;
   discountError: string | null;
 
   //create discount
-  createDiscountData: PreviewDiscountDetailResponse | null;
+  createDiscountData: DiscountDetailResponse | null;
   createDiscountLoading: boolean;
 
   //update discount
-  updateDiscountData: PreviewDiscountDetailResponse | null;
+  updateDiscountData: DiscountDetailResponse | null;
   updateDiscountLoading: boolean;
 
   //delete discount
@@ -30,10 +34,14 @@ interface DiscountState {
 
   //add Products on disocunts
   addProductOnDiscountData: any | null;
-  addProductOnDiscoutLoading: boolean;
+  addProductOnDiscountLoading: boolean;
+
+  //delete product on discounts
+  deleteProductOnDiscountData: OfferAppliedProduct | null;
+  deleteProductOnDiscountLoading: boolean;
 
   //for discount detail
-  discountDetailData: PreviewDiscountDetailResponse | null;
+  discountDetailData: DiscountDetailResponse | null;
   discountDetailLoading: boolean;
 }
 
@@ -56,9 +64,13 @@ const initialState: DiscountState = {
   deleteDiscountData: null,
   deleteDiscountLoading: false,
 
-  //add Products on disocunts
+  //add Products on discounts
   addProductOnDiscountData: null,
-  addProductOnDiscoutLoading: false,
+  addProductOnDiscountLoading: false,
+
+  //for delete product on discount
+  deleteProductOnDiscountData: null,
+  deleteProductOnDiscountLoading: false,
 
   //for discount detail
   discountDetailData: null,
@@ -103,6 +115,11 @@ const discountSlice = createSlice({
       state.discountError = null;
       state.deleteDiscountData = null;
       state.deleteDiscountLoading = false;
+    },
+    clearAddProductOnDiscountState: (state) => {
+      state.discountError = null;
+      state.addProductOnDiscountData = null;
+      state.addProductOnDiscountLoading = false;
     },
   },
   extraReducers: (builder) => {
@@ -153,8 +170,8 @@ const discountSlice = createSlice({
       })
       .addCase(
         updateDiscount.fulfilled,
-        (state, action: PayloadAction<PreviewDiscountDetailResponse>) => {
-          toast.info("Update Successfully", { richColors: true });
+        (state, action: PayloadAction<DiscountDetailResponse>) => {
+          toast.info("Updated Successfully", { richColors: true });
           state.updateDiscountLoading = false;
           state.updateDiscountData = action.payload;
           //on update the discount status it should update the discount detail data(except discount_products , which is not present on the response)
@@ -204,23 +221,77 @@ const discountSlice = createSlice({
 
       // Add products on discount (extra reducer)
       .addCase(addProductOnDiscount.pending, (state) => {
-        state.addProductOnDiscoutLoading = true;
-        state.discountError = null;
-      })
-      .addCase(addProductOnDiscount.fulfilled, (state, action) => {
-        state.addProductOnDiscoutLoading = false;
-        state.addProductOnDiscountData = action.payload;
+        state.addProductOnDiscountLoading = true;
         state.discountError = null;
       })
       .addCase(
+        addProductOnDiscount.fulfilled,
+        (state, action: PayloadAction<OfferAppliedProduct[]>) => {
+          toast.success("Successfully added products");
+
+          state.addProductOnDiscountLoading = false;
+          state.addProductOnDiscountData = action.payload;
+          state.discountError = null;
+
+          //on successful add product on discount it should update the discount detail data
+          if (state.discountDetailData) {
+            state.discountDetailData = {
+              ...state.discountDetailData,
+              discount_products: action.payload,
+            };
+          }
+        }
+      )
+      .addCase(
         addProductOnDiscount.rejected,
         (state, action: PayloadAction<string | undefined>) => {
+          toast.error(action.payload);
+
           state.addProductOnDiscountData = null;
-          state.addProductOnDiscoutLoading = false;
+          state.addProductOnDiscountLoading = false;
           state.discountError =
             action.payload || "Failed to add products on discount";
         }
       )
+      //delete product on discount
+      .addCase(deleteProductOnDiscount.pending, (state) => {
+        state.deleteProductOnDiscountLoading = true;
+        state.discountError = null;
+      })
+      .addCase(
+        deleteProductOnDiscount.fulfilled,
+        (state, action: PayloadAction<OfferAppliedProduct>) => {
+          toast.success("Successfully deleted product on discount");
+
+          state.deleteProductOnDiscountLoading = false;
+          state.deleteProductOnDiscountData = action.payload;
+          state.discountError = null;
+
+          //on successful delete product on discount it should update the discount detail data
+          if (state.discountDetailData) {
+            state.discountDetailData = {
+              ...state.discountDetailData,
+              discount_products:
+                state.discountDetailData.discount_products.filter(
+                  (item) => item.id !== action.payload.id
+                ),
+            };
+          }
+        }
+      )
+      .addCase(
+        deleteProductOnDiscount.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          toast.error(action.payload);
+
+          state.deleteProductOnDiscountData = null;
+          state.deleteProductOnDiscountLoading = false;
+          state.discountError =
+            action.payload || "Failed to delete product on discount";
+        }
+      )
+
+      //getting the details of discount
       .addCase(getDiscountDetail.pending, (state) => {
         state.discountDetailLoading = true;
         state.discountError = null;
@@ -249,6 +320,7 @@ export const {
   clearGetDiscountState,
   clearUpdateDiscountState,
   clearDiscountDetailState,
+  clearAddProductOnDiscountState,
 } = discountSlice.actions;
 
 export default discountSlice.reducer;

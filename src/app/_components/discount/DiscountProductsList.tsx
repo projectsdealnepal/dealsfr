@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,10 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PreviewDiscountedProduct } from "@/redux/features/discount/types";
+import { deleteProductOnDiscount } from "@/redux/features/discount/discount";
+import { OfferAppliedProduct } from "@/redux/features/discount/types";
+import { useAppDispatch } from "@/redux/hooks";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface DiscountProductsListProps {
-  products: PreviewDiscountedProduct[];
+  products: OfferAppliedProduct[];
   storeId: number;
 }
 
@@ -19,6 +22,7 @@ export const DiscountProductsList = ({
   products,
   storeId,
 }: DiscountProductsListProps) => {
+  const dispatch = useAppDispatch();
   if (!products || products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-muted/20 border-dashed">
@@ -28,6 +32,10 @@ export const DiscountProductsList = ({
       </div>
     );
   }
+
+  const handleDeleteProductOnDiscount = (id: number) => {
+    dispatch(deleteProductOnDiscount({ s_id: storeId, d_id: id, pd_id: id }));
+  };
 
   return (
     <div className="space-y-4">
@@ -39,10 +47,11 @@ export const DiscountProductsList = ({
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
-              <TableHead>Category</TableHead>
+              {/* <TableHead>Category</TableHead> */}
               <TableHead>Discount Type</TableHead>
               <TableHead>Value</TableHead>
               <TableHead>Min Spend</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -79,7 +88,7 @@ export const DiscountProductsList = ({
                     <span className="text-muted-foreground">-</span>
                   )}
                 </TableCell>
-                <TableCell>{item.category?.name || "N/A"}</TableCell>
+                {/* <TableCell>{item.category?.name || "N/A"}</TableCell> */}
                 <TableCell>
                   <Badge variant="outline" className="capitalize">
                     {item.discount_type.replace("_", " ").toLowerCase()}
@@ -92,6 +101,21 @@ export const DiscountProductsList = ({
                 </TableCell>
                 <TableCell>
                   {item.min_spend_amount ? `NPR ${item.min_spend_amount}` : "-"}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Pencil className="h-4 w-4 text-blue-500" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive"
+                      onClick={() => handleDeleteProductOnDiscount(item.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

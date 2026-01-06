@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Gift, ChevronRight } from "lucide-react";
+import { ResponseRewardProduct } from "@/redux/features/discount/types";
+import { ChevronRight, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PreviewRewardProduct } from "@/redux/features/discount/types";
+import React, { useState } from "react";
 import { capitalizeName } from "./utils";
 
-
-export const RewardBadge: React.FC<{ rewards: PreviewRewardProduct[] }> = ({ rewards }) => {
+export const RewardBadge: React.FC<{ rewards: ResponseRewardProduct[] }> = ({
+  rewards,
+}) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,9 +24,10 @@ export const RewardBadge: React.FC<{ rewards: PreviewRewardProduct[] }> = ({ rew
         className={`
           flex items-center gap-2 justify-between border py-2 px-4 rounded-full w-full
           backdrop-blur-md transition-all duration-300 cursor-pointer
-          ${isOpen
-            ? "bg-background text-secondary-foreground"
-            : "bg-background text-primary-foreground"
+          ${
+            isOpen
+              ? "bg-background text-secondary-foreground"
+              : "bg-background text-primary-foreground"
           }
         `}
       >
@@ -65,9 +67,10 @@ export const RewardBadge: React.FC<{ rewards: PreviewRewardProduct[] }> = ({ rew
         className={`
           absolute top-full  right-0 mt-2 w-full bg-white rounded-xl shadow-xl z-30
           border border-gray-100 overflow-hidden transform transition-all duration-300 origin-top-right
-          ${isOpen
-            ? "opacity-100 scale-100 translate-y-0"
-            : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+          ${
+            isOpen
+              ? "opacity-100 scale-100 translate-y-0"
+              : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
           }
         `}
       >

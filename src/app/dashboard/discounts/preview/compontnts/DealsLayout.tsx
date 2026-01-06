@@ -1,13 +1,16 @@
+import { OfferAppliedProduct } from "@/redux/features/discount/types";
 import React from "react";
 import DealsCard from "./DealsCard";
-import { PreviewDiscountedProduct, } from "@/redux/features/discount/types";
 
 interface DealsLayoutProps {
-  products: PreviewDiscountedProduct[]
+  products: OfferAppliedProduct[];
   layout: number[];
 }
 
-const DealsLayout: React.FC<DealsLayoutProps> = ({ products, layout = [1, 2, 3, 4, 5] }) => {
+const DealsLayout: React.FC<DealsLayoutProps> = ({
+  products,
+  layout = [1, 2, 3, 4, 5],
+}) => {
   if (!products?.length || !layout?.length) return null;
 
   const rows = [];

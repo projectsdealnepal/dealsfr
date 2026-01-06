@@ -4,13 +4,13 @@ import { AxiosResponse } from "axios";
 import {
   AddProductOnDiscountPayload,
   DiscountCreatePayload,
+  DiscountDetailResponse,
   DiscountUpdatePayload,
-  OfferAppliedProducts,
-  PreviewDiscountDetailResponse,
+  OfferAppliedProduct,
 } from "./types";
 
 export const getDiscount = createAsyncThunk<
-  PreviewDiscountDetailResponse[],
+  DiscountDetailResponse[],
   number,
   { rejectValue: string }
 >("userData/discount/get", async (s_id, thunkAPI) => {
@@ -27,7 +27,7 @@ export const getDiscount = createAsyncThunk<
 });
 
 export const createDiscount = createAsyncThunk<
-  PreviewDiscountDetailResponse,
+  DiscountDetailResponse,
   { payload: DiscountCreatePayload; s_id: number },
   { rejectValue: string }
 >("userData/discount/create", async ({ payload, s_id }, thunkAPI) => {
@@ -44,7 +44,7 @@ export const createDiscount = createAsyncThunk<
 });
 
 export const updateDiscount = createAsyncThunk<
-  PreviewDiscountDetailResponse,
+  DiscountDetailResponse,
   { payload: DiscountUpdatePayload; s_id: number; d_id: number },
   { rejectValue: string }
 >("userData/discount/update", async ({ payload, s_id, d_id }, thunkAPI) => {
@@ -85,7 +85,7 @@ export const deleteDiscount = createAsyncThunk<
 //=====================================
 
 export const addProductOnDiscount = createAsyncThunk<
-  OfferAppliedProducts[],
+  OfferAppliedProduct[],
   { payload: AddProductOnDiscountPayload[]; s_id: number; d_id: number },
   { rejectValue: string }
 >("addProductOnDiscount", async ({ payload, s_id, d_id }, thunkAPI) => {
@@ -105,7 +105,7 @@ export const addProductOnDiscount = createAsyncThunk<
 });
 
 export const updateProductOnDiscount = createAsyncThunk<
-  OfferAppliedProducts[],
+  OfferAppliedProduct[],
   { payload: AddProductOnDiscountPayload[]; s_id: number; d_id: number },
   { rejectValue: string }
 >("updateProductOnDiscount", async ({ payload, s_id, d_id }, thunkAPI) => {
@@ -124,13 +124,34 @@ export const updateProductOnDiscount = createAsyncThunk<
   }
 });
 
+// Delete Product on Discount
+// https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/discount/{discount_pk}/products/{product_discount_pk}/
+export const deleteProductOnDiscount = createAsyncThunk<
+  OfferAppliedProduct,
+  { s_id: number; d_id: number; pd_id: number },
+  { rejectValue: string }
+>("deleteProductOnDiscount", async ({ s_id, d_id, pd_id }, thunkAPI) => {
+  try {
+    const response = await api.delete(
+      `/products/${s_id}/discount/${d_id}/products/${pd_id}/`
+    );
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete product on discount."
+    );
+  }
+});
+
 //get the discount detail (literally all details)
 //https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/discount/{id}/
 export const getDiscountDetail = createAsyncThunk<
-  PreviewDiscountDetailResponse,
+  DiscountDetailResponse,
   { s_id: number; d_id: number },
   { rejectValue: string }
->("getPreviewDiscountDetail", async ({ s_id, d_id }, thunkAPI) => {
+>("getDiscountDetail", async ({ s_id, d_id }, thunkAPI) => {
   try {
     const response = await api.get(`products/${s_id}/discount/${d_id}/`);
     return response.data;
@@ -145,7 +166,7 @@ export const getDiscountDetail = createAsyncThunk<
 
 //get the list of product on the discount for listing in the
 export const getDiscountProductList = createAsyncThunk<
-  OfferAppliedProducts[],
+  OfferAppliedProduct[],
   { s_id: number; d_id: number },
   { rejectValue: string }
 >("getDiscountProductList ", async ({ s_id, d_id }, thunkAPI) => {

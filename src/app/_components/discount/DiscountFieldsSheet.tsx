@@ -18,6 +18,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { addProductOnDiscount } from "@/redux/features/discount/discount";
+import { clearAddProductOnDiscountState } from "@/redux/features/discount/discountSlice";
 import { AddProductOnDiscountPayload } from "@/redux/features/discount/types";
 import {
   clearRewardProductList,
@@ -32,7 +33,7 @@ import {
   ValueType,
 } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Plus } from "lucide-react";
+import { Loader, Loader2, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -95,6 +96,8 @@ const DiscountFieldsSheet = ({
     rewardProductList,
     offerAppliedProductsList,
   } = useAppSelector((s) => s.product);
+  const { addProductOnDiscountData, addProductOnDiscountLoading } =
+    useAppSelector((s) => s.discount);
 
   useEffect(() => {
     setCurrentItem((prev) => ({
@@ -113,7 +116,7 @@ const DiscountFieldsSheet = ({
       };
 
       dispatch(addProductOnDiscount(payload));
-      onClose();
+      // onClose();
     }
   };
 
@@ -432,6 +435,16 @@ const DiscountFieldsSheet = ({
     }
   };
 
+  //closethe sheet only after the addProductOnDiscount is successfull
+  useEffect(() => {
+    if (addProductOnDiscountData) {
+      onClose();
+    }
+    return () => {
+      dispatch(clearAddProductOnDiscountState());
+    };
+  }, [addProductOnDiscountData]);
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-[100%] gap-0 p-0 sm:max-w-2xl flex flex-col h-full">
@@ -477,7 +490,11 @@ const DiscountFieldsSheet = ({
         </div>
         <SheetFooter className="w-full p-6 py-3 border-t mt-auto">
           <Button onClick={addDiscountItem} className="w-full py-5">
-            <Plus className="mr-2 h-4 w-4" />
+            {addProductOnDiscountLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="mr-2 h-4 w-4" />
+            )}
             Add to discount
           </Button>
         </SheetFooter>

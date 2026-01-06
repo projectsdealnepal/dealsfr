@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { PreviewDiscountDetailResponse } from "@/redux/features/discount/types";
+import { DiscountDetailResponse } from "@/redux/features/discount/types";
 import { Calendar } from "lucide-react";
 interface DiscountDetailCardProps {
-  data: PreviewDiscountDetailResponse;
+  data: DiscountDetailResponse;
 }
 
 export const DiscountDetailCard: React.FC<DiscountDetailCardProps> = ({

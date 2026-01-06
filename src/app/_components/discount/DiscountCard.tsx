@@ -12,14 +12,14 @@ import {
   updateDiscount,
 } from "@/redux/features/discount/discount";
 import {
+  DiscountDetailResponse,
   DiscountUpdatePayload,
-  PreviewDiscountDetailResponse,
 } from "@/redux/features/discount/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 
 interface DiscountCardProps {
-  item: PreviewDiscountDetailResponse;
+  item: DiscountDetailResponse;
 }
 
 export const DiscountCard: React.FC<DiscountCardProps> = ({ item }) => {
@@ -76,7 +76,7 @@ export const DiscountCard: React.FC<DiscountCardProps> = ({ item }) => {
           </CardTitle>
           <Badge
             className={`${
-              item.status === "pending"
+              item.status === "inactive"
                 ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20"
                 : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
             } font-medium px-3 py-1 rounded-full shrink-0`}
