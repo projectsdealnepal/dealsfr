@@ -1,10 +1,16 @@
 import api from "@/lib/interceptor";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { DiscountItem, DiscountCreatePayload, DiscountUpdatePayload, AddProductOnDiscountPayload, OfferAppliedProducts, PreviewDiscountDetailResponse } from "./types";
+import {
+  AddProductOnDiscountPayload,
+  DiscountCreatePayload,
+  DiscountUpdatePayload,
+  OfferAppliedProducts,
+  PreviewDiscountDetailResponse,
+} from "./types";
 
 export const getDiscount = createAsyncThunk<
-  DiscountItem[],
+  PreviewDiscountDetailResponse[],
   number,
   { rejectValue: string }
 >("userData/discount/get", async (s_id, thunkAPI) => {
@@ -14,15 +20,15 @@ export const getDiscount = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to get discounts."
+        error.message ||
+        "Failed to get discounts."
     );
   }
 });
 
 export const createDiscount = createAsyncThunk<
-  DiscountItem,
-  { payload: DiscountCreatePayload, s_id: number },
+  PreviewDiscountDetailResponse,
+  { payload: DiscountCreatePayload; s_id: number },
   { rejectValue: string }
 >("userData/discount/create", async ({ payload, s_id }, thunkAPI) => {
   try {
@@ -31,32 +37,35 @@ export const createDiscount = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to create discount."
+        error.message ||
+        "Failed to create discount."
     );
   }
 });
 
 export const updateDiscount = createAsyncThunk<
-  DiscountItem,
-  { payload: DiscountUpdatePayload, s_id: number, d_id: number },
+  PreviewDiscountDetailResponse,
+  { payload: DiscountUpdatePayload; s_id: number; d_id: number },
   { rejectValue: string }
 >("userData/discount/update", async ({ payload, s_id, d_id }, thunkAPI) => {
   try {
-    const response = await api.patch(`/products/${s_id}/discount/${d_id}/`, payload);
+    const response = await api.patch(
+      `/products/${s_id}/discount/${d_id}/`,
+      payload
+    );
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to update discount."
+        error.message ||
+        "Failed to update discount."
     );
   }
 });
 
 export const deleteDiscount = createAsyncThunk<
   AxiosResponse<{ message: string }>,
-  { s_id: number, id: number },
+  { s_id: number; id: number },
   { rejectValue: string }
 >("userData/discount/delete", async ({ s_id, id }, thunkAPI) => {
   try {
@@ -65,8 +74,8 @@ export const deleteDiscount = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to delete discount."
+        error.message ||
+        "Failed to delete discount."
     );
   }
 });
@@ -77,35 +86,40 @@ export const deleteDiscount = createAsyncThunk<
 
 export const addProductOnDiscount = createAsyncThunk<
   OfferAppliedProducts[],
-  { payload: AddProductOnDiscountPayload[], s_id: number, d_id: number },
+  { payload: AddProductOnDiscountPayload[]; s_id: number; d_id: number },
   { rejectValue: string }
 >("addProductOnDiscount", async ({ payload, s_id, d_id }, thunkAPI) => {
   try {
-    const response = await api.post(`/products/${s_id}/discount/${d_id}/products/`, payload);
+    const response = await api.post(
+      `/products/${s_id}/discount/${d_id}/products/`,
+      payload
+    );
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to add products on discount."
+        error.message ||
+        "Failed to add products on discount."
     );
   }
 });
 
-
 export const updateProductOnDiscount = createAsyncThunk<
   OfferAppliedProducts[],
-  { payload: AddProductOnDiscountPayload[], s_id: number, d_id: number },
+  { payload: AddProductOnDiscountPayload[]; s_id: number; d_id: number },
   { rejectValue: string }
 >("updateProductOnDiscount", async ({ payload, s_id, d_id }, thunkAPI) => {
   try {
-    const response = await api.patch(`/products/${s_id}/discount/${d_id}/products/`, payload);
+    const response = await api.patch(
+      `/products/${s_id}/discount/${d_id}/products/`,
+      payload
+    );
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to add products on discount."
+        error.message ||
+        "Failed to add products on discount."
     );
   }
 });
@@ -114,34 +128,37 @@ export const updateProductOnDiscount = createAsyncThunk<
 //https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/discount/{id}/
 export const getDiscountDetail = createAsyncThunk<
   PreviewDiscountDetailResponse,
-  { s_id: number, d_id: number },
-  { rejectValue: string }>("getPreviewDiscountDetail", async ({ s_id, d_id }, thunkAPI) => {
-    try {
-      const response = await api.get(`products/${s_id}/discount/${d_id}/`);
-      return response.data;
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to get detail of the "
-      );
-    }
-  });
-
-//get the list of product on the discount for listing in the 
-export const getDiscountProductList = createAsyncThunk<
-  OfferAppliedProducts[],
-  { s_id: number, d_id: number },
+  { s_id: number; d_id: number },
   { rejectValue: string }
->("getDiscountProductList ", async ({ s_id, d_id }, thunkAPI) => {
+>("getPreviewDiscountDetail", async ({ s_id, d_id }, thunkAPI) => {
   try {
-    const response = await api.get(`/products/${s_id}/discount/${d_id}/products/`);
+    const response = await api.get(`products/${s_id}/discount/${d_id}/`);
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to get the product list of a discount."
+        error.message ||
+        "Failed to get detail of the "
+    );
+  }
+});
+
+//get the list of product on the discount for listing in the
+export const getDiscountProductList = createAsyncThunk<
+  OfferAppliedProducts[],
+  { s_id: number; d_id: number },
+  { rejectValue: string }
+>("getDiscountProductList ", async ({ s_id, d_id }, thunkAPI) => {
+  try {
+    const response = await api.get(
+      `/products/${s_id}/discount/${d_id}/products/`
+    );
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get the product list of a discount."
     );
   }
 });

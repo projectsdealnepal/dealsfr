@@ -1,8 +1,6 @@
-import { BannerItem } from "../banner/types";
 import { CategoryItem } from "../category/types";
-import { LayoutItem } from "../layout/types";
-import { BrandItem } from "../product/types";
-import { BranchItem, StoreItem } from "../store/types";
+import { BrandItem, DiscountType, ValueType } from "../product/types";
+import { BranchItem } from "../store/types";
 
 export interface DiscountCreatePayload {
   applicable_branches_ids?: number[];
@@ -39,26 +37,6 @@ export interface DiscountUpdatePayload {
   applicable_branches?: number[];
 }
 
-export interface DiscountItem {
-  id: number;
-  is_currently_active: boolean;
-  applicable_branches: BranchItem[];
-  banner: BannerItem;
-  layout: LayoutItem;
-  name: string;
-  description: string;
-  terms_conditions: string;
-  start_date: string;
-  end_date: string;
-  status: "active" | "inactive" | string;
-  apply_to_all_branches: boolean;
-  created_at: string;
-  updated_at: string;
-  store: number;
-  created_by: number;
-}
-
-
 //to add the products on the discount
 interface BundleDiscount {
   store_product_id: number;
@@ -84,7 +62,6 @@ export interface AddProductOnDiscountPayload {
   reward_products?: RewardProduct[];
 }
 
-
 export interface ProductsOnDiscount {
   discount_type: "PERCENTAGE" | "FIXED_AMOUNT" | "SPEND_GET" | "BUNDLE";
   value?: number;
@@ -98,7 +75,6 @@ export interface ProductsOnDiscount {
   bundle_discounts?: BundleDiscount[];
   reward_products?: RewardProduct[];
 }
-
 
 //Types of products which have offer applied to them and attached to the
 //discount
@@ -134,7 +110,6 @@ export interface OfferAppliedProducts {
   created_at: string;
 }
 
-
 export interface ResponseRewardProduct {
   id: number;
   product_discount: number;
@@ -143,11 +118,7 @@ export interface ResponseRewardProduct {
   created_at: string;
 }
 
-// // ==========================================================
 // collection of type for disocunt detail (for disocunt preview) response
-// // ==========================================================
-//
-//
 
 export interface PreviewProductItem {
   id: number;
@@ -176,35 +147,50 @@ export interface PreviewStoreProduct {
 }
 
 export interface PreviewBundleDiscount {
-  id: number
-  store_product: Partial<PreviewStoreProduct>
-  buy_quantity: number
+  id: number;
+  store_product: Partial<PreviewStoreProduct>;
+  buy_quantity: number;
 }
 
 export interface PreviewRewardProduct {
-  id: number
-  product_discount: number
-  store_product: Partial<PreviewStoreProduct>
-  get_quantity: number
-  created_at: string
+  id: number;
+  product_discount: number;
+  store_product: Partial<PreviewStoreProduct>;
+  get_quantity: number;
+  created_at: string;
 }
 
 export interface PreviewDiscountedProduct {
-  id: number
-  discount_type: "PERCENTAGE" | "FLAT"
-  value: string
-  value_type: "PERCENTAGE" | "FLAT"
-  buy_quantity: number
-  min_spend_amount: string
-  max_discount_amount: string
-  brand: BrandItem
-  category: CategoryItem
-  store_product: PreviewStoreProduct
-  bundle_discounts: BundleDiscount[]
-  reward_products: PreviewRewardProduct[]
-  created_at: string
+  id: number;
+  discount_type: "PERCENTAGE" | "FLAT";
+  value: string;
+  value_type: "PERCENTAGE" | "FLAT";
+  buy_quantity: number;
+  min_spend_amount: string;
+  max_discount_amount: string;
+  brand: BrandItem | null;
+  category: CategoryItem | null;
+  store_product: PreviewStoreProduct | null;
+  bundle_discounts: BundleDiscount[];
+  reward_products: PreviewRewardProduct[];
+  created_at: string;
 }
 
+export interface OffearAppliedProducts {
+  id: number;
+  discount_type: DiscountType;
+  value: string;
+  value_type: ValueType;
+  buy_quantity: number;
+  min_spend_amount: string;
+  max_discount_amount: string;
+  brand: BrandItem | null;
+  category: CategoryItem | null;
+  store_product: StoreProduct | null;
+  bundle_discounts: any[];
+  reward_products: ResponseRewardProduct[];
+  created_at: string;
+}
 
 export interface PreviewDiscountDetailResponse {
   id: number;
@@ -227,3 +213,21 @@ export interface PreviewDiscountDetailResponse {
   created_by: number;
 }
 
+// interface DiscountItem {
+//   id: number;
+//   is_currently_active: boolean;
+//   applicable_branches: BranchItem[];
+//   banner: BannerItem;
+//   layout: LayoutItem;
+//   name: string;
+//   description: string;
+//   terms_conditions: string;
+//   start_date: string;
+//   end_date: string;
+//   status: "active" | "inactive" | string;
+//   apply_to_all_branches: boolean;
+//   created_at: string;
+//   updated_at: string;
+//   store: number;
+//   created_by: number;
+// }

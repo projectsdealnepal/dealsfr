@@ -1,13 +1,13 @@
 "use client";
-import React, { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { CiSearch } from "react-icons/ci";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { getDiscountDetail } from "@/redux/features/discount/discount";
-import DealsLayout from "./compontnts/DealsLayout";
-import DealsBanner from "./compontnts/DealsBanner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getDiscountDetail } from "@/redux/features/discount/discount";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
+import { CiSearch } from "react-icons/ci";
+import DealsBanner from "./compontnts/DealsBanner";
+import DealsLayout from "./compontnts/DealsLayout";
 
 const PreviewPage = () => {
   const dispatch = useAppDispatch()

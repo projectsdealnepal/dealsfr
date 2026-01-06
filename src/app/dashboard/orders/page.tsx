@@ -1,28 +1,28 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+"use client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
 
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { getOrderList } from '@/redux/features/order/order';
-import OrdersTable from './components/OrdersTable';
-import StatsCard from './components/StatsCard';
-import FilterTabs from './components/FilterTabs';
-import PageHeader from '@/components/PageHeader';
-
+import PageHeader from "@/components/PageHeader";
+import { getOrderList } from "@/redux/features/order/order";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import FilterTabs from "./components/FilterTabs";
+import OrdersTable from "./components/OrdersTable";
+import StatsCard from "./components/StatsCard";
 
 export default function Orders() {
-  const [activeFilter, setActiveFilter] = useState('all');
-  const { storeDetailData } = useAppSelector(s => s.store)
-  const { orderSummaryData, filteredOrderList } = useAppSelector(s => s.order)
-  const dispatch = useAppDispatch()
-
-
+  const [activeFilter, setActiveFilter] = useState("all");
+  const { storeDetailData } = useAppSelector((s) => s.store);
+  const { orderSummaryData, filteredOrderList } = useAppSelector(
+    (s) => s.order
+  );
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    console.log("storeDetailData", storeDetailData);
     if (storeDetailData) {
-      dispatch(getOrderList(storeDetailData.id))
+      dispatch(getOrderList(storeDetailData.id));
     }
-  }, [storeDetailData])
+  }, [storeDetailData]);
 
   return (
     <div className="container mx-auto p-4">
@@ -35,7 +35,7 @@ export default function Orders() {
         />
 
         {/* Orders Section */}
-        < Card >
+        <Card>
           <CardContent className="pt-6 space-y-4">
             <FilterTabs
               activeFilter={activeFilter}
@@ -57,7 +57,6 @@ export default function Orders() {
             {/*     </Button> */}
             {/*   </div> */}
             {/* </div> */}
-
           </CardContent>
         </Card>
       </div>

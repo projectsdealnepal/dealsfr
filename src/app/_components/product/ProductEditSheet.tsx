@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { GenericProductItem, ProductItem } from "@/redux/features/product/types";
+import {
+  GenericProductItem,
+  ProductItem,
+} from "@/redux/features/product/types";
 import { useAppSelector } from "@/redux/hooks";
 import { ChevronDown, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
@@ -40,7 +43,12 @@ interface ProductEditSheetProps {
   product: ProductItem | GenericProductItem | null;
   open: boolean;
   onClose: () => void;
-  onSave: (updatedProduct: EditFormData, productId: number, newImages: File[], imageUrls: string[]) => void;
+  onSave: (
+    updatedProduct: EditFormData,
+    productId: number,
+    newImages: File[],
+    imageUrls: string[]
+  ) => void;
 }
 
 export function ProductEditSheet({
@@ -61,15 +69,14 @@ export function ProductEditSheet({
     is_available: product?.is_available || false,
   });
   const [catSheetOpen, setCatSheetOpen] = useState(false);
-  const [brand, setBrand] = useState(product?.brand)
-  const [category, setCategory] = useState(product?.category)
+  const [brand, setBrand] = useState(product?.brand);
+  const [category, setCategory] = useState(product?.category);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<File[]>([]);
-  const {
-    createProductLoading,
-    bulkProductUpdateLoading,
-  } = useAppSelector((s) => s.product)
-  const { categoryData } = useAppSelector((s) => s.category)
+  const { createProductLoading, bulkProductUpdateLoading } = useAppSelector(
+    (s) => s.product
+  );
+  const { categoryData } = useAppSelector((s) => s.category);
 
   // Type guard to check if product is ProductItem
   const isProductItem = (
@@ -89,13 +96,15 @@ export function ProductEditSheet({
       setFormData({
         name: product.name || "",
         description: product.description || "",
-        price: isProductItem(product) ? product.price : product.price?.toString() || "",
+        price: isProductItem(product)
+          ? product.price
+          : product.price?.toString() || "",
         brand_id: product.brand.id || 0,
         category_id: product.category.id || 0,
         is_available: product.is_available || false,
       });
-      setCategory(product.category)
-      setBrand(product.brand)
+      setCategory(product.category);
+      setBrand(product.brand);
 
       // Set existing images
       if (isProductItem(product)) {
@@ -103,7 +112,7 @@ export function ProductEditSheet({
       } else {
         setExistingImages(
           product.images?.map((img) =>
-            typeof img === 'string' ? img : img.image
+            typeof img === "string" ? img : img.image
           ) || []
         );
       }
@@ -141,14 +150,7 @@ export function ProductEditSheet({
     setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-
   const handleSave = () => {
-    console.log(formData)
-    console.log(product?.id)
-    console.log(newImages)
-    console.log(existingImages)
-    console.log("===============")
-
     if (!validateForm()) {
       return;
     }
@@ -168,23 +170,23 @@ export function ProductEditSheet({
 
   const validateForm = () => {
     if (formData.name.trim() === "") {
-      toast.error("Please enter product name")
+      toast.error("Please enter product name");
       return false;
     }
     if (formData.description.trim() === "") {
-      toast.error("Please enter product description")
+      toast.error("Please enter product description");
       return false;
     }
     if (!formData.price) {
-      toast.error("Please enter product price")
+      toast.error("Please enter product price");
       return false;
     }
     if (formData.brand_id === 0) {
-      toast.error("Please select product brand")
+      toast.error("Please select product brand");
       return false;
     }
     if (formData.category_id === 0) {
-      toast.error("Please select product category")
+      toast.error("Please select product category");
       return false;
     }
     return true;
@@ -195,9 +197,7 @@ export function ProductEditSheet({
       <SheetContent className="sm:max-w-3xl  px-4 ">
         <SheetHeader className="px-0">
           <SheetTitle>{title}</SheetTitle>
-          <SheetDescription>
-            {description}
-          </SheetDescription>
+          <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-200px)] pr-4">
@@ -231,9 +231,7 @@ export function ProductEditSheet({
 
             {/* Price */}
             <div className="space-y-2">
-              <Label htmlFor="price">
-                Price *
-              </Label>
+              <Label htmlFor="price">Price *</Label>
               <Input
                 id="price"
                 name="price"
@@ -307,7 +305,6 @@ export function ProductEditSheet({
                         </button>
                       </div>
                     ))}
-
                   </div>
                 </div>
               )}
@@ -342,7 +339,7 @@ export function ProductEditSheet({
             </div>
 
             {/* Product Info (Read-only) */}
-            {(
+            {
               <div className="space-y-4 pt-4 border-t">
                 <p className="text-sm font-medium text-gray-700">
                   Product Information
@@ -351,9 +348,7 @@ export function ProductEditSheet({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   {/* Category */}
                   <div className="space-y-1.5">
-                    <Label className="text-muted-foreground">
-                      Category
-                    </Label>
+                    <Label className="text-muted-foreground">Category</Label>
 
                     {categoryData && (
                       <CategorySelectorSheet
@@ -361,11 +356,11 @@ export function ProductEditSheet({
                         onClose={() => setCatSheetOpen(false)}
                         categories={categoryData}
                         onSelect={(item) => {
-                          setCategory(item)
+                          setCategory(item);
                           setFormData((prev) => ({
                             ...prev,
                             category_id: item.id,
-                          }))
+                          }));
                         }}
                       />
                     )}
@@ -382,19 +377,16 @@ export function ProductEditSheet({
                   </div>
 
                   {/* Brand */}
-                  <div className="space-y-1.5">
-                    <Label className="text-muted-foreground">
-                      Brand
-                    </Label>
-
+                  <div className="space-y-1.5 ">
+                    <Label className="text-muted-foreground">Brand</Label>
                     <BrandSelector
                       value={brand}
                       onSelect={(brand) => {
-                        setBrand(brand)
+                        setBrand(brand);
                         setFormData((prev) => ({
                           ...prev,
                           brand_id: brand?.id ?? 0,
-                        }))
+                        }));
                       }}
                     />
                   </div>
@@ -403,17 +395,15 @@ export function ProductEditSheet({
                     <>
                       {/* Store */}
                       <div className="space-y-1.5">
-                        <Label className="text-muted-foreground">
-                          Store
-                        </Label>
-                        <p className="font-medium leading-9">
-                          {product.store}
-                        </p>
+                        <Label className="text-muted-foreground">Store</Label>
+                        <p className="font-medium leading-9">{product.store}</p>
                       </div>
 
                       {/* Status */}
                       <div className="space-y-1.5">
-                        <Label className="text-muted-foreground">Availability</Label>
+                        <Label className="text-muted-foreground">
+                          Availability
+                        </Label>
 
                         <div
                           className="flex items-center justify-between rounded-md border p-3 cursor-pointer hover:bg-muted/50 transition"
@@ -426,7 +416,9 @@ export function ProductEditSheet({
                         >
                           <div>
                             <p className="font-medium">
-                              {product.is_available ? "Available" : "Unavailable"}
+                              {product.is_available
+                                ? "Available"
+                                : "Unavailable"}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               Click to change availability
@@ -436,13 +428,11 @@ export function ProductEditSheet({
                           <Switch checked={formData.is_available} />
                         </div>
                       </div>
-
                     </>
                   )}
                 </div>
               </div>
-
-            )}
+            }
           </div>
         </ScrollArea>
 
@@ -452,12 +442,13 @@ export function ProductEditSheet({
           </Button>
           <Button
             onClick={handleSave}
-          // disabled={!hasChanges() || !formData.name || !formData.description}
+            // disabled={!hasChanges() || !formData.name || !formData.description}
           >
             {buttonText}
-            {bulkProductUpdateLoading || createProductLoading && (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            )}
+            {bulkProductUpdateLoading ||
+              (createProductLoading && (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ))}
           </Button>
         </SheetFooter>
       </SheetContent>

@@ -30,13 +30,11 @@ export function BrandSelector({ value, onSelect }: BrandSelectorProps) {
   const { brandListData } = useAppSelector((state) => state.product);
   const filteredBrands = useMemo(() => brandListData ?? [], [brandListData]);
 
-
   const handleBrandSelect = (brand: BrandItem) => {
-
     const newValue = value?.id === brand.id ? undefined : brand;
     onSelect?.(newValue);
     setOpen(false);
-  }
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -45,7 +43,7 @@ export function BrandSelector({ value, onSelect }: BrandSelectorProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between py-5"
+          className="w-full justify-between py-5"
         >
           {value?.name || "Select Brand..."}
           <ChevronsUpDown className="opacity-50" />

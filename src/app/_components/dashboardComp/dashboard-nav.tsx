@@ -123,24 +123,24 @@ function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
               {navigationItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 rounded-lg transition-all duration-200 group",
-                          activeHref === item.href
-                            ? "bg-accent text-accent-foreground font-semibold"
-                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        )}
-                      >
-                        <item.icon />
-                        <span className="font-medium text-sm md:text-base truncate">
-                          {item.title}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 rounded-lg transition-all duration-200 group",
+                        activeHref === item.href
+                          ? "bg-accent text-accent-foreground font-semibold"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <item.icon />
+                      <span className="font-medium text-sm md:text-base truncate">
+                        {item.title}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -229,6 +229,9 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
   const { userData, userStateLoading: loading } = useSelector(
     (state: RootState) => state.userData
   );
+
+  useWebSocket()
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 

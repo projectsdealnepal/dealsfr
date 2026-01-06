@@ -1,9 +1,15 @@
 "use client";
-import { EditFormData, ProductEditSheet } from "@/app/_components/product/ProductEditSheet";
+import {
+  EditFormData,
+  ProductEditSheet,
+} from "@/app/_components/product/ProductEditSheet";
 import ProductListTable from "@/app/_components/product/ProductListComponent";
 import PageHeader from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
-import { filterProducts, updateBulkProducts } from "@/redux/features/product/product";
+import {
+  filterProducts,
+  updateBulkProducts,
+} from "@/redux/features/product/product";
 import { ProductItem } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Search } from "lucide-react";
@@ -12,44 +18,55 @@ import { JSX } from "react/jsx-runtime";
 
 export default function ProductsPage(): JSX.Element {
   const dispatch = useAppDispatch();
-  const { productList } = useAppSelector(s => s.product);
-  const { storeDetailData } = useAppSelector(s => s.store);
-  const [searchTerm, setSearchTerm] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [debouncedSearch, setDebouncedSearch] = useState("")
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null)
-  const pageSize = 10
+  const { productList } = useAppSelector((s) => s.product);
+  const { storeDetailData } = useAppSelector((s) => s.store);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(
+    null
+  );
+  const pageSize = 10;
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm)
-      setCurrentPage(1) // Reset to first page on new search
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [searchTerm])
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1); // Reset to first page on new search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Fetch products when search or page changes
   useEffect(() => {
-    const queryParams = new URLSearchParams()
-    if (debouncedSearch) queryParams.append('search', debouncedSearch)
-    queryParams.append('page', currentPage.toString())
-    queryParams.append('page_size', pageSize.toString())
+    const queryParams = new URLSearchParams();
+    if (debouncedSearch) queryParams.append("search", debouncedSearch);
+    queryParams.append("page", currentPage.toString());
+    queryParams.append("page_size", pageSize.toString());
 
     if (storeDetailData) {
-      dispatch(filterProducts({ s_id: storeDetailData?.id, filter: queryParams.toString() }));
+      dispatch(
+        filterProducts({
+          s_id: storeDetailData?.id,
+          filter: queryParams.toString(),
+        })
+      );
     }
-  }, [debouncedSearch, currentPage, dispatch, storeDetailData, pageSize])
+  }, [debouncedSearch, currentPage, dispatch, storeDetailData, pageSize]);
 
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
-  }
+    setSearchTerm(e.target.value);
+  };
 
-
-  const handleEdit = (formData: EditFormData, productId: number, newImages: File[], imageUrls: string[]) => {
-    const form = new FormData()
-    console.log("productId", formData)
+  const handleEdit = (
+    formData: EditFormData,
+    productId: number,
+    newImages: File[],
+    imageUrls: string[]
+  ) => {
+    const form = new FormData();
+    console.log("productId", formData);
     form.append("id", productId.toString());
     form.append("name", formData.name);
     form.append("description", formData.description);
@@ -72,10 +89,10 @@ export default function ProductsPage(): JSX.Element {
       const payload = {
         store_pk: storeDetailData.id,
         userData: form,
-      }
-      dispatch(updateBulkProducts(payload))
+      };
+      dispatch(updateBulkProducts(payload));
     }
-  }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -99,25 +116,6 @@ export default function ProductsPage(): JSX.Element {
               className="pl-12 py-5 max-w-xl text-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent "
             />
           </div>
-
-          {/* <div className="flex flex-2 md:justify-end">
-            <Button onClick={() => setCatSheetOpen(true)} variant={"ghost"}>
-              Categories
-              <ChevronDown />
-            </Button>
-            {categoryData && (
-              <CategorySelectorSheet
-                open={catSheetOpen}
-                onClose={() => setCatSheetOpen(false)}
-                categories={categoryData}
-                onSelect={(item) => {
-                  setSelectedCategory(item.id)
-                  console.log("Selected category:", item);
-                  console.log("Selected category IDs:", item);
-                }}
-              />
-            )}
-          </div> */}
         </div>
 
         {/* Form */}
@@ -128,12 +126,11 @@ export default function ProductsPage(): JSX.Element {
                 products={productList}
                 onView={(product) => console.log("View product:", product)}
                 onEdit={(product) => {
-                  console.log("Edit product:", product)
-                  setIsEditSheetOpen(true)
-                  setSelectedProduct(product as ProductItem)
+                  console.log("Edit product:", product);
+                  setIsEditSheetOpen(true);
+                  setSelectedProduct(product as ProductItem);
                 }}
               />
-
             </>
           )}
           {productList?.length === 0 && (
@@ -151,8 +148,8 @@ export default function ProductsPage(): JSX.Element {
           open={isEditSheetOpen}
           onClose={() => setIsEditSheetOpen(false)}
           onSave={(formData, productId, newImages, imageUrls) => {
-            handleEdit(formData, productId, newImages, imageUrls)
-            console.timeLog("formData", formData)
+            handleEdit(formData, productId, newImages, imageUrls);
+            console.timeLog("formData", formData);
           }}
         />
       </div>

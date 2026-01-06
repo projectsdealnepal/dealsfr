@@ -1,12 +1,12 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { updateOrderStatus } from "@/redux/features/order/order";
 import { OrderItem } from "@/redux/features/order/types";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useEffect, useState } from "react";
 import { OrderDetailSheet } from "./OrderDetailSheet";
 import { StatusSelect } from "./StatusSelect";
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { updateOrderStatus } from "@/redux/features/order/order";
 
 interface OrdersTableProps {
   orders: OrderItem[] | null;
@@ -14,7 +14,8 @@ interface OrdersTableProps {
 
 const OrdersTable = ({ orders }: OrdersTableProps) => {
   const [statusMap, setStatusMap] = useState<Record<number, string>>({});
-  const formatDate = (dateStr: string) => new Date(dateStr).toISOString().slice(0, 10);
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toISOString().slice(0, 10);
   const dispatch = useAppDispatch();
   const { storeDetailData } = useAppSelector((s) => s.store);
 
@@ -27,17 +28,14 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
   useEffect(() => {
     if (orders) {
       const initialStatusMap: Record<number, string> = {};
-      orders.forEach(order => {
+      orders.forEach((order) => {
         initialStatusMap[order.id] = order.status;
       });
       setStatusMap(initialStatusMap);
     }
-
-  }, [orders])
-
+  }, [orders]);
 
   const handleStatusChange = (id: number, newValue: string) => {
-
     storeDetailData &&
       dispatch(
         updateOrderStatus({
@@ -46,16 +44,14 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
           status: newValue,
         })
       );
-    setStatusMap(prev => ({
+    setStatusMap((prev) => ({
       ...prev,
       [id]: newValue,
     }));
 
-
     console.log("Order ID:", id);
     console.log("Status changed to:", newValue);
   };
-
 
   // const handleStatusChange = (id: number, newValue: string) => {
   //   setStatusValue(newValue)
@@ -115,7 +111,7 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
                 </td>
 
                 <td className="px-4 py-4 font-medium text-sm">
-                  ${order.total_amount}
+                  NPR {order.total_amount}
                 </td>
 
                 <td className="px-4 py-4 text-sm text-muted-foreground">
@@ -134,7 +130,10 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
                   <StatusSelect
                     value={statusMap[order.id] ?? ""}
                     id={order.id}
-                    onChange={(value: string) => handleStatusChange(order.id, value)} />
+                    onChange={(value: string) =>
+                      handleStatusChange(order.id, value)
+                    }
+                  />
                 </td>
 
                 <td className="px-4 py-4">

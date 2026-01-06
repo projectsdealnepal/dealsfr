@@ -6,22 +6,22 @@ import {
   getDiscountDetail,
   updateDiscount,
 } from "@/redux/features/discount/discount";
-import { PreviewDiscountDetailResponse, DiscountItem } from "@/redux/features/discount/types";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PreviewDiscountDetailResponse } from "@/redux/features/discount/types";
+import { createSlice, PayloadAction, TaskAbortError } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
 
 interface DiscountState {
-  discountData: DiscountItem[] | null;
+  discountData: PreviewDiscountDetailResponse[] | null;
   discountStateLoading: boolean;
   discountError: string | null;
 
   //create discount
-  createDiscountData: DiscountItem | null;
+  createDiscountData: PreviewDiscountDetailResponse | null;
   createDiscountLoading: boolean;
 
   //update discount
-  updateDiscountData: DiscountItem | null;
+  updateDiscountData: PreviewDiscountDetailResponse | null;
   updateDiscountLoading: boolean;
 
   //delete discount
@@ -151,15 +151,29 @@ const discountSlice = createSlice({
         state.updateDiscountLoading = true;
         state.discountError = null;
       })
-      .addCase(updateDiscount.fulfilled, (state, action: PayloadAction<DiscountItem>) => {
-        toast.info("Update Successfully", { richColors: true })
-        state.updateDiscountLoading = false;
-        state.updateDiscountData = action.payload;
-        state.discountData = state.discountData && state.discountData.map((item) =>
-          action.payload.id == item.id ? { ...item, ...action.payload } : item
-        )
-        state.discountError = null;
-      })
+      .addCase(
+        updateDiscount.fulfilled,
+        (state, action: PayloadAction<PreviewDiscountDetailResponse>) => {
+          toast.info("Update Successfully", { richColors: true });
+          state.updateDiscountLoading = false;
+          state.updateDiscountData = action.payload;
+          //on update the discount status it should update the discount detail data(except discount_products , which is not present on the response)
+          state.discountDetailData = {
+            ...action.payload,
+            discount_products:
+              state.discountDetailData?.discount_products ?? [],
+          };
+
+          state.discountData =
+            state.discountData &&
+            state.discountData.map((item) =>
+              action.payload.id == item.id
+                ? { ...item, ...action.payload }
+                : item
+            );
+          state.discountError = null;
+        }
+      )
       .addCase(
         updateDiscount.rejected,
         (state, action: PayloadAction<string | undefined>) => {
@@ -197,11 +211,6 @@ const discountSlice = createSlice({
         state.addProductOnDiscoutLoading = false;
         state.addProductOnDiscountData = action.payload;
         state.discountError = null;
-        // Optionally update discountData if needed:
-        // if (action.payload?.id && state.discountData) {
-        //   const idx = state.discountData.findIndex(d => d.id === action.payload.id);
-        //   if (idx !== -1) state.discountData[idx] = action.payload;
-        // }
       })
       .addCase(
         addProductOnDiscount.rejected,
@@ -221,7 +230,8 @@ const discountSlice = createSlice({
         state.discountDetailData = action.payload;
         state.discountError = null;
       })
-      .addCase(getDiscountDetail.rejected,
+      .addCase(
+        getDiscountDetail.rejected,
         (state, action: PayloadAction<string | undefined>) => {
           state.discountDetailData = null;
           state.discountDetailLoading = false;

@@ -10,7 +10,7 @@ const StoreManager = () => {
   const { discountData, discountStateLoading: discountLoading } =
     useAppSelector((s) => s.discount);
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   console.log("discount", discountData);
 
@@ -32,15 +32,15 @@ const StoreManager = () => {
           />
         </>
 
-        <div className="w-full my-8">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
           {discountData && !discountLoading
             ? discountData?.map((item, index) => {
-                return (
-                  <div className="my-8" key={index.toString()}>
-                    <DiscountCard item={item} />
-                  </div>
-                );
-              })
+              return (
+                <div className="my-8" key={index.toString()}>
+                  <DiscountCard item={item} />
+                </div>
+              );
+            })
             : null}
         </div>
       </div>

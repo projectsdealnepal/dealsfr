@@ -19,7 +19,6 @@ export interface GenericProductsApiResponse {
   results: GenericProductItem[];
 }
 
-
 //this is the combinaitn of generic product that we will get on api and store product that we will create .
 export interface GenericProductItem {
   id: number;
@@ -34,7 +33,6 @@ export interface GenericProductItem {
   is_available?: boolean;
   created_at: string;
 }
-
 
 export interface ProductItem {
   id: number;
@@ -107,25 +105,30 @@ export interface ActiveDiscount {
 
 //add discount payload
 export interface AddProductOnDiscount {
-  items: Record<string, boolean>,
-  rowId: number | undefined
+  items: Record<string, boolean>;
+  rowId: number | undefined;
 }
 
 //for brands list
 export interface BrandItem {
-  id: number
-  name: string
-  created_at: string
-  updated_at: string
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface RewardProductItem extends ProductItem {
   quantity: number;
 }
 
-export type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT" | "BOGO" | "SPEND_GET" | "BUNDLE"
-export type TargetType = "storeproduct" | "category" | "brand"
-export type ValueType = "PERCENTAGE" | "FIXED_AMOUNT"
+export type DiscountType =
+  | "PERCENTAGE"
+  | "FIXED_AMOUNT"
+  | "BOGO"
+  | "SPEND_GET"
+  | "BUNDLE";
+export type TargetType = "storeproduct" | "category" | "brand" | "store";
+export type ValueType = "PERCENTAGE" | "FIXED_AMOUNT";
 
 export interface DiscountedProductType {
   discount_type: DiscountType;

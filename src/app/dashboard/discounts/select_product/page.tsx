@@ -2,13 +2,13 @@
 import ChildRouteHeader from "@/components/ChildRouteHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { getDiscountProductList } from "@/redux/features/discount/discount";
 import { getProducts } from "@/redux/features/product/product";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Package } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import DiscountProductManager from "./Components/DiscountProductManager";
-import { getDiscountProductList } from "@/redux/features/discount/discount";
 
 const AddProducts = () => {
   const params = useSearchParams();

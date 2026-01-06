@@ -9,8 +9,8 @@ export const getOrderList = createAsyncThunk<
   { rejectValue: string }
 >("get/orderlist", async (s_id, thunkAPI) => {
   try {
-    const response = await api.get(`/orders/${s_id}/`);
-    return response.data;
+    const response = await api.get(`/orders/${s_id}/?page=1`);
+    return response.data.results;
   } catch (err: any) {
     return thunkAPI.rejectWithValue(
       extractErrorMessage(err, "Failed to get the order list")
