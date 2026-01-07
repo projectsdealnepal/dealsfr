@@ -16,10 +16,12 @@ import { Pencil, Trash2 } from "lucide-react";
 interface DiscountProductsListProps {
   products: OfferAppliedProduct[];
   storeId: number;
+  discountId: number;
 }
 
 export const DiscountProductsList = ({
   products,
+  discountId,
   storeId,
 }: DiscountProductsListProps) => {
   const dispatch = useAppDispatch();
@@ -34,7 +36,9 @@ export const DiscountProductsList = ({
   }
 
   const handleDeleteProductOnDiscount = (id: number) => {
-    dispatch(deleteProductOnDiscount({ s_id: storeId, d_id: id, pd_id: id }));
+    dispatch(
+      deleteProductOnDiscount({ s_id: storeId, d_id: discountId, pd_id: id })
+    );
   };
 
   return (
@@ -47,7 +51,6 @@ export const DiscountProductsList = ({
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
-              {/* <TableHead>Category</TableHead> */}
               <TableHead>Discount Type</TableHead>
               <TableHead>Value</TableHead>
               <TableHead>Min Spend</TableHead>
@@ -104,9 +107,9 @@ export const DiscountProductsList = ({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    {/* <Button variant="ghost" size="icon" className="h-8 w-8">
                       <Pencil className="h-4 w-4 text-blue-500" />
-                    </Button>
+                    </Button> */}
                     <Button
                       variant="ghost"
                       size="icon"

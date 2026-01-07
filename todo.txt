@@ -9,3 +9,6 @@ Frontend:
     - Add number of products that are in the discount card in the discount list.
     - Show the error toast message when there is an error while changing the status of order.
     - Add breadcrump on all pages.
+
+- Make support delivery editable on store detail page.
+- Show delivery address on order detial sheet.

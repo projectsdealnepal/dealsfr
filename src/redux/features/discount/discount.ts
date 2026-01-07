@@ -127,7 +127,7 @@ export const updateProductOnDiscount = createAsyncThunk<
 // Delete Product on Discount
 // https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/discount/{discount_pk}/products/{product_discount_pk}/
 export const deleteProductOnDiscount = createAsyncThunk<
-  OfferAppliedProduct,
+  number,
   { s_id: number; d_id: number; pd_id: number },
   { rejectValue: string }
 >("deleteProductOnDiscount", async ({ s_id, d_id, pd_id }, thunkAPI) => {
@@ -135,7 +135,7 @@ export const deleteProductOnDiscount = createAsyncThunk<
     const response = await api.delete(
       `/products/${s_id}/discount/${d_id}/products/${pd_id}/`
     );
-    return response.data;
+    return pd_id;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||

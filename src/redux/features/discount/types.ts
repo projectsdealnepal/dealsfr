@@ -44,9 +44,9 @@ export interface DiscountUpdatePayload {
 
 //to add the products on the discount
 export interface AddProductOnDiscountPayload {
-  discount_type: "PERCENTAGE" | "FIXED_AMOUNT" | "SPEND_GET" | "BUNDLE";
+  discount_type: DiscountType;
   value?: number;
-  value_type: "PERCENTAGE" | "FIXED_AMOUNT";
+  value_type?: ValueType;
   buy_quantity?: number;
   min_spend_amount?: string;
   max_discount_amount?: string;
@@ -59,7 +59,6 @@ export interface AddProductOnDiscountPayload {
 
 //Types of products which have offer applied to them and attached to the
 //discount
-
 export interface StoreProduct {
   id: number;
   store: number;

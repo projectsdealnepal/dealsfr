@@ -33,7 +33,7 @@ import {
   ValueType,
 } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Loader, Loader2, Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -51,21 +51,53 @@ const fixedAmountSchema = z.object({
   amountValue: z.number().min(0),
 });
 
-const bogoSchema = z.object({
-  buyQuantity: z.number().int().min(1),
-  percentageValue: z.number().min(0).max(100).optional(),
-  maximumDiscount: z.number().min(0).optional(),
-  discountValue: z.number().min(0).optional(),
-  rewardItems: z.string().optional(),
-});
+const getBogoSchema = (hasRewards: boolean) =>
+  z
+    .object({
+      buyQuantity: z.number().int().min(1, "Buy quantity is required"),
+      percentageValue: z.number().min(0).max(100).optional(),
+      maximumDiscount: z.number().min(0).optional(),
+      discountValue: z.number().min(0).optional(),
+      rewardItems: z.string().optional(),
+    })
+    .refine(
+      (data) => {
+        const hasDiscount = data.discountValue !== undefined;
+        const hasPercentage =
+          data.percentageValue !== undefined &&
+          data.maximumDiscount !== undefined;
 
-const spendGetSchema = z.object({
-  spendAmount: z.number().min(1),
-  percentageValue: z.number().min(0).max(100).optional(),
-  maximumDiscount: z.number().min(0).optional(),
-  discountValue: z.number().min(0).optional(),
-  rewardItems: z.string().optional(),
-});
+        return hasDiscount || hasPercentage || hasRewards;
+      },
+      {
+        message:
+          "Either discount value, (percentage value and maximum value together) or rewards products should not be empty on Buy-Get discount",
+      }
+    );
+
+const getSpendGetSchema = (hasRewards: boolean) =>
+  z
+    .object({
+      spendAmount: z.number().min(1, "Spend amount is required"),
+      percentageValue: z.number().min(0).max(100).optional(),
+      maximumDiscount: z.number().min(0).optional(),
+      discountValue: z.number().min(0).optional(),
+      rewardItems: z.any().optional(),
+    })
+    .refine(
+      (data) => {
+        const hasDiscount = data.discountValue !== undefined;
+        const hasPercentage =
+          data.percentageValue !== undefined &&
+          data.maximumDiscount !== undefined;
+
+        return hasDiscount || hasPercentage || hasRewards;
+      },
+      {
+        message:
+          "Either discount value, (percentage value and maximum value together) or rewards products should not be empty on Spend Get discount",
+      }
+    );
 
 interface DiscountFieldsSheetProps {
   discountType: DiscountType;
@@ -94,7 +126,6 @@ const DiscountFieldsSheet = ({
   const {
     tempDiscountProductList,
     rewardProductList,
-    offerAppliedProductsList,
   } = useAppSelector((s) => s.product);
   const { addProductOnDiscountData, addProductOnDiscountLoading } =
     useAppSelector((s) => s.discount);
@@ -123,66 +154,149 @@ const DiscountFieldsSheet = ({
   const validateCurrentItem = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!currentItem.discountType) {
-      newErrors.discountType = "Discount type is required";
-      setErrors(newErrors);
-      toast.info("Discount type is required", { richColors: true });
-      return false;
-    }
-
-    if (!currentItem.targetType) {
-      newErrors.targetType = "Application scope is required";
-      setErrors(newErrors);
-      toast.info("Application scope is required", { richColors: true });
-      return false;
-    }
-
-    if (
-      currentItem.discountType === "BOGO" ||
-      currentItem.discountType === "SPEND_GET"
-    ) {
-      if (
-        currentItem.percentageValue == null &&
-        currentItem.discountValue == null &&
-        currentItem.rewardItems?.length == 0
-      ) {
-        toast.info("At least the bonus value or discount value is required", {
-          richColors: true,
-        });
-        return false;
-      }
-      if (
-        currentItem.percentageValue != null &&
-        currentItem.maximumDiscount == null
-      ) {
-        toast.info(
-          "You have to mention maximum discount limit on percentage value.",
-          { richColors: true }
-        );
-        return false;
-      }
-    }
-
-    if (
-      (currentItem.discountType === "BOGO" ||
-        currentItem.discountType === "SPEND_GET") &&
-      rewardProductList.length <= 0 &&
-      currentItem.discountValue === 0 &&
-      currentItem.percentageValue === 0 &&
-      currentItem.discountValue === undefined
-    ) {
-      toast.info("At least one reward product or discount value is required", {
-        richColors: true,
-      });
-      return false;
-    }
-
+    //If discount is on product, there should be atleast one prodcut
     if (
       currentItem.targetType == "storeproduct" &&
       tempDiscountProductList.length === 0
     ) {
       toast.info("At least one product is required", { richColors: true });
       return false;
+    }
+    //if discount is on brand, there should be atleast one brand
+    if (currentItem.targetType == "brand" && brandValue == null) {
+      toast.info("At least one brand is required", { richColors: true });
+      return false;
+    }
+
+    //There  should be discount type selected
+    if (!currentItem.discountType) {
+      newErrors.discountType = "Discount type is required";
+      setErrors(newErrors);
+      toast.info("Discount type is required (please select discount type)", {
+        richColors: true,
+      });
+      return false;
+    }
+
+    //There  should be target type selected( but if the target is store then on api payload it will be null)
+    if (!currentItem.targetType) {
+      newErrors.targetType = "Target Type is required";
+      setErrors(newErrors);
+      toast.info("Target Type is required (please select target type)", {
+        richColors: true,
+      });
+      return false;
+    }
+
+    // If the discount is percentage then there should be max cap amount
+    if (
+      currentItem.discountType === "PERCENTAGE" &&
+      currentItem.maximumDiscount == null
+    ) {
+      toast.info(
+        "You have to mention maximum discount limit on percentage value.",
+        { richColors: true }
+      );
+      return false;
+    }
+
+    // In every discount of BOGO and SPEND_GET, there should be eithre reward product or discount( discount itself can be two times 1. Flat amount discount 2. Percentage discount with max cap amount)
+
+    //When user select BOGO type
+    //Case:1
+    // User select the flat amount as discount
+    if (
+      currentItem.discountType == "BOGO" &&
+      currentItem.valueType == "FIXED_AMOUNT"
+    ) {
+      //there should be discount value present in the currentItem or reward item but not both
+      if (!currentItem.discountValue && rewardProductList.length == 0) {
+        toast.info("Discount value or reward items are required");
+        return false;
+      }
+      //if there is disocunt and reward items both are present then show error
+      if (currentItem.discountValue && rewardProductList.length > 0) {
+        toast.info(
+          "Reward items are not allowed when discount value is present"
+        );
+        return false;
+      }
+    }
+
+    //Case:2
+    // User select the percentage value as discount
+    if (
+      currentItem.discountType == "BOGO" &&
+      currentItem.valueType == "PERCENTAGE"
+    ) {
+      //there should be discount value present in the currentItem or reward item but not both
+      if (
+        currentItem.percentageValue == undefined &&
+        rewardProductList.length == 0
+      ) {
+        toast.info("Discount value or reward items are required");
+        return false;
+      }
+      //if there is disocunt and reward items both are present then show error
+      if (
+        currentItem.percentageValue != undefined &&
+        rewardProductList.length > 0
+      ) {
+        toast.info(
+          "Reward items are not allowed when discount value is present"
+        );
+        return false;
+      }
+    }
+
+    //When user select Spend Get type
+    //Case:1
+    // User select the flat amount as discount
+    if (
+      currentItem.discountType == "SPEND_GET" &&
+      currentItem.valueType == "FIXED_AMOUNT"
+    ) {
+      //there shoudl be eithre disocunt value present or reward items but not both
+      if (!currentItem.discountValue && rewardProductList.length == 0) {
+        toast.info("Discount value or reward items are required");
+        return false;
+      }
+      //if there is disocunt and reward items both are present then show error
+      if (
+        currentItem.discountValue != undefined &&
+        rewardProductList.length > 0
+      ) {
+        toast.info(
+          "Reward items are not allowed when discount value is present"
+        );
+        return false;
+      }
+    }
+
+    //Case:2
+    // User select the percentage value as discount
+    if (
+      currentItem.discountType == "SPEND_GET" &&
+      currentItem.valueType == "PERCENTAGE"
+    ) {
+      //there should be eithre percentage value present or reward items but not both
+      if (
+        !currentItem.percentageValue &&
+        rewardProductList.length == 0
+      ) {
+        toast.info("Percentage value or reward items are required");
+        return false;
+      }
+      //if there is percentage and reward items both are present then show error
+      if (
+        currentItem.percentageValue != undefined &&
+        rewardProductList.length > 0
+      ) {
+        toast.info(
+          "Reward items are not allowed when percentage value is present"
+        );
+        return false;
+      }
     }
 
     try {
@@ -199,17 +313,21 @@ const DiscountFieldsSheet = ({
           });
           break;
         case "BOGO":
-          bogoSchema.parse({
+          getBogoSchema(rewardProductList.length > 0).parse({
             buyQuantity: (currentItem as BOGODiscount).buyQuantity,
             discountValue: (currentItem as BOGODiscount).discountValue,
+            percentageValue: (currentItem as BOGODiscount).percentageValue,
+            maximumDiscount: (currentItem as BOGODiscount).maximumDiscount,
             rewardItems: (currentItem as BOGODiscount).rewardItems,
           });
           break;
         case "SPEND_GET":
-          spendGetSchema.parse({
+          getSpendGetSchema(rewardProductList.length > 0).parse({
             spendAmount: (currentItem as SpendGetDiscount).spendAmount,
             discountValue: (currentItem as SpendGetDiscount).discountValue,
             rewardItems: (currentItem as SpendGetDiscount).rewardItems,
+            percentageValue: (currentItem as SpendGetDiscount).percentageValue,
+            maximumDiscount: (currentItem as SpendGetDiscount).maximumDiscount,
           });
           break;
       }
@@ -219,6 +337,7 @@ const DiscountFieldsSheet = ({
       if (error instanceof z.ZodError) {
         error.errors.forEach((err) => {
           newErrors[err.path[0] as string] = err.message;
+          toast.info(err.message, { richColors: true });
         });
       }
       setErrors(newErrors);
@@ -297,6 +416,7 @@ const DiscountFieldsSheet = ({
   };
 
   const handleBOGODiscount = () => {
+    console.log("handleBOGODiscount", currentItem);
     if (currentItem.discountType == "BOGO") {
       const rewardProducts: RewardProduct[] = rewardProductList.map((item) => ({
         store_product_id: item.id,
@@ -307,8 +427,11 @@ const DiscountFieldsSheet = ({
       switch (currentItem.targetType) {
         case "storeproduct":
           payload = tempDiscountProductList.map((item) => ({
-            discount_type: currentItem.discountType as "PERCENTAGE",
-            value_type: currentItem.valueType as ValueType,
+            discount_type: currentItem.discountType,
+            //only provide the value type if there is no reward product
+            ...(rewardProducts.length == 0 && {
+              value_type: currentItem.valueType as ValueType,
+            }),
             buy_quantity: currentItem.buyQuantity,
             reward_products: rewardProducts,
             value:
@@ -324,8 +447,11 @@ const DiscountFieldsSheet = ({
         case "brand":
           payload = [
             {
-              discount_type: currentItem.discountType as "PERCENTAGE",
-              value_type: currentItem.valueType as ValueType,
+              discount_type: currentItem.discountType,
+              //only provide the value type if there is no reward product
+              ...(rewardProducts.length == 0 && {
+                value_type: currentItem.valueType as ValueType,
+              }),
               buy_quantity: currentItem.buyQuantity,
               reward_products: rewardProducts,
               value:
@@ -361,7 +487,11 @@ const DiscountFieldsSheet = ({
         case "storeproduct":
           payload = tempDiscountProductList.map((item) => ({
             discount_type: "SPEND_GET",
-            value_type: currentItem.valueType as "PERCENTAGE",
+            //only pass the value type when there is no reward products
+            ...(rewardProducts.length == 0 &&
+            {
+              value_type: currentItem.valueType as ValueType,
+            }),
             max_discount_amount: currentItem.maximumDiscount?.toString(),
             store_product: item.id,
             min_spend_amount: currentItem.spendAmount?.toString(),
@@ -380,7 +510,11 @@ const DiscountFieldsSheet = ({
           payload = [
             {
               discount_type: "SPEND_GET",
-              value_type: currentItem.valueType as "PERCENTAGE",
+              //only pass the value type when there is no reward products
+              ...(rewardProducts.length == 0 &&
+              {
+                value_type: currentItem.valueType as ValueType,
+              }),
               brand: brandValue?.id,
               min_spend_amount: currentItem.spendAmount?.toString(),
               reward_products: rewardProducts,
@@ -455,10 +589,10 @@ const DiscountFieldsSheet = ({
             {targetType === "brand"
               ? "Brand"
               : targetType === "storeproduct"
-              ? "Product"
-              : targetType === "category"
-              ? "Category"
-              : "All Products"}
+                ? "Product"
+                : targetType === "category"
+                  ? "Category"
+                  : "All Products"}
           </SheetDescription>
         </SheetHeader>
 
@@ -469,10 +603,10 @@ const DiscountFieldsSheet = ({
               {targetType === "brand"
                 ? "Select Brand"
                 : targetType === "storeproduct"
-                ? "Select Product"
-                : targetType === "category"
-                ? "Select Category"
-                : "Discount will applied on all products"}
+                  ? "Select Product"
+                  : targetType === "category"
+                    ? "Select Category"
+                    : "Discount will applied on all products"}
             </Label>
             {targetType === "storeproduct" ? (
               <ProductSelector />

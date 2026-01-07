@@ -58,6 +58,7 @@ export const DiscountDetailView = ({
           <DiscountProductsList
             products={data.discount_products}
             storeId={storeId}
+            discountId={data.id}
           />
         </CardContent>
       </Card>

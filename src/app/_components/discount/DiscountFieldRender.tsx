@@ -241,7 +241,7 @@ export const DiscountFieldRender = ({
                       htmlFor="maximumDiscount"
                       className="text-xs font-medium uppercase tracking-wider"
                     >
-                      Max Cap (Optional)
+                      Max Cap
                     </Label>
                     <div className="relative group">
                       <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
@@ -249,7 +249,7 @@ export const DiscountFieldRender = ({
                         id="maximumDiscount"
                         type="number"
                         min="0"
-                        placeholder="Unlimited"
+                        placeholder="e.g., 50"
                         className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
                         value={
                           (currentItem as BOGODiscount).maximumDiscount || ""
@@ -319,16 +319,24 @@ export const DiscountFieldRender = ({
 
     case "SPEND_GET":
       return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2 col-span-1">
-              <Label htmlFor="spendAmount">Minimum Spend Amount</Label>
+        <div className="space-y-6 pt-2">
+          {/* Minimum Spend Section */}
+          <div className="space-y-2.5">
+            <Label
+              htmlFor="spendAmount"
+              className="text-xs font-medium uppercase tracking-wider"
+            >
+              Minimum Spend Amount
+            </Label>
+            <div className="relative group w-full">
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
               <Input
                 id="spendAmount"
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="e.g., 100"
+                placeholder="e.g., 500"
+                className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
                 value={(currentItem as SpendGetDiscount).spendAmount || ""}
                 onChange={(e) =>
                   setCurrentItem({
@@ -337,126 +345,163 @@ export const DiscountFieldRender = ({
                   })
                 }
               />
-              {errors.spendAmount && (
-                <p className="text-sm text-red-500">{errors.spendAmount}</p>
-              )}
             </div>
-            <div className="space-y-2 col-span-2">
-              <Label htmlFor="targetType">Discount Value Type</Label>
-              <Tabs
-                defaultValue="PERCENTAGE"
-                className="w-full bg-accent"
-                onValueChange={(v) => {
-                  setCurrentItem({
-                    ...currentItem,
-                    valueType: v as ValueType,
-                    discountType: currentItem.discountType,
-                  });
-                }}
-              >
-                <TabsList className="flex w-full justify-start gap-6 border-b border-primary/10  rounded-none p-0">
-                  <TabsTrigger
-                    value="PERCENTAGE"
-                    style={{
-                      boxShadow: "none",
-                    }}
-                    className="relative rounded-none border-none bg-transparent 
-                  after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary after:opacity-0
-                 data-[state=active]:after:opacity-100"
-                  >
-                    Percentage
-                  </TabsTrigger>
+            {errors.spendAmount && (
+              <p className="text-xs text-red-500 font-medium ml-1">
+                {errors.spendAmount}
+              </p>
+            )}
+          </div>
 
-                  <TabsTrigger
-                    value="FIXED_AMOUNT"
-                    style={{
-                      boxShadow: "none",
-                    }}
-                    className="relative rounded-none border-none bg-transparent 
-                  after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary after:opacity-0
-                 data-[state=active]:after:opacity-100"
-                  >
-                    Fixed Value
-                  </TabsTrigger>
-                </TabsList>
+          <div className="border-t border-dashed my-4 opacity-50" />
 
-                <TabsContent value="PERCENTAGE" className="flex gap-2 mt-4">
-                  <div className="flex-1">
-                    <Label htmlFor="discountValue">Discount Value (%)</Label>
-                    <Input
-                      id="discountValue"
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.01"
-                      placeholder="e.g., 100 for free"
-                      value={
-                        (currentItem as SpendGetDiscount).percentageValue || ""
-                      }
-                      onChange={(e) =>
-                        setCurrentItem({
-                          ...currentItem,
-                          percentageValue: parseFloat(e.target.value) || 0,
-                        })
-                      }
-                    />
+          {/* Discount Logic Section */}
+          <div className="space-y-4">
+            <Label className="text-xs font-medium uppercase tracking-wider">
+              Discount Type & Value
+            </Label>
+            <Tabs
+              defaultValue="PERCENTAGE"
+              className="w-full"
+              onValueChange={(v) => {
+                setCurrentItem({
+                  ...currentItem,
+                  discountType: currentItem.discountType,
+                  valueType: v as ValueType,
+                });
+              }}
+            >
+              <TabsList className="grid w-full gap-4 grid-cols-2 h-11 p-1 mb-6">
+                <TabsTrigger
+                  value="PERCENTAGE"
+                  className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
+                >
+                  Percentage Off
+                </TabsTrigger>
+                <TabsTrigger
+                  value="FIXED_AMOUNT"
+                  className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
+                >
+                  Fixed Amount Off
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="PERCENTAGE" className="mt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2.5">
+                    <Label
+                      htmlFor="discountValue"
+                      className="text-xs font-medium uppercase tracking-wider"
+                    >
+                      Discount (%)
+                    </Label>
+                    <div className="relative group">
+                      <Percent className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                      <Input
+                        id="discountValue"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        placeholder="10"
+                        className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
+                        value={
+                          (currentItem as SpendGetDiscount).percentageValue ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          setCurrentItem({
+                            ...currentItem,
+                            percentageValue: parseFloat(e.target.value) || 0,
+                          })
+                        }
+                      />
+                    </div>
                     {errors.percentageValue && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-xs text-red-500 font-medium ml-1">
                         {errors.percentageValue}
                       </p>
                     )}
                   </div>
 
-                  <div className="flex-1">
-                    <Label htmlFor="maximumDiscount">Maximum Discount</Label>
+                  <div className="space-y-2.5">
+                    <Label
+                      htmlFor="maximumDiscount"
+                      className="text-xs font-medium uppercase tracking-wider"
+                    >
+                      Max Cap
+                    </Label>
+                    <div className="relative group">
+                      <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                      <Input
+                        id="maximumDiscount"
+                        type="number"
+                        min="0"
+                        placeholder="e.g., 200"
+                        className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
+                        value={
+                          (currentItem as SpendGetDiscount).maximumDiscount ||
+                          ""
+                        }
+                        onChange={(e) =>
+                          setCurrentItem({
+                            ...currentItem,
+                            maximumDiscount: parseFloat(e.target.value) || 0,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="FIXED_AMOUNT" className="mt-0">
+                <div className="space-y-2.5 max-w-sm">
+                  <Label
+                    htmlFor="discountValue"
+                    className="text-xs font-medium uppercase tracking-wider"
+                  >
+                    Discount Amount
+                  </Label>
+                  <div className="relative group">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                     <Input
-                      id="maximumDiscount"
+                      id="discountValue"
                       type="number"
                       min="0"
-                      placeholder="e.g., 200"
+                      step="0.01"
+                      placeholder="e.g., 100"
+                      className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
                       value={
-                        (currentItem as SpendGetDiscount).maximumDiscount || ""
+                        (currentItem as SpendGetDiscount).discountValue || ""
                       }
                       onChange={(e) =>
                         setCurrentItem({
                           ...currentItem,
-                          maximumDiscount: parseFloat(e.target.value) || 0,
+                          discountValue: parseFloat(e.target.value) || 0,
                         })
                       }
                     />
                   </div>
-                </TabsContent>
-                <TabsContent value="FIXED_AMOUNT" className="mt-4">
-                  <Label htmlFor="discountValue">Discount Value (%)</Label>
-                  <Input
-                    id="discountValue"
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    placeholder="e.g., 100 for free"
-                    value={
-                      (currentItem as SpendGetDiscount).discountValue || ""
-                    }
-                    onChange={(e) =>
-                      setCurrentItem({
-                        ...currentItem,
-                        discountValue: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
                   {errors.discountValue && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-xs text-red-500 font-medium ml-1">
                       {errors.discountValue}
                     </p>
                   )}
-                </TabsContent>
-              </Tabs>
-            </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="rewardItems">Reward Items (Optional)</Label>{" "}
-            <div>
+
+          <div className="pt-2">
+            <div className="flex items-center gap-2 mb-3">
+              <Gift className="h-4 w-4 text-primary" />
+              <Label className="text-sm font-semibold text-foreground">
+                Additional Reward Items
+              </Label>
+              <span className="text-xs text-muted-foreground">(Optional)</span>
+            </div>
+            <div className="pl-1">
               <SelectRewardDialog />
             </div>
           </div>

@@ -37,7 +37,7 @@ interface DiscountState {
   addProductOnDiscountLoading: boolean;
 
   //delete product on discounts
-  deleteProductOnDiscountData: OfferAppliedProduct | null;
+  deleteProductOnDiscountData: number | null;
   deleteProductOnDiscountLoading: boolean;
 
   //for discount detail
@@ -260,7 +260,7 @@ const discountSlice = createSlice({
       })
       .addCase(
         deleteProductOnDiscount.fulfilled,
-        (state, action: PayloadAction<OfferAppliedProduct>) => {
+        (state, action: PayloadAction<number>) => {
           toast.success("Successfully deleted product on discount");
 
           state.deleteProductOnDiscountLoading = false;
@@ -273,7 +273,7 @@ const discountSlice = createSlice({
               ...state.discountDetailData,
               discount_products:
                 state.discountDetailData.discount_products.filter(
-                  (item) => item.id !== action.payload.id
+                  (item) => item.id !== action.payload
                 ),
             };
           }
