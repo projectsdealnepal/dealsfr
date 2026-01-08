@@ -78,11 +78,10 @@ export const DiscountDetailHeader: React.FC<DiscountDetailHeaderProps> = ({
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight">{data.name}</h1>
           <Badge
-            className={`${
-              data.status === "active"
-                ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
-                : "bg-amber-500/10 text-amber-700 border-amber-500/20"
-            } capitalize flex items-center gap-1.5`}
+            className={`${data.status === "active"
+              ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
+              : "bg-amber-500/10 text-amber-700 border-amber-500/20"
+              } capitalize flex items-center gap-1.5`}
           >
             {data.status === "active" ? (
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -123,7 +122,7 @@ export const DiscountDetailHeader: React.FC<DiscountDetailHeaderProps> = ({
               <DialogTitle>Are you absolutely sure?</DialogTitle>
               <DialogDescription>
                 This action cannot be undone. This will permanently delete the
-                discount "{data.name}".
+                discount {`"${data.name}"`}.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

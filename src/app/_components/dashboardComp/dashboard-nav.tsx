@@ -230,7 +230,7 @@ export function DashboardNav({ children }: { children: React.ReactNode }) {
     (state: RootState) => state.userData
   );
 
-  // useWebSocket()
+  useWebSocket()
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();

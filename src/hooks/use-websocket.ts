@@ -77,7 +77,10 @@ const useWebSocket = (): WebSocket | null => {
 
       // Use the ref to get the latest value
       if (storeDetailDataRef.current) {
-        dispatch(getOrderList(storeDetailDataRef.current.id))
+        dispatch(getOrderList({
+          s_id: storeDetailDataRef.current.id,
+          filter: ""
+        }))
       }
 
       console.log("Message received:", JSON.stringify(parsedData));

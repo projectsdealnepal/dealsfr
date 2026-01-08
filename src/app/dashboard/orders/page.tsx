@@ -70,17 +70,19 @@ export default function Orders() {
             />
             <OrdersTable orders={filteredOrderList} />
 
-            <Pagination
-              pageSize={query.page_size}
-              currentPage={query.page}
-              totalProducts={orderListData?.count!}
-              onPageChange={(pageNumber: number) => {
-                setQuery({
-                  ...query,
-                  page: pageNumber
-                })
-              }}
-            />
+            {orderListData && (
+              <Pagination
+                pageSize={query.page_size}
+                currentPage={query.page}
+                totalProducts={orderListData.count}
+                onPageChange={(pageNumber: number) => {
+                  setQuery({
+                    ...query,
+                    page: pageNumber
+                  })
+                }}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
