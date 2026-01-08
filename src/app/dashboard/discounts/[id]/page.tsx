@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+export const runtime = 'edge';
 
 const DiscountDetailPage = () => {
   const { id } = useParams();
@@ -19,9 +20,9 @@ const DiscountDetailPage = () => {
     if (storeDetailData?.id && id) {
       dispatch(getDiscountDetail({ s_id: storeDetailData.id, d_id: Number(id) }));
     }
-    
+
     return () => {
-       dispatch(clearDiscountDetailState());
+      dispatch(clearDiscountDetailState());
     }
   }, [dispatch, storeDetailData?.id, id]);
 
@@ -43,12 +44,12 @@ const DiscountDetailPage = () => {
   }
 
   if (!discountDetailData) {
-    return null; 
+    return null;
   }
 
   return (
     <div className="p-4 md:p-6 h-full w-full bg-background overflow-y-auto">
-       <DiscountDetailView data={discountDetailData} storeId={storeDetailData?.id || 0} />
+      <DiscountDetailView data={discountDetailData} storeId={storeDetailData?.id || 0} />
     </div>
   );
 };
