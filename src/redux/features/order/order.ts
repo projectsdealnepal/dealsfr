@@ -1,16 +1,16 @@
 import api from "@/lib/interceptor";
 import { extractErrorMessage } from "@/lib/utils";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { OrderDetail, OrderItem, OrderSummary } from "./types";
+import { OrderDetail, OrderListResponse, OrderSummary } from "./types";
 
 export const getOrderList = createAsyncThunk<
-  OrderItem[],
-  number,
+  OrderListResponse,
+  { s_id: number, filter: string },
   { rejectValue: string }
->("get/orderlist", async (s_id, thunkAPI) => {
+>("get/orderlist", async ({ s_id, filter }, thunkAPI) => {
   try {
-    const response = await api.get(`/orders/${s_id}/?page=1`);
-    return response.data.results;
+    const response = await api.get(`/orders/${s_id}/?${filter}`);
+    return response.data;
   } catch (err: any) {
     return thunkAPI.rejectWithValue(
       extractErrorMessage(err, "Failed to get the order list")

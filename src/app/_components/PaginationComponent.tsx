@@ -5,21 +5,37 @@ interface PaginationProps {
   currentPage: number;
   totalProducts: number;
   onPageChange: (page: number) => void;
+  pageSize?: number,
 }
 
 export default function Pagination({
   currentPage,
   totalProducts,
   onPageChange,
+  pageSize = 10
 }: PaginationProps) {
-  const pageSize = 10;
 
   const handlePageChange = (page: number) => {
     onPageChange(page);
   };
-
   const totalPages =
     totalProducts !== 1 ? Math.ceil(totalProducts / pageSize) : 1;
+
+  const getVisiblePages = () => {
+    const maxVisible = 5
+    if (totalPages < maxVisible) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1)
+    }
+
+    let start = Math.max(currentPage - 2, 1)
+    let end = start + maxVisible - 1
+    if (end > totalPages) {
+      end = totalPages
+      start = end - maxVisible + 1
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => i + start)
+  };
 
   return (
     <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
@@ -41,36 +57,17 @@ export default function Pagination({
             Previous
           </Button>
           <div className="flex items-center gap-1">
-            {Array.from(
-              { length: Math.min(5, totalPages) },
-              (_, i) => {
-                let pageNum;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
-                }
-
-                return (
-                  <Button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    variant={
-                      currentPage === pageNum ? "default" : "outline"
-                    }
-                    size="sm"
-                    className="w-9 h-9"
-                  >
-                    {pageNum}
-                  </Button>
-                );
-              }
-            )}
-          </div>
+            {getVisiblePages().map((pageNum) => (
+              <Button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                variant={currentPage === pageNum ? "default" : "outline"}
+                size="sm"
+                className="w-9 h-9"
+              >
+                {pageNum}
+              </Button>
+            ))}</div>
           <Button
             onClick={() =>
               handlePageChange(Math.min(totalPages, currentPage + 1))
@@ -87,3 +84,4 @@ export default function Pagination({
     </div>
   )
 }
+

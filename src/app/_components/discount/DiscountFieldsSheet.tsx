@@ -123,10 +123,9 @@ const DiscountFieldsSheet = ({
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const {
-    tempDiscountProductList,
-    rewardProductList,
-  } = useAppSelector((s) => s.product);
+  const { tempDiscountProductList, rewardProductList } = useAppSelector(
+    (s) => s.product
+  );
   const { addProductOnDiscountData, addProductOnDiscountLoading } =
     useAppSelector((s) => s.discount);
 
@@ -280,10 +279,7 @@ const DiscountFieldsSheet = ({
       currentItem.valueType == "PERCENTAGE"
     ) {
       //there should be eithre percentage value present or reward items but not both
-      if (
-        !currentItem.percentageValue &&
-        rewardProductList.length == 0
-      ) {
+      if (!currentItem.percentageValue && rewardProductList.length == 0) {
         toast.info("Percentage value or reward items are required");
         return false;
       }
@@ -488,8 +484,7 @@ const DiscountFieldsSheet = ({
           payload = tempDiscountProductList.map((item) => ({
             discount_type: "SPEND_GET",
             //only pass the value type when there is no reward products
-            ...(rewardProducts.length == 0 &&
-            {
+            ...(rewardProducts.length == 0 && {
               value_type: currentItem.valueType as ValueType,
             }),
             max_discount_amount: currentItem.maximumDiscount?.toString(),
@@ -511,8 +506,7 @@ const DiscountFieldsSheet = ({
             {
               discount_type: "SPEND_GET",
               //only pass the value type when there is no reward products
-              ...(rewardProducts.length == 0 &&
-              {
+              ...(rewardProducts.length == 0 && {
                 value_type: currentItem.valueType as ValueType,
               }),
               brand: brandValue?.id,
@@ -589,10 +583,10 @@ const DiscountFieldsSheet = ({
             {targetType === "brand"
               ? "Brand"
               : targetType === "storeproduct"
-                ? "Product"
-                : targetType === "category"
-                  ? "Category"
-                  : "All Products"}
+              ? "Product"
+              : targetType === "category"
+              ? "Category"
+              : "All Products"}
           </SheetDescription>
         </SheetHeader>
 
@@ -603,10 +597,10 @@ const DiscountFieldsSheet = ({
               {targetType === "brand"
                 ? "Select Brand"
                 : targetType === "storeproduct"
-                  ? "Select Product"
-                  : targetType === "category"
-                    ? "Select Category"
-                    : "Discount will applied on all products"}
+                ? "Select Product"
+                : targetType === "category"
+                ? "Select Category"
+                : "Discount will applied on all products"}
             </Label>
             {targetType === "storeproduct" ? (
               <ProductSelector />

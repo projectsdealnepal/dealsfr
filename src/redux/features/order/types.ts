@@ -1,3 +1,9 @@
+export interface OrderListResponse {
+  count: number,
+  next: string,
+  previous: string,
+  results: OrderItem[]
+}
 export interface OrderItem {
   id: number
   status: string

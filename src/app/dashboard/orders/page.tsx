@@ -1,28 +1,52 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
-
 import PageHeader from "@/components/PageHeader";
 import { getOrderList } from "@/redux/features/order/order";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import FilterTabs from "./components/FilterTabs";
 import OrdersTable from "./components/OrdersTable";
-import StatsCard from "./components/StatsCard";
+import Pagination from "@/app/_components/PaginationComponent";
+
+export interface GetOrderListParams {
+  page: number;
+  page_size: number;
+  status: string;
+  search: string;
+}
 
 export default function Orders() {
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("");
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { orderSummaryData, filteredOrderList } = useAppSelector(
-    (s) => s.order
-  );
+  const { filteredOrderList, orderListData } = useAppSelector((s) => s.order);
+
+  const [query, setQuery] = useState<GetOrderListParams>({
+    page: 2,
+    page_size: 10,
+    status: "",
+    search: "",
+  })
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     console.log("storeDetailData", storeDetailData);
     if (storeDetailData) {
-      dispatch(getOrderList(storeDetailData.id));
+
+      const searchStr = (Object.keys(query) as Array<keyof GetOrderListParams>)
+        .reduce((str, k) => {
+          const v = query[k]
+          if (v == "" || v == 0 || v == null) return str
+          return str + `${k}=${query[k]}&`
+        }, "")
+
+      dispatch(getOrderList({
+        s_id: storeDetailData.id,
+        filter: searchStr
+      }))
     }
-  }, [storeDetailData]);
+  }, [storeDetailData, query]);
+
+
 
   return (
     <div className="container mx-auto p-4">
@@ -34,29 +58,29 @@ export default function Orders() {
           hasButton={false}
         />
 
+
         {/* Orders Section */}
         <Card>
           <CardContent className="pt-6 space-y-4">
             <FilterTabs
+              query={query}
+              setQuery={setQuery}
               activeFilter={activeFilter}
               setActiveFilter={setActiveFilter}
             />
             <OrdersTable orders={filteredOrderList} />
 
-            {/* Pagination */}
-            {/* <div className="flex justify-between items-center pt-2"> */}
-            {/*   <p className="text-sm text-muted-foreground"> */}
-            {/*     Showing {filteredOrders.length} of {ordersData.length} orders */}
-            {/*   </p> */}
-            {/*   <div className="flex gap-2"> */}
-            {/*     <Button variant="outline" size="sm" disabled> */}
-            {/*       Previous */}
-            {/*     </Button> */}
-            {/*     <Button variant="outline" size="sm"> */}
-            {/*       Next */}
-            {/*     </Button> */}
-            {/*   </div> */}
-            {/* </div> */}
+            <Pagination
+              pageSize={query.page_size}
+              currentPage={query.page}
+              totalProducts={orderListData?.count!}
+              onPageChange={(pageNumber: number) => {
+                setQuery({
+                  ...query,
+                  page: pageNumber
+                })
+              }}
+            />
           </CardContent>
         </Card>
       </div>

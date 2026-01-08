@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useEffect, useState } from "react";
 import { OrderDetailSheet } from "./OrderDetailSheet";
 import { StatusSelect } from "./StatusSelect";
+import { Loader2 } from "lucide-react";
 
 interface OrdersTableProps {
   orders: OrderItem[] | null;
@@ -18,6 +19,7 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
     new Date(dateStr).toISOString().slice(0, 10);
   const dispatch = useAppDispatch();
   const { storeDetailData } = useAppSelector((s) => s.store);
+  const { orderLoading } = useAppSelector((s) => s.order);
 
   const getFulfillmentType = (summary: any) => {
     if (summary.pickup === 1) return "Pickup";
@@ -83,6 +85,17 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
         </thead>
 
         <tbody className="divide-y">
+          {orderLoading && (
+            <tr>
+              <td
+                colSpan={9}
+                className="py-10 text-center text-muted-foreground"
+              >
+                <Loader2 className="animate-spin" />
+              </td>
+            </tr>
+          )}
+
           {orders && orders.length === 0 && (
             <tr>
               <td

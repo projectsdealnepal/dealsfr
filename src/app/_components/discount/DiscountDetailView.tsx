@@ -1,10 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { DiscountDetailResponse } from "@/redux/features/discount/types";
 import { getProducts } from "@/redux/features/product/product";
 import { DiscountType, TargetType } from "@/redux/features/product/types";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { DiscountDetailCard } from "./DiscountDetailCard";
 import { DiscountDetailHeader } from "./DiscountDetailHeader";
 import DiscountFieldsSheet from "./DiscountFieldsSheet";

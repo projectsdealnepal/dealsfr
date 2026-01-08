@@ -6,11 +6,11 @@ import {
   getOrderSummary,
   updateOrderStatus,
 } from "./order";
-import { OrderDetail, OrderItem, OrderSummary } from "./types";
+import { OrderDetail, OrderItem, OrderListResponse, OrderSummary } from "./types";
 
 interface OrderState {
   orderLoading: boolean;
-  orderListData: OrderItem[] | null;
+  orderListData: OrderListResponse | null;
   orderError: string | null;
   //for storing filtered orderListData
   filteredOrderList: OrderItem[] | null;
@@ -66,46 +66,46 @@ const OrderSlice = createSlice({
     },
 
 
-    filterOrders: (state, action: PayloadAction<string>) => {
-      if (state.orderListData) {
-        // const filters = [
-        //   { label: "All", value: "all" },
-        //   { label: "Pending", value: "pending" },
-        //   { label: "Confirmed", value: "confirmed" },
-        //   { label: "Ready", value: "ready_for_pickup" },
-        //   { label: "Picked Up", value: "picked_up" },
-        //   { label: "Cancelled", value: "cancelled" },
-        //   { label: "Completed", value: "completed" },
-        // ];
-        switch (action.payload) {
-          case "all":
-            state.filteredOrderList = state.orderListData
-            break;
-          case "pending":
-            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
-            break;
-          case "confirmed":
-            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
-            break;
-          case "ready_for_pickup":
-            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
-            break;
-          case "picked_up":
-            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
-            break;
-          case "cancelled":
-            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
-            break;
-          case "completed":
-            state.filteredOrderList = state.orderListData.filter((item) => item.status == action.payload)
-            break;
-          default:
-            state.filteredOrderList = state.orderListData
-            break;
-        }
-      }
-
-    }
+    // filterOrders: (state, action: PayloadAction<string>) => {
+    //   if (state.orderListData) {
+    //     // const filters = [
+    //     //   { label: "All", value: "all" },
+    //     //   { label: "Pending", value: "pending" },
+    //     //   { label: "Confirmed", value: "confirmed" },
+    //     //   { label: "Ready", value: "ready_for_pickup" },
+    //     //   { label: "Picked Up", value: "picked_up" },
+    //     //   { label: "Cancelled", value: "cancelled" },
+    //     //   { label: "Completed", value: "completed" },
+    //     // ];
+    //     switch (action.payload) {
+    //       case "all":
+    //         state.filteredOrderList = state.orderListData.results
+    //         break;
+    //       case "pending":
+    //         state.filteredOrderList = state.orderListData.results.filter((item) => item.status == action.payload)
+    //         break;
+    //       case "confirmed":
+    //         state.filteredOrderList = state.orderListData.results.filter((item) => item.status == action.payload)
+    //         break;
+    //       case "ready_for_pickup":
+    //         state.filteredOrderList = state.orderListData.results.filter((item) => item.status == action.payload)
+    //         break;
+    //       case "picked_up":
+    //         state.filteredOrderList = state.orderListData.results.filter((item) => item.status == action.payload)
+    //         break;
+    //       case "cancelled":
+    //         state.filteredOrderList = state.orderListData.results.filter((item) => item.status == action.payload)
+    //         break;
+    //       case "completed":
+    //         state.filteredOrderList = state.orderListData.results.filter((item) => item.status == action.payload)
+    //         break;
+    //       default:
+    //         state.filteredOrderList = state.orderListData.results
+    //         break;
+    //     }
+    //   }
+    //
+    // }
 
   },
   extraReducers: (builder) => {
@@ -116,11 +116,11 @@ const OrderSlice = createSlice({
       })
       .addCase(
         getOrderList.fulfilled,
-        (state, action: PayloadAction<OrderItem[]>) => {
+        (state, action: PayloadAction<OrderListResponse>) => {
           state.orderError = null;
           state.orderLoading = false;
           state.orderListData = action.payload;
-          state.filteredOrderList = action.payload;
+          state.filteredOrderList = action.payload.results;
         }
       )
       .addCase(
@@ -196,5 +196,5 @@ const OrderSlice = createSlice({
   },
 });
 
-export const { clearOrderListState, filterOrders } = OrderSlice.actions;
+export const { clearOrderListState } = OrderSlice.actions;
 export default OrderSlice.reducer;

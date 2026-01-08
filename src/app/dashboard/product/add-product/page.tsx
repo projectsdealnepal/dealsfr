@@ -1,7 +1,7 @@
 "use client";
 import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
 import { EditFormData, ProductEditSheet } from "@/app/_components/product/ProductEditSheet";
-import ProductListPagination from "@/app/_components/product/ProductListPagination";
+import PaginationComponent from "@/app/_components/PaginationComponent";
 import { AppBreadcrumbs } from "@/components/PageBreadcumbs";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -352,7 +352,7 @@ const AddProduct = () => {
                 </Table>
 
                 {/* Pagination */}
-                <ProductListPagination
+                <PaginationComponent
                   currentPage={currentPage}
                   totalProducts={allProductPagination}
                   onPageChange={setCurrentPage}
