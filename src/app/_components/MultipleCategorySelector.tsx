@@ -49,7 +49,7 @@ export function MultipleCategorySelector({
 
   // Helper to recursively get all descendant IDs of a category
   const getDescendantIds = (cat: CategoryItem): number[] => {
-    let ids: number[] = [];
+    const ids: number[] = [];
     if (cat.children?.length) {
       for (const child of cat.children) {
         ids.push(child.id);
