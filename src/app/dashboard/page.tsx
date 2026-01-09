@@ -2,19 +2,15 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppSelector } from "@/redux/hooks";
-import {
-  ChevronRight,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import QuickAction from "../_components/dashboardComp/QuickActions";
 import StoreInsight from "../_components/dashboardComp/StoreInsights";
 
 const DashboardPage = () => {
-  const {
-    userData,
-    userStateLoading,
-    userError
-  } = useAppSelector((s) => s.userData);
+  const { userData, userStateLoading, userError } = useAppSelector(
+    (s) => s.userData
+  );
   const { storeDetailData } = useAppSelector((s) => s.store);
 
   // Loading skeleton
@@ -47,14 +43,14 @@ const DashboardPage = () => {
     <div className="p-2 space-y-6">
       {/* Alerts */}
       {storeDetailData && storeDetailData.branches?.length < 1 && (
-        <div >
+        <div>
           <Link href="/dashboard/create_branch">
             <div className="cursor-pointer flex justify-between items-center px-5 py-3 rounded-md bg-primary/10 text-foreground hover:bg-primary/20 transition-colors">
               You need to setup at least one store branch to publish Discounts.
               <ChevronRight />
             </div>
           </Link>
-        </div >
+        </div>
       )}
       {!storeDetailData && (
         <div>

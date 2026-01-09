@@ -1,16 +1,14 @@
 "use client";
-
-import { useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronRight, ChevronDown, Check } from "lucide-react";
 import { CategoryItem } from "@/redux/features/category/types";
-
+import { Check, ChevronDown, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface CategorySelectorModalProps {
   open: boolean;
@@ -35,7 +33,6 @@ export function CategorySelectorSheet({
     return ids;
   };
 
-
   const toggleExpand = (id: number) => {
     setExpandedIds((prev) => {
       const newSet = new Set(prev);
@@ -52,11 +49,11 @@ export function CategorySelectorSheet({
   }) => {
     const isExpanded = expandedIds.has(cat.id);
     const handleCategorySelect = () => {
-      console.log("cat", cat)
-      onSelect(cat)
+      console.log("cat", cat);
+      onSelect(cat);
       // dispatch(filterProducts({ s_id: storeDetailData?.id || 0, filter: `category=${cat.id}` }))
-      onClose()
-    }
+      onClose();
+    };
     return (
       <div>
         <div

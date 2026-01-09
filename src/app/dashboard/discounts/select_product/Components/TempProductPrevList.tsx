@@ -1,27 +1,29 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { Card } from "@/components/ui/card";
+import { CategoryItem } from "@/redux/features/category/types";
 import {
   updateRewardProductList,
   updateTempProductList,
 } from "@/redux/features/product/productSlice";
-import { CategoryItem } from "@/redux/features/category/types";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { Trash2 } from "lucide-react";
 
 interface TempProductPreviewProps {
   mode?: "reward" | "default";
 }
 
-export function TempProductPrevList({ mode = "default" }: TempProductPreviewProps) {
+export function TempProductPrevList({
+  mode = "default",
+}: TempProductPreviewProps) {
   const dispatch = useAppDispatch();
-  const { tempDiscountProductList } = useAppSelector(
-    (s) => s.product
-  );
+  const { tempDiscountProductList } = useAppSelector((s) => s.product);
 
   const handleRemoveTempProduct = (id: number) => {
-    const modifiedArr = tempDiscountProductList.filter((item) => item.id !== id);
+    const modifiedArr = tempDiscountProductList.filter(
+      (item) => item.id !== id
+    );
     dispatch(updateTempProductList(modifiedArr));
   };
 
@@ -33,7 +35,9 @@ export function TempProductPrevList({ mode = "default" }: TempProductPreviewProp
         productList.map((product, index) => (
           <div
             key={product.id}
-            className={`p-3 py-1 border-b ${index % 2 == 0 ? 'bg-muted' : 'bg-muted/50'} flex justify-between hover:bg-muted/30 transition-colors  `}
+            className={`p-3 py-1 border-b ${
+              index % 2 == 0 ? "bg-muted" : "bg-muted/50"
+            } flex justify-between hover:bg-muted/30 transition-colors  `}
           >
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <img
@@ -60,7 +64,6 @@ export function TempProductPrevList({ mode = "default" }: TempProductPreviewProp
                 <Trash2 className="h-5 w-5" />
               </Button>
             </div>
-
           </div>
         ))
       ) : (

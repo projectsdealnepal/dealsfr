@@ -21,7 +21,7 @@ export const columns: ColumnDef<ProductItem>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => {
-          row.toggleSelected()
+          row.toggleSelected();
         }}
         aria-label="Select row"
       />
@@ -34,7 +34,7 @@ export const columns: ColumnDef<ProductItem>[] = [
     accessorKey: "id",
     header: "ID",
     enableSorting: false,
-    cell: ({ row }) => (row.original.id)
+    cell: ({ row }) => row.original.id,
   },
   {
     accessorKey: "name",
@@ -81,10 +81,11 @@ export const columns: ColumnDef<ProductItem>[] = [
     header: "Available",
     cell: ({ row }) => (
       <span
-        className={`px-2 py-1 rounded text-xs ${row.original.is_available
-          ? "bg-green-100 text-green-800"
-          : "bg-red-100 text-red-800"
-          }`}
+        className={`px-2 py-1 rounded text-xs ${
+          row.original.is_available
+            ? "bg-green-100 text-green-800"
+            : "bg-red-100 text-red-800"
+        }`}
       >
         {row.original.is_available ? "Yes" : "No"}
       </span>
@@ -97,14 +98,13 @@ export const columns: ColumnDef<ProductItem>[] = [
     cell: ({ row }) => row.original.active_discount?.name || "None",
     enableSorting: false,
   },
-  {
-    accessorKey: "created_at",
-    header: "Created",
-    cell: ({ row }) =>
-      row.original.created_at
-        ? new Date(row.original.created_at).toLocaleDateString()
-        : "-",
-    enableSorting: false,
-  },
+  // {
+  //   accessorKey: "created_at",
+  //   header: "Created",
+  //   cell: ({ row }) =>
+  //     row.original.created_at
+  //       ? new Date(row.original.created_at).toLocaleDateString()
+  //       : "-",
+  //   enableSorting: false,
+  // },
 ];
-

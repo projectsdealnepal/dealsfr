@@ -19,12 +19,30 @@ export const getCategories = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to fetch main categories"
+        error.message ||
+        "Failed to fetch main categories"
     );
   }
 });
 
+// Get store Category List
+// https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/category-by-store/
+export const getStoreCategories = createAsyncThunk<
+  CategoryItem[],
+  { store_pk: number },
+  { rejectValue: string }
+>("category/storeCategory/get", async ({ store_pk }, thunkAPI) => {
+  try {
+    const response = await api.get(`/products/${store_pk}/category-by-store/`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch store categories list"
+    );
+  }
+});
 // Create Main Category
 export const createMainCategory = createAsyncThunk<
   MainCategoryItem[],
@@ -39,8 +57,8 @@ export const createMainCategory = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to create main category"
+        error.message ||
+        "Failed to create main category"
     );
   }
 });
@@ -52,19 +70,15 @@ export const updateMainCategory = createAsyncThunk<
   { rejectValue: string }
 >("category/mainCategory/update", async ({ id, categoryData }, thunkAPI) => {
   try {
-    const response = await api.patch(
-      `/main-categories/${id}`,
-      categoryData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
-    );
+    const response = await api.patch(`/main-categories/${id}`, categoryData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to update main category"
+        error.message ||
+        "Failed to update main category"
     );
   }
 });
@@ -83,8 +97,8 @@ export const deleteMainCategory = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to delete main category"
+        error.message ||
+        "Failed to delete main category"
     );
   }
 });
@@ -107,8 +121,8 @@ export const getSubCategory = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to fetch sub categories"
+        error.message ||
+        "Failed to fetch sub categories"
     );
   }
 });
@@ -127,8 +141,8 @@ export const createSubCategory = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to create sub category"
+        error.message ||
+        "Failed to create sub category"
     );
   }
 });
@@ -147,8 +161,8 @@ export const updateSubCategory = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to update sub category"
+        error.message ||
+        "Failed to update sub category"
     );
   }
 });
@@ -167,9 +181,8 @@ export const deleteSubCategory = createAsyncThunk<
   } catch (error: any) {
     return thunkAPI.rejectWithValue(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to delete sub category"
+        error.message ||
+        "Failed to delete sub category"
     );
   }
 });
-

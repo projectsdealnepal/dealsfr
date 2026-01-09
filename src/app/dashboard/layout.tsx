@@ -3,7 +3,10 @@
 import { DashboardNav } from "@/app/_components/dashboardComp/dashboard-nav";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getBanner } from "@/redux/features/banner/banner";
-import { getCategories } from "@/redux/features/category/category";
+import {
+  getCategories,
+  getStoreCategories,
+} from "@/redux/features/category/category";
 import { getDiscount } from "@/redux/features/discount/discount";
 import { getLayout } from "@/redux/features/layout/layout";
 import { getOrderSummary } from "@/redux/features/order/order";
@@ -48,9 +51,10 @@ export default function DashboardLayout({
       dispatch(getLayout(storeId));
       dispatch(getBanner(storeId));
       dispatch(getCategories());
+      dispatch(getStoreCategories({ store_pk: storeId }));
       dispatch(getBrandsList());
-      dispatch(getStoresCategories())
-      dispatch(getOrderSummary(storeId))
+      dispatch(getStoresCategories());
+      dispatch(getOrderSummary(storeId));
     }
   }, [userData]);
 
@@ -72,7 +76,9 @@ export default function DashboardLayout({
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-md">
-          <h2 className="text-xl font-semibold text-foreground">Authentication Error</h2>
+          <h2 className="text-xl font-semibold text-foreground">
+            Authentication Error
+          </h2>
           <p className="text-muted-foreground">{userError}</p>
           <button
             onClick={() => router.push("/")}

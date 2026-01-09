@@ -17,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { CategoryItem } from "@/redux/features/category/types";
 import { addProductOnDiscount } from "@/redux/features/discount/discount";
 import { clearAddProductOnDiscountState } from "@/redux/features/discount/discountSlice";
 import { AddProductOnDiscountPayload } from "@/redux/features/discount/types";
@@ -39,6 +40,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { BrandSelector } from "../BrandSelector";
+import { MultipleCategorySelector } from "../MultipleCategorySelector";
 import { DiscountFieldRender } from "./DiscountFieldRender";
 
 // Validation schemas
@@ -119,6 +121,8 @@ const DiscountFieldsSheet = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [brandValue, setBrandValue] = useState<BrandItem>();
+  const [categoryValue, setCategoryValue] = useState<CategoryItem[]>();
+  const [openCategorySelector, setOpenCategorySelector] = useState(false);
 
   const { id } = useParams();
   const dispatch = useAppDispatch();
@@ -126,6 +130,8 @@ const DiscountFieldsSheet = ({
   const { tempDiscountProductList, rewardProductList } = useAppSelector(
     (s) => s.product
   );
+
+  const { categoryData,storeCategoryData } = useAppSelector((s) => s.category);
   const { addProductOnDiscountData, addProductOnDiscountLoading } =
     useAppSelector((s) => s.discount);
 
@@ -606,6 +612,24 @@ const DiscountFieldsSheet = ({
               <ProductSelector />
             ) : targetType === "brand" ? (
               <BrandSelector value={brandValue} onSelect={setBrandValue} />
+            ) : targetType === "category" ? (
+              storeCategoryData && (
+                <div>
+                  <Button
+                    onClick={() => setOpenCategorySelector(true)}
+                    className="w-full"
+                  >
+                    Select Category
+                  </Button>
+                  <MultipleCategorySelector
+                    value={categoryValue}
+                    onSelect={setCategoryValue}
+                    onClose={() => setOpenCategorySelector(false)}
+                    open={openCategorySelector}
+                    categories={storeCategoryData}
+                  />
+                </div>
+              )
             ) : null}
           </div>
 
