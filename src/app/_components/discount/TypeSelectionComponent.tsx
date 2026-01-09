@@ -12,20 +12,14 @@ import {
 } from "@/components/ui/select";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 
 const discountTypeOptions = [
   { value: "PERCENTAGE", label: "Percentage Off" },
   { value: "FIXED_AMOUNT", label: "Fixed Amount Off" },
   { value: "BOGO", label: "Buy X Get Y" },
   { value: "SPEND_GET", label: "Spend X Get Y Off" },
-  { value: "BUNDLE", label: "Buy Combo of Products to Get Discount" },
-];
-const discountOnOptions = [
-  { value: "storeproduct", label: "Products" },
-  { value: "brand", label: "Brands" },
-  { value: "category", label: "Categories" },
-  { value: "store", label: "Store" },
+  // { value: "BUNDLE", label: "Buy Combo of Products to Get Discount" },
 ];
 
 interface TypeSelectionComponentProps {
@@ -37,7 +31,6 @@ interface TypeSelectionComponentProps {
   setOpenFieldSheet: (value: boolean) => void;
 }
 export const TypeSelectionComponent: React.FC<TypeSelectionComponentProps> = ({
-  dataId,
   selectedDiscountType,
   setSelectedDiscountType,
   selectedDiscountOn,
@@ -45,6 +38,58 @@ export const TypeSelectionComponent: React.FC<TypeSelectionComponentProps> = ({
   setOpenFieldSheet,
 }) => {
   const router = useRouter();
+  let discountOnOptions: { value: string, label: string }[] = []
+
+
+  // const discountOnOptions = [
+  //   { value: "storeproduct", label: "Products" },
+  //   { value: "brand", label: "Brands" },
+  //   { value: "category", label: "Categories" },
+  //   { value: "store", label: "Store" },
+  // ];
+  //
+  switch (selectedDiscountType) {
+    case "PERCENTAGE":
+      discountOnOptions = [
+        { value: "storeproduct", label: "Products" },
+        { value: "brand", label: "Brands" },
+        { value: "category", label: "Categories" },
+        { value: "store", label: "Store" },
+      ];
+      break;
+    case "FIXED_AMOUNT":
+      discountOnOptions = [
+        { value: "storeproduct", label: "Products" },
+        { value: "brand", label: "Brands" },
+        { value: "category", label: "Categories" },
+        { value: "store", label: "Store" },
+      ];
+      break;
+    case "BOGO":
+      discountOnOptions = [
+        { value: "storeproduct", label: "Products" },
+        { value: "brand", label: "Brands" },
+        { value: "category", label: "Categories" },
+        { value: "store", label: "Store" },
+      ];
+      break;
+    case "SPEND_GET":
+      discountOnOptions = [
+        { value: "brand", label: "Brands" },
+        { value: "category", label: "Categories" },
+        { value: "store", label: "Store" },
+      ];
+      break;
+    default:
+      discountOnOptions = [
+        { value: "storeproduct", label: "Products" },
+        { value: "brand", label: "Brands" },
+        { value: "category", label: "Categories" },
+        { value: "store", label: "Store" },
+      ];
+      break;
+
+  }
 
   return (
     <Card className="w-full">
