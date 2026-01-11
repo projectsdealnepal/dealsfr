@@ -34,12 +34,13 @@ import {
   ValueType,
 } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Loader2, Plus } from "lucide-react";
+import { ChevronRight, Loader2, Plus, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { BrandSelector } from "../BrandSelector";
+import { CategorySelectorSheet } from "../CategoriesSheet";
 import { MultipleCategorySelector } from "../MultipleCategorySelector";
 import { DiscountFieldRender } from "./DiscountFieldRender";
 
@@ -121,8 +122,10 @@ const DiscountFieldsSheet = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [brandValue, setBrandValue] = useState<BrandItem>();
-  const [categoryValue, setCategoryValue] = useState<CategoryItem[]>();
+  const [categoryValue, setCategoryValue] = useState<CategoryItem>();
   const [openCategorySelector, setOpenCategorySelector] = useState(false);
+
+  console.log("Selected caregories:: from DiscountFieldsSheet", categoryValue);
 
   const { id } = useParams();
   const dispatch = useAppDispatch();
@@ -131,7 +134,7 @@ const DiscountFieldsSheet = ({
     (s) => s.product
   );
 
-  const { categoryData,storeCategoryData } = useAppSelector((s) => s.category);
+  const { categoryData, storeCategoryData } = useAppSelector((s) => s.category);
   const { addProductOnDiscountData, addProductOnDiscountLoading } =
     useAppSelector((s) => s.discount);
 
@@ -164,12 +167,17 @@ const DiscountFieldsSheet = ({
       currentItem.targetType == "storeproduct" &&
       tempDiscountProductList.length === 0
     ) {
-      toast.info("At least one product is required", { richColors: true });
+      toast.info("At least one product is required");
       return false;
     }
     //if discount is on brand, there should be atleast one brand
     if (currentItem.targetType == "brand" && brandValue == null) {
-      toast.info("At least one brand is required", { richColors: true });
+      toast.info("At least one brand is required");
+      return false;
+    }
+    //if discount is on category, there should be atleast one category
+    if (currentItem.targetType == "category" && categoryValue == null) {
+      toast.info("Please select the category for category target type");
       return false;
     }
 
@@ -371,6 +379,17 @@ const DiscountFieldsSheet = ({
             },
           ];
           break;
+        case "category":
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              value: currentItem.percentageValue,
+              value_type: "PERCENTAGE",
+              max_discount_amount: currentItem.maximumDiscount?.toString(),
+              category: categoryValue?.id,
+            },
+          ];
+          break;
         default:
           break;
       }
@@ -405,6 +424,16 @@ const DiscountFieldsSheet = ({
               value: currentItem.amountValue,
               value_type: "FIXED_AMOUNT",
               brand: brandValue?.id,
+            },
+          ];
+          break;
+        case "category":
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              value: currentItem.amountValue,
+              value_type: "FIXED_AMOUNT",
+              category: categoryValue?.id,
             },
           ];
           break;
@@ -467,6 +496,27 @@ const DiscountFieldsSheet = ({
             },
           ];
           break;
+        case "category":
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              //only provide the value type if there is no reward product
+              ...(rewardProducts.length == 0 && {
+                value_type: currentItem.valueType as ValueType,
+              }),
+              buy_quantity: currentItem.buyQuantity,
+              reward_products: rewardProducts,
+              value:
+                currentItem.valueType == "PERCENTAGE"
+                  ? currentItem.percentageValue
+                  : currentItem.discountValue,
+              category: categoryValue?.id,
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            },
+          ];
+          break;
         default:
           break;
       }
@@ -516,6 +566,28 @@ const DiscountFieldsSheet = ({
                 value_type: currentItem.valueType as ValueType,
               }),
               brand: brandValue?.id,
+              min_spend_amount: currentItem.spendAmount?.toString(),
+              reward_products: rewardProducts,
+              value:
+                currentItem.valueType == "PERCENTAGE"
+                  ? currentItem.percentageValue
+                  : currentItem.discountValue,
+
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            },
+          ];
+          break;
+        case "category":
+          payload = [
+            {
+              discount_type: "SPEND_GET",
+              //only pass the value type when there is no reward products
+              ...(rewardProducts.length == 0 && {
+                value_type: currentItem.valueType as ValueType,
+              }),
+              category: categoryValue?.id,
               min_spend_amount: currentItem.spendAmount?.toString(),
               reward_products: rewardProducts,
               value:
@@ -614,19 +686,45 @@ const DiscountFieldsSheet = ({
               <BrandSelector value={brandValue} onSelect={setBrandValue} />
             ) : targetType === "category" ? (
               storeCategoryData && (
-                <div>
-                  <Button
-                    onClick={() => setOpenCategorySelector(true)}
-                    className="w-full"
-                  >
-                    Select Category
-                  </Button>
-                  <MultipleCategorySelector
-                    value={categoryValue}
-                    onSelect={setCategoryValue}
-                    onClose={() => setOpenCategorySelector(false)}
+                <div className="space-y-2">
+                  {!categoryValue ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => setOpenCategorySelector(true)}
+                      className="w-full justify-between font-normal"
+                    >
+                      <span className="text-muted-foreground">
+                        Select Category
+                      </span>
+                      <ChevronRight className="h-4 w-4 opacity-50" />
+                    </Button>
+                  ) : (
+                    <div className="flex items-center justify-between rounded-md border p-3">
+                      <div className="space-y-0.5">
+                        <p className="text-xs text-muted-foreground">
+                          Selected Category
+                        </p>
+                        <p className="text-sm font-medium">
+                          {categoryValue.name}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setCategoryValue(undefined)}
+                        className="h-8 w-8"
+                      >
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Clear</span>
+                      </Button>
+                    </div>
+                  )}
+
+                  <CategorySelectorSheet
                     open={openCategorySelector}
+                    onClose={() => setOpenCategorySelector(false)}
                     categories={storeCategoryData}
+                    onSelect={setCategoryValue}
                   />
                 </div>
               )

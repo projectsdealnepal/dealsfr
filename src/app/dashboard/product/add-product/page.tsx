@@ -1,14 +1,13 @@
 "use client";
 import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
-import { EditFormData, ProductEditSheet } from "@/app/_components/product/ProductEditSheet";
 import PaginationComponent from "@/app/_components/PaginationComponent";
-import { AppBreadcrumbs } from "@/components/PageBreadcumbs";
+import {
+  EditFormData,
+  ProductEditSheet,
+} from "@/app/_components/product/ProductEditSheet";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -25,13 +24,7 @@ import {
 } from "@/redux/features/product/product";
 import { GenericProductItem } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  ArrowRight,
-  ChevronDown,
-  Package,
-  Search,
-  X,
-} from "lucide-react";
+import { ArrowRight, ChevronDown, Package, Search, X } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -53,7 +46,8 @@ const AddProduct = () => {
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedProduct, setSelectedProduct] = useState<GenericProductItem | null>(null);
+  const [selectedProduct, setSelectedProduct] =
+    useState<GenericProductItem | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CategoryItem | null>(
     null
   );
@@ -96,34 +90,37 @@ const AddProduct = () => {
     return tempAddedProductList.some((p) => p.id === productId);
   };
 
-
   const handleAddToStore = (p: GenericProductItem) => {
-    setSelectedProduct(p)
-    setIsEditSheetOpen(true)
+    setSelectedProduct(p);
+    setIsEditSheetOpen(true);
   };
 
-  const handleSave = (formData: EditFormData, newImages: File[], imageUrls: string[]) => {
-    const form = new FormData()
-    form.append("name", formData.name)
-    form.append("description", formData.description)
-    form.append("price", formData.price)
-    form.append("brand", formData.brand_id.toString())
-    form.append("category", formData.category_id.toString())
+  const handleSave = (
+    formData: EditFormData,
+    newImages: File[],
+    imageUrls: string[]
+  ) => {
+    const form = new FormData();
+    form.append("name", formData.name);
+    form.append("description", formData.description);
+    form.append("price", formData.price);
+    form.append("brand", formData.brand_id.toString());
+    form.append("category", formData.category_id.toString());
     newImages.forEach((image) => {
-      form.append("images", image)
-    })
+      form.append("images", image);
+    });
     imageUrls.forEach((image) => {
-      form.append("image_urls", image)
-    })
+      form.append("image_urls", image);
+    });
 
     if (storeDetailData) {
       const payload = {
         store_pk: storeDetailData.id,
         userData: form,
-      }
-      dispatch(createProduct(payload))
+      };
+      dispatch(createProduct(payload));
     }
-  }
+  };
 
   useEffect(() => {
     if (addProductToStoreData) {
@@ -155,7 +152,6 @@ const AddProduct = () => {
   //   }
   // }, [bulkProductUpdateData, bulkProductUpdateError]);
 
-
   return (
     <div className="flex flex-1 flex-col min-h-screen p-6">
       <div className="w-full max-w-7xl  space-y-6">
@@ -176,11 +172,10 @@ const AddProduct = () => {
           open={isAddSheetOpen}
           onClose={() => setIsAddSheetOpen(false)}
           onSave={(formData, _, newImages, imageUrls) => {
-            handleSave(formData, newImages, imageUrls)
-            console.timeLog("formData", formData)
+            handleSave(formData, newImages, imageUrls);
+            console.timeLog("formData", formData);
           }}
         />
-
 
         {/* Search + Category selector (compact, inline) */}
         <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -288,8 +283,9 @@ const AddProduct = () => {
                     {allProductList.map((product: GenericProductItem) => (
                       <TableRow
                         key={product.id}
-                        className={`hover:bg-blue-50/50 transition-colors ${isProductSelected(product.id) ? "bg-blue-50/70" : ""
-                          }`}
+                        className={`hover:bg-blue-50/50 transition-colors ${
+                          isProductSelected(product.id) ? "bg-blue-50/70" : ""
+                        }`}
                       >
                         {/* <TableCell> */}
                         {/*   <div className="flex items-center justify-center"> */}
@@ -307,7 +303,7 @@ const AddProduct = () => {
                             {product.images.length ? (
                               <Image
                                 src={
-                                  typeof product.images[0] === 'string'
+                                  typeof product.images[0] === "string"
                                     ? product.images[0]
                                     : product.images[0].image
                                 }
@@ -374,7 +370,7 @@ const AddProduct = () => {
               open={isEditSheetOpen}
               onClose={() => setIsEditSheetOpen(false)}
               onSave={(formData, _, newImages, imageUrls) => {
-                handleSave(formData, newImages, imageUrls)
+                handleSave(formData, newImages, imageUrls);
               }}
             />
           </CardContent>

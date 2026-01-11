@@ -10,5 +10,5 @@ Frontend:
     - Show the error toast message when there is an error while changing the status of order.
     - Add breadcrump on all pages.
 
-- Make support delivery editable on store detail page.
+- Make support delivery(does delivery is availabe on store or not) editable on store detail page.
 - Show delivery address on order detial sheet.
