@@ -1,13 +1,18 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { updateOrderStatus } from "@/redux/features/order/order";
 import { OrderItem } from "@/redux/features/order/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { OrderDetailSheet } from "./OrderDetailSheet";
 import { StatusSelect } from "./StatusSelect";
-import { Loader2 } from "lucide-react";
 
 interface OrdersTableProps {
   orders: OrderItem[] | null;
@@ -66,6 +71,7 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
       <table className="w-full">
         <thead className="border-b bg-muted/50">
           <tr>
+            <th className="px-4 py-3 text-left text-sm font-medium"></th>
             <th className="px-4 py-3 text-left text-sm font-medium">Order</th>
             <th className="px-4 py-3 text-left text-sm font-medium">Date</th>
             <th className="px-4 py-3 text-left text-sm font-medium">
@@ -113,6 +119,22 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
                 key={order.id}
                 className="hover:bg-muted/50 transition-colors"
               >
+                <td className="px-4 py-4 font-medium text-sm">
+                  {order.status == "pending" ? (
+                    <Tooltip>
+                      <TooltipTrigger>
+                        {/* //want to build illuminate dot with pulse */}
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Order is pending</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : null}
+                </td>
                 <td className="px-4 py-4 font-medium text-sm">{order.id}</td>
 
                 <td className="px-4 py-4 text-sm text-muted-foreground">
