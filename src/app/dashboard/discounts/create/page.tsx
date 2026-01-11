@@ -1,4 +1,5 @@
 "use client";
+import ChildRouteHeader from "@/components/ChildRouteHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -17,17 +18,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { CalendarDays, Image, Layout, Tag } from "lucide-react";
-import { createDiscount, updateDiscount } from "@/redux/features/discount/discount";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  createDiscount,
+  updateDiscount,
+} from "@/redux/features/discount/discount";
 import { clearCreateDiscountState } from "@/redux/features/discount/discountSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { CalendarDays, Image, Layout, Tag } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import ChildRouteHeader from "@/components/ChildRouteHeader";
 
 // Define form data type
 export interface DiscountFormData {
@@ -43,21 +46,21 @@ export interface DiscountFormData {
 
 export default function AddDiscountForm() {
   const dispatch = useAppDispatch();
-  const param = useSearchParams()
-  const id = param.get("id")
-  const router = useRouter()
+  const param = useSearchParams();
+  const id = param.get("id");
+  const router = useRouter();
 
   const { layoutData } = useAppSelector((state) => state.layout);
   const { bannerData } = useAppSelector((state) => state.banner);
-  const { storeDetailData } = useAppSelector(s => s.store)
+  const { storeDetailData } = useAppSelector((s) => s.store);
   const { createDiscountData, discountData, discountError } = useAppSelector(
     (s) => s.discount
   );
 
-  const isEditMode = Boolean(id)
+  const isEditMode = Boolean(id);
   const currentDiscount = isEditMode
     ? discountData?.find((d) => d.id === Number(id))
-    : null
+    : null;
 
   const form = useForm<DiscountFormData>({
     defaultValues: {
@@ -72,11 +75,19 @@ export default function AddDiscountForm() {
 
   useEffect(() => {
     if (isEditMode && currentDiscount) {
+      const formatDate = (dateString: string) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 16);
+      };
+
       form.reset({
         name: currentDiscount.name || "",
         description: currentDiscount.description || "",
-        start_date: currentDiscount.start_date || "",
-        end_date: currentDiscount.end_date || "",
+        start_date: formatDate(currentDiscount.start_date) || "",
+        end_date: formatDate(currentDiscount.end_date) || "",
         banner: String(currentDiscount.banner || ""),
         layout: String(currentDiscount.layout || ""),
       });
@@ -92,29 +103,32 @@ export default function AddDiscountForm() {
     };
 
     if (isEditMode && currentDiscount) {
-      dispatch(updateDiscount({
-        payload,
-        d_id: Number(id),
-        s_id: storeDetailData?.id || 0
-      }))
+      dispatch(
+        updateDiscount({
+          payload,
+          d_id: Number(id),
+          s_id: storeDetailData?.id || 0,
+        })
+      );
     } else {
-      dispatch(createDiscount({
-        payload,
-        s_id: storeDetailData?.id || 0
-      }));
+      dispatch(
+        createDiscount({
+          payload,
+          s_id: storeDetailData?.id || 0,
+        })
+      );
     }
   };
 
   useEffect(() => {
     if (createDiscountData) {
-      toast.success("Successfully created Discount", { richColors: true })
-      router.back()
+      toast.success("Successfully created Discount", { richColors: true });
+      router.back();
     }
 
     return () => {
-      dispatch(clearCreateDiscountState())
-    }
-
+      dispatch(clearCreateDiscountState());
+    };
   }, [createDiscountData, discountError]);
 
   const getDiscountTypeColor = (type: string) => {
@@ -137,12 +151,13 @@ export default function AddDiscountForm() {
           {/* Header Section */}
           <ChildRouteHeader
             title={isEditMode ? "Edit Discount" : "Create New Discount"}
-            subtitle={isEditMode
-              ? "Update your discount settings and promotional details"
-              : "Configure your discount settings and promotional details"
+            subtitle={
+              isEditMode
+                ? "Update your discount settings and promotional details"
+                : "Configure your discount settings and promotional details"
             }
-            backLink='/dashboard/discounts'
-            backText='Back to discounts'
+            backLink="/dashboard/discounts"
+            backText="Back to discounts"
             titleIcon={<Tag className="h-5 w-5 text-primary" />}
           />
 
@@ -169,11 +184,16 @@ export default function AddDiscountForm() {
                         name="name"
                         rules={{
                           required: "Title is required",
-                          maxLength: { value: 100, message: "Title is too long" },
+                          maxLength: {
+                            value: 100,
+                            message: "Title is too long",
+                          },
                         }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium">Discount Title</FormLabel>
+                            <FormLabel className="text-base font-medium">
+                              Discount Title
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 placeholder="e.g., Summer Sale 2024"
@@ -199,7 +219,9 @@ export default function AddDiscountForm() {
                         }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium">Description</FormLabel>
+                            <FormLabel className="text-base font-medium">
+                              Description
+                            </FormLabel>
                             <FormControl>
                               <Textarea
                                 placeholder="Describe your discount offer and terms..."
@@ -231,7 +253,9 @@ export default function AddDiscountForm() {
                         rules={{ required: "Start date is required" }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium">Start Date & Time</FormLabel>
+                            <FormLabel className="text-base font-medium">
+                              Start Date & Time
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 type="datetime-local"
@@ -251,7 +275,9 @@ export default function AddDiscountForm() {
                         rules={{ required: "End date is required" }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium">End Date & Time</FormLabel>
+                            <FormLabel className="text-base font-medium">
+                              End Date & Time
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 type="datetime-local"
@@ -267,7 +293,6 @@ export default function AddDiscountForm() {
                   </div>
 
                   <Separator />
-
 
                   {/* Display Settings Section */}
                   <div className="space-y-6">
@@ -324,7 +349,9 @@ export default function AddDiscountForm() {
                         rules={{ required: "Layout is required" }}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium">Layout Template</FormLabel>
+                            <FormLabel className="text-base font-medium">
+                              Layout Template
+                            </FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
@@ -361,7 +388,9 @@ export default function AddDiscountForm() {
                   {/* Submit Button */}
                   <div className="pt-4">
                     <Button type="submit">
-                      {isEditMode ? "Update Discount" : "Create Discount Campaign"}
+                      {isEditMode
+                        ? "Update Discount"
+                        : "Create Discount Campaign"}
                     </Button>
                   </div>
                 </form>
