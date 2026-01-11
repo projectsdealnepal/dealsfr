@@ -12,7 +12,7 @@ import { deleteProductOnDiscount } from "@/redux/features/discount/discount";
 import { OfferAppliedProduct } from "@/redux/features/discount/types";
 import { DiscountType } from "@/redux/features/product/types";
 import { useAppDispatch } from "@/redux/hooks";
-import { Trash2 } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { DiscountedProductFilter } from "./DiscountedProductFilter";
 
@@ -45,6 +45,10 @@ export const DiscountProductsList = ({
       deleteProductOnDiscount({ s_id: storeId, d_id: discountId, pd_id: id })
     );
   };
+
+  const handleEditProductOnDicount = (item: OfferAppliedProduct) => {
+    console.log("itme::", item)
+  }
 
   const filteredProducts = products.filter((item) => {
     if (filter === "ALL") return true;
@@ -135,6 +139,14 @@ export const DiscountProductsList = ({
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 "
+                          onClick={() => handleEditProductOnDicount(item)}
+                        >
+                          <Edit2 className="h-4 w-4 text-blue-500" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"

@@ -20,7 +20,10 @@ import {
 import { CategoryItem } from "@/redux/features/category/types";
 import { addProductOnDiscount } from "@/redux/features/discount/discount";
 import { clearAddProductOnDiscountState } from "@/redux/features/discount/discountSlice";
-import { AddProductOnDiscountPayload } from "@/redux/features/discount/types";
+import {
+  AddProductOnDiscountPayload,
+  OfferAppliedProduct,
+} from "@/redux/features/discount/types";
 import {
   clearRewardProductList,
   clearTempProductList,
@@ -103,6 +106,7 @@ const getSpendGetSchema = (hasRewards: boolean) =>
     );
 
 interface DiscountFieldsSheetProps {
+  discountedAppliedProduct?: OfferAppliedProduct | null;
   discountType: DiscountType;
   targetType: TargetType;
   open: boolean;
@@ -390,6 +394,16 @@ const DiscountFieldsSheet = ({
             },
           ];
           break;
+        case "store":
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              value: currentItem.percentageValue,
+              value_type: "PERCENTAGE",
+              max_discount_amount: currentItem.maximumDiscount?.toString(),
+            },
+          ];
+          break;
         default:
           break;
       }
@@ -434,6 +448,15 @@ const DiscountFieldsSheet = ({
               value: currentItem.amountValue,
               value_type: "FIXED_AMOUNT",
               category: categoryValue?.id,
+            },
+          ];
+          break;
+        case "store":
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              value: currentItem.amountValue,
+              value_type: "FIXED_AMOUNT",
             },
           ];
           break;
@@ -517,6 +540,26 @@ const DiscountFieldsSheet = ({
             },
           ];
           break;
+        case "store":
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              //only provide the value type if there is no reward product
+              ...(rewardProducts.length == 0 && {
+                value_type: currentItem.valueType as ValueType,
+              }),
+              buy_quantity: currentItem.buyQuantity,
+              reward_products: rewardProducts,
+              value:
+                currentItem.valueType == "PERCENTAGE"
+                  ? currentItem.percentageValue
+                  : currentItem.discountValue,
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            },
+          ];
+          break;
         default:
           break;
       }
@@ -588,6 +631,27 @@ const DiscountFieldsSheet = ({
                 value_type: currentItem.valueType as ValueType,
               }),
               category: categoryValue?.id,
+              min_spend_amount: currentItem.spendAmount?.toString(),
+              reward_products: rewardProducts,
+              value:
+                currentItem.valueType == "PERCENTAGE"
+                  ? currentItem.percentageValue
+                  : currentItem.discountValue,
+
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            },
+          ];
+          break;
+        case "store":
+          payload = [
+            {
+              discount_type: "SPEND_GET",
+              //only pass the value type when there is no reward products
+              ...(rewardProducts.length == 0 && {
+                value_type: currentItem.valueType as ValueType,
+              }),
               min_spend_amount: currentItem.spendAmount?.toString(),
               reward_products: rewardProducts,
               value:

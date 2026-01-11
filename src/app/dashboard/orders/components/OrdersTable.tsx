@@ -27,8 +27,8 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
   const { orderLoading } = useAppSelector((s) => s.order);
 
   const getFulfillmentType = (summary: any) => {
-    if (summary.pickup === 1) return "Pickup";
-    if (summary.delivery === 1) return "Delivery";
+    if (summary.pickup != 0) return "Pickup";
+    if (summary.delivery != 0) return "Delivery";
     return "Unknown";
   };
 
