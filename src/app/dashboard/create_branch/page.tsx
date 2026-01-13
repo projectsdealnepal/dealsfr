@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Toast } from "@/components/ui/toast";
 import {
   createStoreBranch,
+  getBranchDetails,
   getStoreDetail,
 } from "@/redux/features/store/store";
 import {
@@ -67,18 +68,20 @@ export default function CreateBranchPage() {
   const dispatch = useAppDispatch();
   const params = useSearchParams();
   const action = params.get("action");
+  const branch_id = params.get("branch_id");
+  const store_id = params.get("store_id");
   const { userData } = useAppSelector((s) => s.userData);
   const { creteBranchData, branchDetailsData } = useAppSelector((s) => s.store);
 
   const defaultValues: Partial<BranchFormValues> = {
-    id: branchDetailsData?.id || 0,
-    name: branchDetailsData?.name || "",
-    city: branchDetailsData?.city || "",
-    district: branchDetailsData?.district || "",
-    address: branchDetailsData?.address || "",
-    location_link: branchDetailsData?.location_link || "",
-    latitude: branchDetailsData?.latitude || "",
-    longitude: branchDetailsData?.longitude || "",
+    id: 0,
+    name: "",
+    city: "",
+    district: "",
+    address: "",
+    location_link: "",
+    latitude: "",
+    longitude: "",
   };
 
   const form = useForm<BranchFormValues>({
@@ -138,11 +141,37 @@ export default function CreateBranchPage() {
     };
   }, [creteBranchData]);
 
+  useEffect(() => {
+    if (action === "edit" && branch_id && store_id) {
+      dispatch(
+        getBranchDetails({
+          store_id: parseInt(store_id),
+          branch_id: parseInt(branch_id),
+        })
+      );
+    }
+  }, [action, branch_id, store_id, dispatch]);
+
+  useEffect(() => {
+    if (action === "edit" && branchDetailsData) {
+      form.reset({
+        id: branchDetailsData.id,
+        name: branchDetailsData.name,
+        city: branchDetailsData.city,
+        district: branchDetailsData.district,
+        address: branchDetailsData.address,
+        location_link: branchDetailsData.location_link,
+        latitude: branchDetailsData.latitude,
+        longitude: branchDetailsData.longitude,
+      });
+    }
+  }, [branchDetailsData, action, form]);
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-card-foreground">
-          Create New Branch
+          {action === "edit" ? "Update Branch" : "Create New Branch"}
         </h1>
       </div>
 
@@ -310,7 +339,7 @@ export default function CreateBranchPage() {
                   type="submit"
                   className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
-                  Create Branch
+                  {action === "edit" ? "Update Branch" : "Create Branch"}
                 </Button>
               </div>
             </form>

@@ -105,9 +105,11 @@ export const DiscountFieldRender = ({
             Discount Amount
           </Label>
           <div className="relative group">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+            <p className="absolute left-3 text-sm top-1/4  h-2 w-2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+              NPR
+            </p>
             <Input
-              className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
+              className="pl-12 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
               id="amountValue"
               type="number"
               min="0"
@@ -275,14 +277,16 @@ export const DiscountFieldRender = ({
                     Discount Amount
                   </Label>
                   <div className="relative group">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                    <p className="absolute left-3 text-sm top-1/4  h-2 w-2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+                      NPR
+                    </p>
                     <Input
                       id="discountValue"
                       type="number"
                       min="0"
                       step="1"
                       placeholder="e.g. 50"
-                      className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
+                      className="pl-12 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
                       value={(currentItem as BOGODiscount).discountValue || ""}
                       onChange={(e) =>
                         setCurrentItem({
@@ -329,14 +333,16 @@ export const DiscountFieldRender = ({
               Minimum Spend Amount
             </Label>
             <div className="relative group w-full">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+              <p className="absolute left-3 text-sm top-1/4  h-2 w-2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+                NPR
+              </p>
               <Input
                 id="spendAmount"
                 type="number"
                 min="0"
                 step="0.01"
                 placeholder="e.g., 500"
-                className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
+                className="pl-12 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
                 value={(currentItem as SpendGetDiscount).spendAmount || ""}
                 onChange={(e) =>
                   setCurrentItem({
@@ -464,14 +470,16 @@ export const DiscountFieldRender = ({
                     Discount Amount
                   </Label>
                   <div className="relative group">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                    <p className="absolute left-3 text-sm top-1/4  h-2 w-2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+                      NPR
+                    </p>
                     <Input
                       id="discountValue"
                       type="number"
                       min="0"
                       step="0.01"
                       placeholder="e.g., 100"
-                      className="pl-9 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
+                      className="pl-12 h-11 bg-muted/5 border-muted-foreground/20 focus:bg-background focus:border-primary/50 transition-all font-medium text-lg"
                       value={
                         (currentItem as SpendGetDiscount).discountValue || ""
                       }

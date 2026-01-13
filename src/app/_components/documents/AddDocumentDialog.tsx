@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Upload } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface AddDocumentDialogProps {
@@ -34,6 +34,18 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
     file: null as File | null,
   });
 
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (formData.file && formData.file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(formData.file);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [formData.file]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -43,12 +55,10 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!formData.name || !formData.file) {
       toast.error("Please fill in all fields");
       return;
     }
-
     onSubmit({ name: formData.name, file: formData.file });
     setFormData({ name: "", file: null });
   };
@@ -83,13 +93,28 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="file">Select File</Label>
-            <Input
-              id="file"
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
-              onChange={handleFileChange}
-              required
-            />
+            <div className="relative">
+              <Input
+                id="file"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                onChange={handleFileChange}
+                required
+              />
+              <div className="flex h-10 items-center justify-center rounded-md border border-input bg-background text-sm text-muted-foreground px-3 truncate">
+                {formData.file?.name ?? "Choose file"}
+              </div>
+            </div>
+            {previewUrl && (
+              <div className="mt-2">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="h-20 w-auto rounded object-contain"
+                />
+              </div>
+            )}
             <p className="text-sm text-gray-500">
               Maximum file size: 10MB. Supported formats: PDF, JPG, PNG, GIF,
               WebP

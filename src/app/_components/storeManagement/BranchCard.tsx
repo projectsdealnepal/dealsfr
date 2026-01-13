@@ -1,43 +1,34 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import api from "@/lib/interceptor"
-import { getBranchDetails, getStoreDetail } from "@/redux/features/store/store"
-import { Branch } from "@/redux/features/store/types"
-import { useAppDispatch, useAppSelector } from "@/redux/hooks"
-import { Building, Edit, Trash2 } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import api from "@/lib/interceptor";
+import { getBranchDetails, getStoreDetail } from "@/redux/features/store/store";
+import { Branch } from "@/redux/features/store/types";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { Building, Edit, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface BranchCardTypes {
-  branch: Branch,
+  branch: Branch;
 }
 
 const BranchCard = ({ branch }: BranchCardTypes) => {
-  const dispatch = useAppDispatch()
-  const router = useRouter()
-  const { storeDetailData, branchDetailsData } = useAppSelector((s) => s.store);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { storeDetailData } = useAppSelector((s) => s.store);
 
   const handleBranchEdit = (b_id: number, s_id: number) => {
-    toast("Navigated to edit branch")
-    dispatch(getBranchDetails({ store_id: s_id, branch_id: b_id }))
-    console.log("id", b_id)
-  }
+    router.push(
+      `/dashboard/create_branch/?action=edit&branch_id=${b_id}&store_id=${s_id}`
+    );
+  };
 
   const handleBranchDelete = async (b_id: number, s_id: number) => {
-    await api.delete(`/api/stores/${s_id}/branches/${b_id}/`)
-    console.log("Successfully deleted")
-    dispatch(getStoreDetail(s_id))
-  }
-
-  useEffect(() => {
-    if (branchDetailsData) {
-      router.push('/dashboard/create_branch/?action=edit')
-    }
-  }, [branchDetailsData])
+    await api.delete(`/api/stores/${s_id}/branches/${b_id}/`);
+    dispatch(getStoreDetail(s_id));
+  };
 
   return (
-    <Card >
+    <Card>
       <CardContent className="px-4,py-2">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -61,7 +52,9 @@ const BranchCard = ({ branch }: BranchCardTypes) => {
                 <Edit />
               </Button>
               <Button
-                onClick={() => handleBranchDelete(branch.id, storeDetailData.id)}
+                onClick={() =>
+                  handleBranchDelete(branch.id, storeDetailData.id)
+                }
                 variant="destructive"
                 size="icon"
               >
@@ -72,6 +65,6 @@ const BranchCard = ({ branch }: BranchCardTypes) => {
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 export default BranchCard;

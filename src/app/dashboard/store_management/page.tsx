@@ -23,7 +23,7 @@ import React, { useEffect } from "react";
 
 const StoreManager = () => {
   const router = useRouter();
-  const { storeDetailData, branchDetailsData } = useAppSelector((s) => s.store);
+  const { storeDetailData } = useAppSelector((s) => s.store);
 
   const handleStoreDetailEdit = (id: number) => {
     router.push(`/dashboard/store_setup/`);
@@ -34,12 +34,6 @@ const StoreManager = () => {
     router.push(`/dashboard/store_management/documents`);
     console.log({ id });
   };
-
-  useEffect(() => {
-    if (branchDetailsData) {
-      router.push("/dashboard/create_branch/?action=edit");
-    }
-  }, [branchDetailsData]);
 
   const storeTypeLabels: Record<string, string> = {
     DEPT: "Department Store",
@@ -78,7 +72,7 @@ const StoreManager = () => {
                   <AvatarImage
                     src={storeDetailData.logo || undefined}
                     alt={storeDetailData.name}
-                    className="object-cover"
+                    className="object-contain"
                     onError={(e) =>
                       ((e.target as HTMLImageElement).style.display = "none")
                     }

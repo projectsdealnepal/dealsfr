@@ -82,7 +82,7 @@ const AddedProductsDialog = ({
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl flex flex-col max-h-[85vh] p-0 gap-0">
+      <DialogContent className="max-w-2xl flex flex-col max-h-[85vh] p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-primary/10 rounded-full">
@@ -97,60 +97,58 @@ const AddedProductsDialog = ({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 px-6">
-          <div className="py-2 space-y-1">
-            {addedDisountProducts.length > 0 ? (
-              addedDisountProducts.map((product, index) => (
-                <div key={product.id}>
-                  {index > 0 && <Separator className="my-2" />}
-                  <div className="flex items-center justify-between group py-2 rounded-lg hover:bg-muted/50 transition-colors px-2 -mx-2">
-                    <div className="flex items-center gap-4 overflow-hidden">
-                      <Avatar className="h-12 w-12 rounded-lg border bg-muted">
-                        <AvatarImage
-                          src={product.image}
-                          alt={product.name}
-                          className="object-cover"
-                        />
-                        <AvatarFallback className="rounded-lg">
-                          <Package className="h-6 w-6 text-muted-foreground" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <h4 className="font-medium truncate">{product.name}</h4>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="font-medium text-foreground">
-                            NPR {product.price}
-                          </span>
-                        </div>
+        <div className=" overflow-scroll overflow-x-hidden px-6">
+          {addedDisountProducts.length > 0 ? (
+            addedDisountProducts.map((product, index) => (
+              <div key={product.id}>
+                {index > 0 && <Separator className="my-2" />}
+                <div className="flex items-center justify-between gap-4 min-w-0 group py-2 rounded-lg hover:bg-muted/50 transition-colors px-2 -mx-2">
+                  <div className="flex items-center gap-4 overflow-hidden min-w-0">
+                    <Avatar className="h-12 w-12 rounded-lg border bg-muted shrink-0">
+                      <AvatarImage
+                        src={product.image}
+                        alt={product.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="rounded-lg">
+                        <Package className="h-6 w-6 text-muted-foreground" />
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="min-w-0">
+                      <h4 className="font-medium truncate">{product.name}</h4>
+                      <div className="text-sm text-muted-foreground">
+                        NPR {product.price}
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
-                      onClick={() => handleRemoveSelectedItem(product?.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
-                </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-                <div className="p-4 bg-muted rounded-full">
-                  <Package className="h-8 w-8 text-muted-foreground/50" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-semibold">No products selected</h3>
-                  <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                    Please select products from the list to add them to this
-                    discount.
-                  </p>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => handleRemoveSelectedItem(product.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
-            )}
-          </div>
-        </ScrollArea>
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+              <div className="p-4 bg-muted rounded-full">
+                <Package className="h-8 w-8 text-muted-foreground/50" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-semibold">No products selected</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                  Please select products from the list to add them to this
+                  discount.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
 
         <DialogFooter className="p-4 border-t bg-muted/20">
           <div className="flex items-center justify-between w-full">

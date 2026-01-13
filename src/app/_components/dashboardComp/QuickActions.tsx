@@ -19,7 +19,7 @@ const quickActions = [
   {
     title: "Banners",
     icon: ImageIcon,
-    href: "/dashboard/banners",
+    href: "/dashboard/banner",
     color: "bg-purple-500/5 hover:bg-purple-500/20 text-purple-600"
   },
   {
