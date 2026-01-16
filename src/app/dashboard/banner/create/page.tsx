@@ -103,11 +103,18 @@ const CreateBannerPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!storeDetailData) {
+      toast.warning("Looks like your store setup isn’t complete yet. Please finish your registration to continue 🚀", {
+        richColors: true,
+      });
+      return;
+    }
+
     if (
       !bannerName ||
       (!webBannerImage && !webPreview) ||
-      (!mobBannerImage && !mobilePreview) ||
-      !storeDetailData
+      (!mobBannerImage && !mobilePreview)
     ) {
       toast.warning("Please fill all fields.", { richColors: true });
       return;
