@@ -442,7 +442,7 @@ export function ProductEditSheet({
           </Button>
           <Button
             onClick={handleSave}
-            // disabled={!hasChanges() || !formData.name || !formData.description}
+          // disabled={!hasChanges() || !formData.name || !formData.description}
           >
             {buttonText}
             {bulkProductUpdateLoading ||

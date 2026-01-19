@@ -136,7 +136,7 @@ const AddProduct = () => {
   //     toast.error("Failed to create product");
   //   }
   //   return () => {
-  //     dispatch(clearProductCreadteState())
+  //     dispatch(clearProductCreatedState())
   //   }
   // }, [createProductData, createProductError]);
 

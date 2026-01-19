@@ -1,29 +1,41 @@
 "use client";
+
+import {
+  BundleCreateFormData,
+  ProductBundleCreateSheet,
+} from "@/app/_components/product/ProductBundleCreateSheet";
 import {
   EditFormData,
   ProductEditSheet,
 } from "@/app/_components/product/ProductEditSheet";
 import ProductListTable from "@/app/_components/product/ProductListComponent";
+import { ProductViewSheet } from "@/app/_components/product/ProductViewSheet";
 import PageHeader from "@/components/PageHeader";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  createProduct,
   filterProducts,
   updateBulkProducts,
 } from "@/redux/features/product/product";
 import { ProductItem } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Search } from "lucide-react";
+import { Group, Search } from "lucide-react";
+import Link from "next/link";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { JSX } from "react/jsx-runtime";
+import { toast } from "sonner";
 
 export default function ProductsPage(): JSX.Element {
   const dispatch = useAppDispatch();
-  const { productList } = useAppSelector((s) => s.product);
+  const { productList, bundleProductList } = useAppSelector((s) => s.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [isBundleSheetOpen, setIsBundleSheetOpen] = useState(false);
+  const [isViewSheetOpen, setIsViewSheetOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(
     null
   );
@@ -57,6 +69,43 @@ export default function ProductsPage(): JSX.Element {
 
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleAddBundle = () => {
+    setIsBundleSheetOpen(true);
+  };
+
+  const handleCreateBundle = (
+    formData: BundleCreateFormData,
+    newImages: File[]
+  ) => {
+    if (!storeDetailData) return;
+
+    const form = new FormData();
+    form.append("name", formData.name);
+    form.append("description", formData.description);
+    form.append("price", formData.price);
+    // form.append("brand", formData.brand.toString());
+    // form.append("category", formData.category.toString());
+    form.append("is_available", formData.is_available.toString());
+    form.append("product_type", "COMBO");
+
+    // Append combo items
+    bundleProductList.forEach((item, index) => {
+      form.append(`combo_items[${index}]component_product`, item.id.toString());
+      form.append(`combo_items[${index}]quantity`, item.quantity.toString());
+    });
+    newImages.forEach((image) => {
+      form.append("images", image);
+    });
+
+    dispatch(
+      createProduct({ store_pk: storeDetailData.id, userData: form })
+    ).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        setIsBundleSheetOpen(false);
+      }
+    });
   };
 
   const handleEdit = (
@@ -98,12 +147,36 @@ export default function ProductsPage(): JSX.Element {
     <div className="container mx-auto p-4">
       <div className="max-w-7xl space-y-8">
         {/* Header */}
-        <PageHeader
-          title="Products"
-          subtitle="Manage and review your store products."
-          buttonText="Add New Product"
-          herf="/dashboard/product/add-product"
-        />
+
+        <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center  text-foreground mb-4">
+          <div>
+            <h1 className="text-lg md:text-xl font-bold mb-2">Products</h1>
+            <h3 className="text-xs md:text-sm text-muted-foreground">
+              Manage and review your store products.
+            </h3>
+          </div>
+          <div className="flex flex-row gap-2 ">
+            <Button
+              variant="default"
+              className="flex-1 md:flex-none px-8 cursor-pointer"
+              onClick={handleAddBundle}
+            >
+              <span className="flex-row flex items-center gap-2">
+                Create Bundle
+                <Group />
+              </span>
+            </Button>
+            <Button
+              variant="default"
+              className="flex-1 md:flex-none px-8"
+              asChild
+            >
+              <Link href={"/dashboard/product/add-product"}>
+                Add New Product
+              </Link>
+            </Button>
+          </div>
+        </div>
 
         {/* Search and Category Filter */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -124,7 +197,11 @@ export default function ProductsPage(): JSX.Element {
             <>
               <ProductListTable
                 products={productList}
-                onView={(product) => console.log("View product:", product)}
+                onView={(product) => {
+                  console.log("View product:", product);
+                  setSelectedProduct(product as ProductItem);
+                  setIsViewSheetOpen(true);
+                }}
                 onEdit={(product) => {
                   console.log("Edit product:", product);
                   setIsEditSheetOpen(true);
@@ -151,6 +228,20 @@ export default function ProductsPage(): JSX.Element {
             handleEdit(formData, productId, newImages, imageUrls);
             console.timeLog("formData", formData);
           }}
+        />
+
+        <ProductViewSheet
+          product={selectedProduct}
+          open={isViewSheetOpen}
+          onClose={() => setIsViewSheetOpen(false)}
+          title="Product Details"
+          description="View complete information about this product."
+        />
+
+        <ProductBundleCreateSheet
+          open={isBundleSheetOpen}
+          onClose={() => setIsBundleSheetOpen(false)}
+          onSave={handleCreateBundle}
         />
       </div>
     </div>

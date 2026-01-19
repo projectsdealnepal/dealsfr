@@ -1,5 +1,6 @@
 import { CategoryItem } from "../category/types";
 
+export type ProductType = "SIMPLE" | "COMBO"
 export interface ApiResponse {
   count: number;
   next: string | null;
@@ -24,6 +25,7 @@ export interface GenericProductItem {
   id: number;
   name: string;
   description: string;
+  product_type: ProductType
   category: CategoryItem;
   brand: Brand;
   images: ProductImages[] | string[];
@@ -38,6 +40,7 @@ export interface ProductItem {
   id: number;
   name: string;
   description: string;
+  product_type: ProductType
   category: CategoryItem;
   brand: Brand;
   price: string;
@@ -118,6 +121,10 @@ export interface BrandItem {
 }
 
 export interface RewardProductItem extends ProductItem {
+  quantity: number;
+}
+
+export interface BundleProductItem extends ProductItem {
   quantity: number;
 }
 

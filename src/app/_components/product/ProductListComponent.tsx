@@ -6,7 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { GenericProductItem, ProductItem } from "@/redux/features/product/types";
+import {
+  GenericProductItem,
+  ProductItem,
+} from "@/redux/features/product/types";
 import { useAppSelector } from "@/redux/hooks";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
@@ -21,10 +24,14 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
   onView,
   onEdit,
 }) => {
-  const { storeDetailData } = useAppSelector(s => s.store)
+  const { storeDetailData } = useAppSelector((s) => s.store);
   // Type guard to check if product is ProductItem
-  const isProductItem = (product: ProductItem | GenericProductItem): product is ProductItem => {
-    return 'image' in product && typeof (product as ProductItem).image === 'string';
+  const isProductItem = (
+    product: ProductItem | GenericProductItem
+  ): product is ProductItem => {
+    return (
+      "image" in product && typeof (product as ProductItem).image === "string"
+    );
   };
 
   // Get image URL based on product type
@@ -33,9 +40,11 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
       return product.image;
     } else {
       // GenericProductItem has images array
-      return product.images && product.images.length > 0 && typeof product.images[0] != 'string'
+      return product.images &&
+        product.images.length > 0 &&
+        typeof product.images[0] != "string"
         ? product.images[0].image
-        : '/placeholder-image.png'; // fallback image
+        : "/placeholder-image.png"; // fallback image
     }
   };
 
@@ -45,12 +54,14 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
       return product.store;
     } else {
       // GenericProductItem has store_id (optional)
-      return storeDetailData ? storeDetailData.name : 'N/A';
+      return storeDetailData ? storeDetailData.name : "N/A";
     }
   };
 
   // Get price based on product type
-  const getPrice = (product: ProductItem | GenericProductItem): string | null => {
+  const getPrice = (
+    product: ProductItem | GenericProductItem
+  ): string | null => {
     if (isProductItem(product)) {
       return product.price;
     } else {
@@ -60,7 +71,9 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
   };
 
   // Get availability status
-  const getAvailability = (product: ProductItem | GenericProductItem): boolean => {
+  const getAvailability = (
+    product: ProductItem | GenericProductItem
+  ): boolean => {
     if (isProductItem(product)) {
       return product.is_available;
     } else {
@@ -82,7 +95,7 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
 
   return (
     <div className="rounded-none border border-gray-200 overflow-hidden">
-      <Table >
+      <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Image</TableHead>
@@ -96,7 +109,7 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
           </TableRow>
         </TableHeader>
 
-        <TableBody >
+        <TableBody>
           {products.length === 0 ? (
             <TableRow>
               <TableCell colSpan={8} className="h-24 text-center text-gray-500">
@@ -104,7 +117,7 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
               </TableCell>
             </TableRow>
           ) : (
-            products.map((product) => {
+            products.filter(p => p.product_type == "SIMPLE").map((product) => {
               const imageUrl = getImageUrl(product);
               const store = getStore(product);
               const price = getPrice(product);
@@ -159,29 +172,29 @@ const ProductListTable: React.FC<ProductListTableProps> = ({
 
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <button
+                      {/* <button
                         onClick={() => onView(product)}
                         className="rounded-md p-2 text-blue-600 hover:bg-blue-50"
                         title="View product"
                       >
                         <Eye className="h-4 w-4" />
-                      </button>
+                      </button> */}
 
                       <button
                         onClick={() => onEdit(product)}
-                        className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+                        className="rounded-md p-2 text-blue-600 hover:bg-blue-50"
                         title="Edit product"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
 
-                      {/* <button */}
-                      {/*   onClick={() => onDelete(product)} */}
-                      {/*   className="rounded-md p-2 text-red-600 hover:bg-red-50" */}
-                      {/*   title="Delete product" */}
-                      {/* > */}
-                      {/*   <Trash2 className="h-4 w-4" /> */}
-                      {/* </button> */}
+                      {/* <button
+                        onClick={() => onDelete(product)}
+                        className="rounded-md p-2 text-red-600 hover:bg-red-50"
+                        title="Delete product"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button> */}
                     </div>
                   </TableCell>
                 </TableRow>

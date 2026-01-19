@@ -16,8 +16,10 @@ import { DataTable } from "./data-table";
 import { TempProductPrevList } from "./TempProductPrevList";
 
 export default function SelectProductDialog() {
-  const [selectProductDialog, setSelectProductDialog] = useState(false); const { tempDiscountProductList, productList } = useAppSelector((s) => s.product);
-
+  const [selectProductDialog, setSelectProductDialog] = useState(false);
+  const { tempDiscountProductList, productList } = useAppSelector(
+    (s) => s.product
+  );
 
   return (
     <div className="w-full space-y-2">
@@ -26,9 +28,7 @@ export default function SelectProductDialog() {
         {/* Show only if there are selected products */}
         {tempDiscountProductList && tempDiscountProductList.length > 0 && (
           <>
-            <Card
-              className="flex bg-primary/20 flex-row items-center justify-between cursor-pointer flex-1 p-4 hover:bg-accent/30 transition"
-            >
+            <Card className="flex bg-primary/20 flex-row items-center justify-between cursor-pointer flex-1 p-4 hover:bg-accent/30 transition">
               <span className="text-sm font-medium">Products Selected</span>
               <Badge variant="secondary">
                 {tempDiscountProductList.length}
@@ -46,7 +46,7 @@ export default function SelectProductDialog() {
             <DialogTrigger asChild>
               <Card className="flex flex-row items-center justify-center gap-2 border-2 border-red-300 border-dashed cursor-pointer p-3 flex-1 hover:bg-accent/30 transition">
                 {tempDiscountProductList.length > 0 ? (
-                  <div className="flex flex-row  p-1  gap-2 justify-between items-center " >
+                  <div className="flex flex-row  p-1  gap-2 justify-between items-center ">
                     <RotateCcw size={16} />
                     <span className="text-sm font-medium">Replace</span>
                   </div>
@@ -54,7 +54,9 @@ export default function SelectProductDialog() {
                   <div className="py-6 space-y-2 flex flex-col justify-center items-center">
                     <PlusCircle size={16} />
                     <span className="text-sm font-semibold">Add Products</span>
-                    <span className="text-sm font-medium text-foreground/80">Search and select product to apply discount</span>
+                    <span className="text-sm font-medium text-foreground/80">
+                      Search and select product to apply discount
+                    </span>
                   </div>
                 )}
               </Card>

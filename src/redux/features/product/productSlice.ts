@@ -11,6 +11,7 @@ import {
   AddProductOnDiscount,
   ApiResponse,
   BrandItem,
+  BundleProductItem,
   DiscountedProductType,
   GenericProductItem,
   ProductItem,
@@ -46,6 +47,8 @@ interface ProductState {
   rowSelection: Record<string, boolean>;
   //discounted applied Product list(this is like final list of products that are in the
   //discount)
+  //for creating bundle of product as the product item
+  bundleProductList: BundleProductItem[];
   discountAppliedProductList: AddProductOnDiscountPayload[];
   offerAppliedProductsList: OfferAppliedProduct[];
 
@@ -119,6 +122,9 @@ const initialState: ProductState = {
   createProductData: null,
   createProductLoading: false,
   createProductError: null,
+
+  //for bundle product list
+  bundleProductList: [],
 
   bulkProductUpdateData: null,
   bulkProductUpdateLoading: false,
@@ -204,6 +210,19 @@ const productSlice = createSlice({
       state.rewardProductList = [];
     },
 
+    //for bundle products
+    setBundleProductList(state) {
+      state.bundleProductList = state.selectedProductList.map(
+        (item, index) => ({ ...item, quantity: 1 })
+      );
+    },
+    updateBundleProductList(state, action: PayloadAction<BundleProductItem[]>) {
+      state.bundleProductList = action.payload;
+    },
+    clearBundleProductList(state) {
+      state.bundleProductList = [];
+    },
+
     //for setting the final discounted product list
     setDiscountAppliedProductList(
       state,
@@ -261,7 +280,7 @@ const productSlice = createSlice({
     },
 
     //for product create and update state
-    clearProductCreadteState(state) {
+    clearProductCreatedState(state) {
       state.createProductData = null;
       state.createProductLoading = false;
       state.createProductError = null;
@@ -425,7 +444,11 @@ export const {
   clearTempAddedProducts,
   removeTempAddedProduct,
   updateTempAddedProduct,
-  clearProductCreadteState,
+  clearProductCreatedState,
   clearBulkProductUpdateState,
+  //for bundle
+  setBundleProductList,
+  updateBundleProductList,
+  clearBundleProductList,
 } = productSlice.actions;
 export default productSlice.reducer;

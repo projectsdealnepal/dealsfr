@@ -1,5 +1,6 @@
 "use client";
 
+import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
 import AddedProductsDialog from "@/app/_components/discount/AddedProductsDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,14 +51,12 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import Filter from "./filter";
-import { CategorySelectorSheet } from "@/app/_components/CategoriesSheet";
 
 interface DataTableProps<TData, TValue> {
-  mode?: "reward" | "default"
+  mode?: "reward" | "default" | "bundle";
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  setSelectProductDialog: React.Dispatch<React.SetStateAction<boolean>>
-
+  setSelectProductDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function DataTable<TData, TValue>({
@@ -76,11 +75,12 @@ export function DataTable<TData, TValue>({
   const [selected, setSelected] = useState<CategoryItem>();
   const { categoryData } = useAppSelector((s) => s.category);
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { productData, productLoading, rowSelection } =
-    useAppSelector((s) => s.product);
+  const { productData, productLoading, rowSelection } = useAppSelector(
+    (s) => s.product
+  );
   const dispatch = useAppDispatch();
   //for dialog that give preview of selected products
-  const [previewDialog, setPreviewDialog] = useState(false)
+  const [previewDialog, setPreviewDialog] = useState(false);
 
   // Build query parameters for server requests
   const buildQueryParams = useCallback(() => {

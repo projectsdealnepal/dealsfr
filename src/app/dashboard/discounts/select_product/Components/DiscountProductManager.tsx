@@ -16,6 +16,16 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  addProductOnDiscount,
+  updateProductOnDiscount,
+} from "@/redux/features/discount/discount";
+import { AddProductOnDiscountPayload } from "@/redux/features/discount/types";
+import {
+  clearRewardProductList,
+  clearTempProductList,
+  setDiscountAppliedProductList,
+} from "@/redux/features/product/productSlice";
+import {
   BrandItem,
   DiscountType,
   RewardProduct,
@@ -24,18 +34,21 @@ import {
 } from "@/redux/features/product/types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Plus } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { BrandSelector } from "./BrandSelector";
-import ProductSelector from "./ProductSelector";
-import { AddProductOnDiscountPayload } from "@/redux/features/discount/types";
-import { useSearchParams } from "next/navigation";
-import { BOGODiscount, FixedAmountDiscount, PartialDiscountItem, PercentageDiscount, SpendGetDiscount } from "./types";
-import { RenderDiscountFields } from "./RenderFieldComponent";
 import DiscountAppliedProductListDialog from "./DiscountAppliedProductListDialog";
-import { clearRewardProductList, clearTempProductList, setDiscountAppliedProductList, } from "@/redux/features/product/productSlice";
-import { addProductOnDiscount, updateProductOnDiscount } from "@/redux/features/discount/discount";
+import ProductSelector from "./ProductSelector";
+import { RenderDiscountFields } from "./RenderFieldComponent";
+import {
+  BOGODiscount,
+  FixedAmountDiscount,
+  PartialDiscountItem,
+  PercentageDiscount,
+  SpendGetDiscount,
+} from "./types";
 
 // Validation schemas
 const percentageSchema = z.object({
@@ -71,13 +84,17 @@ const DiscountManager = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [brandValue, setBrandValue] = useState<BrandItem>();
   //discount applied product dialog
-  const [daplDialog, setDaplDialog] = useState<boolean>(false)
+  const [daplDialog, setDaplDialog] = useState<boolean>(false);
 
-  const param = useSearchParams()
-  const id = parseInt(param.get("id") ?? "0", 10)
-  const dispatch = useAppDispatch()
+  const param = useSearchParams();
+  const id = parseInt(param.get("id") ?? "0", 10);
+  const dispatch = useAppDispatch();
   const { storeDetailData } = useAppSelector((s) => s.store);
-  const { tempDiscountProductList, rewardProductList, offerAppliedProductsList } = useAppSelector((s) => s.product);
+  const {
+    tempDiscountProductList,
+    rewardProductList,
+    offerAppliedProductsList,
+  } = useAppSelector((s) => s.product);
 
   //function that will patch or create the offered products in discount
   const handleAddProducts = (p: AddProductOnDiscountPayload[]) => {
@@ -86,15 +103,15 @@ const DiscountManager = () => {
         d_id: id,
         s_id: storeDetailData.id,
         payload: p,
-      }
+      };
       if (offerAppliedProductsList.length > 0) {
         // dispatch(updateProductOnDiscount(payload))
-        dispatch(addProductOnDiscount(payload))
+        dispatch(addProductOnDiscount(payload));
       } else {
-        dispatch(addProductOnDiscount(payload))
+        dispatch(addProductOnDiscount(payload));
       }
     }
-  }
+  };
 
   const discountTypeOptions = [
     { value: "PERCENTAGE", label: "Percentage Off" },
@@ -137,18 +154,31 @@ const DiscountManager = () => {
 
     //TODO: need to modify validation schema
     // Rule 1: Either percentageValue or discountValue must be present
-    if (currentItem.discountType === "BOGO" || currentItem.discountType === "SPEND_GET") {
-      if (currentItem.percentageValue == null && currentItem.discountValue == null && currentItem.rewardItems?.length == 0) {
+    if (
+      currentItem.discountType === "BOGO" ||
+      currentItem.discountType === "SPEND_GET"
+    ) {
+      if (
+        currentItem.percentageValue == null &&
+        currentItem.discountValue == null &&
+        currentItem.rewardItems?.length == 0
+      ) {
         toast.info("at least the bonus value or disocunt value is requied", {
           richColors: true,
         });
         return false;
       }
       // Rule 2: If percentageValue is present, maximumDiscount must also be present
-      if (currentItem.percentageValue != null && currentItem.maximumDiscount == null) {
-        toast.info("You have to mention maximum discount limit on percentage value.", {
-          richColors: true,
-        });
+      if (
+        currentItem.percentageValue != null &&
+        currentItem.maximumDiscount == null
+      ) {
+        toast.info(
+          "You have to mention maximum discount limit on percentage value.",
+          {
+            richColors: true,
+          }
+        );
         return false;
       }
     }
@@ -170,7 +200,10 @@ const DiscountManager = () => {
     }
 
     //check if there are any product selected or not
-    if (currentItem.targetType == "storeproduct" && tempDiscountProductList.length === 0) {
+    if (
+      currentItem.targetType == "storeproduct" &&
+      tempDiscountProductList.length === 0
+    ) {
       toast.info("At least one product is required", { richColors: true });
       return false;
     }
@@ -219,67 +252,74 @@ const DiscountManager = () => {
   //funcitons that are used to api post  the proucts on the discount
 
   const handlePercentageDiscount = () => {
-    let payload: AddProductOnDiscountPayload[] = []
+    let payload: AddProductOnDiscountPayload[] = [];
     if (currentItem.discountType == "PERCENTAGE") {
       //for currentItem.tartet type is "storeProduct"
       switch (currentItem.targetType) {
         case "storeproduct":
-          payload = tempDiscountProductList.map(
-            (item) => ({
-              discount_type: currentItem.discountType,
-              value: currentItem.percentageValue,
-              value_type: "PERCENTAGE",
-              max_discount_amount: currentItem.maximumDiscount?.toString(),
-              store_product: item.id,
-            })
-          );
-          break;
-        case "brand":
-          //for currentItem.tartet type is "brand"
-          payload = [{
+          payload = tempDiscountProductList.map((item) => ({
             discount_type: currentItem.discountType,
             value: currentItem.percentageValue,
             value_type: "PERCENTAGE",
+            scope: "CATELOG",
             max_discount_amount: currentItem.maximumDiscount?.toString(),
-            brand: brandValue?.id,
-          }]
+            store_product: item.id,
+          }));
+          break;
+        case "brand":
+          //for currentItem.tartet type is "brand"
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              value: currentItem.percentageValue,
+              value_type: "PERCENTAGE",
+              scope: "CATELOG",
+              max_discount_amount: currentItem.maximumDiscount?.toString(),
+              brand: brandValue?.id,
+            },
+          ];
           break;
         default:
           break;
       }
       console.log({ payload });
-      dispatch(setDiscountAppliedProductList(payload))
-      handleAddProducts(payload)
+      dispatch(setDiscountAppliedProductList(payload));
+      handleAddProducts(payload);
     }
   };
 
   const handleFixedDiscount = () => {
-    let payload: AddProductOnDiscountPayload[] = []
+    let payload: AddProductOnDiscountPayload[] = [];
     if (currentItem.discountType == "FIXED_AMOUNT") {
-
       switch (currentItem.targetType) {
         case "storeproduct":
-          payload = tempDiscountProductList.map(
-            (item, _) => ({
-              discount_type: currentItem.discountType,
-              value: currentItem.amountValue,
-              value_type: "FIXED_AMOUNT",
+          payload = tempDiscountProductList.map((item, _) => ({
+            discount_type: currentItem.discountType,
+            scope: "CATELOG",
+            value: currentItem.amountValue,
+            value_type: "FIXED_AMOUNT",
 
-              // conditional key assignment
-              [currentItem.targetType === "storeproduct" ? "store_product" : "brand"]:
-                currentItem.targetType === "storeproduct" ? item.id : brandValue?.id,
-            })
-          );
+            // conditional key assignment
+            [currentItem.targetType === "storeproduct"
+              ? "store_product"
+              : "brand"]:
+              currentItem.targetType === "storeproduct"
+                ? item.id
+                : brandValue?.id,
+          }));
           break;
 
         case "brand":
           //for currentItem.tartet type is "brand"
-          payload = [{
-            discount_type: currentItem.discountType,
-            value: currentItem.amountValue,
-            value_type: "FIXED_AMOUNT",
-            brand: brandValue?.id,
-          }]
+          payload = [
+            {
+              discount_type: currentItem.discountType,
+              value: currentItem.amountValue,
+              scope: "CATELOG",
+              value_type: "FIXED_AMOUNT",
+              brand: brandValue?.id,
+            },
+          ];
           break;
         default:
           break;
@@ -292,8 +332,8 @@ const DiscountManager = () => {
       // }
       // dispatch(addProductOnDiscount(dispatchData))
       console.log({ payload });
-      dispatch(setDiscountAppliedProductList(payload))
-      handleAddProducts(payload)
+      dispatch(setDiscountAppliedProductList(payload));
+      handleAddProducts(payload);
     }
   };
 
@@ -304,45 +344,53 @@ const DiscountManager = () => {
         get_quantity: item.quantity,
       }));
 
-      let payload: AddProductOnDiscountPayload[] = []
+      let payload: AddProductOnDiscountPayload[] = [];
       switch (currentItem.targetType) {
         case "storeproduct":
-          payload = tempDiscountProductList.map(
-            (item, _) => ({
-              discount_type: currentItem.discountType as "PERCENTAGE",
-              value_type: currentItem.valueType as ValueType,
-              buy_quantity: currentItem.buyQuantity,
-              reward_products: rewardProducts,
-              value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
-              store_product: item?.id,
-              //pass the max disocunt amount only on percentage
-              ...(currentItem.valueType === "PERCENTAGE" && {
-                max_discount_amount: currentItem.maximumDiscount?.toString(),
-              }),
-            })
-          );
-          break;
-        case "brand":
-          payload = [{
+          payload = tempDiscountProductList.map((item, _) => ({
             discount_type: currentItem.discountType as "PERCENTAGE",
             value_type: currentItem.valueType as ValueType,
             buy_quantity: currentItem.buyQuantity,
             reward_products: rewardProducts,
-            value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
-            brand: brandValue?.id,
+            scope: "CATELOG",
+            value:
+              currentItem.valueType == "PERCENTAGE"
+                ? currentItem.percentageValue
+                : currentItem.discountValue,
+            store_product: item?.id,
             //pass the max disocunt amount only on percentage
             ...(currentItem.valueType === "PERCENTAGE" && {
               max_discount_amount: currentItem.maximumDiscount?.toString(),
             }),
-          }]
+          }));
+          break;
+        case "brand":
+          payload = [
+            {
+              discount_type: currentItem.discountType as "PERCENTAGE",
+              value_type: currentItem.valueType as ValueType,
+              buy_quantity: currentItem.buyQuantity,
+              scope: "CATELOG",
+              reward_products: rewardProducts,
+              value:
+                currentItem.valueType == "PERCENTAGE"
+                  ? currentItem.percentageValue
+                  : currentItem.discountValue,
+              brand: brandValue?.id,
+              //pass the max disocunt amount only on percentage
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            },
+          ];
           break;
         default:
           break;
       }
 
       console.log({ payload });
-      dispatch(setDiscountAppliedProductList(payload))
-      handleAddProducts(payload)
+      dispatch(setDiscountAppliedProductList(payload));
+      handleAddProducts(payload);
     }
   };
 
@@ -353,48 +401,56 @@ const DiscountManager = () => {
         get_quantity: item.quantity,
       }));
 
-      let payload: AddProductOnDiscountPayload[] = []
+      let payload: AddProductOnDiscountPayload[] = [];
       switch (currentItem.targetType) {
         case "storeproduct":
-          payload = tempDiscountProductList.map(
-            (item, _) => ({
-              discount_type: "SPEND_GET",
-              value_type: currentItem.valueType as "PERCENTAGE",
-              max_discount_amount: currentItem.maximumDiscount?.toString(),
-              store_product: item.id,
-              min_spend_amount: currentItem.spendAmount?.toString(),
-              reward_products: rewardProducts,
-              value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
-
-              //pass the max disocunt amount only on percentage
-              ...(currentItem.valueType === "PERCENTAGE" && {
-                max_discount_amount: currentItem.maximumDiscount?.toString(),
-              }),
-            })
-          );
-          break;
-        case "brand":
-          payload = [{
+          payload = tempDiscountProductList.map((item, _) => ({
             discount_type: "SPEND_GET",
             value_type: currentItem.valueType as "PERCENTAGE",
-            brand: brandValue?.id,
+            scope: "CATELOG",
+            max_discount_amount: currentItem.maximumDiscount?.toString(),
+            store_product: item.id,
             min_spend_amount: currentItem.spendAmount?.toString(),
             reward_products: rewardProducts,
-            value: currentItem.valueType == "PERCENTAGE" ? currentItem.percentageValue : currentItem.discountValue,
+            value:
+              currentItem.valueType == "PERCENTAGE"
+                ? currentItem.percentageValue
+                : currentItem.discountValue,
 
             //pass the max disocunt amount only on percentage
             ...(currentItem.valueType === "PERCENTAGE" && {
               max_discount_amount: currentItem.maximumDiscount?.toString(),
             }),
-          }]
+          }));
+          break;
+        case "brand":
+          payload = [
+            {
+              discount_type: "SPEND_GET",
+              value_type: currentItem.valueType as "PERCENTAGE",
+              brand: brandValue?.id,
+              min_spend_amount: currentItem.spendAmount?.toString(),
+              scope: "CATELOG",
+              reward_products: rewardProducts,
+              value:
+                currentItem.valueType == "PERCENTAGE"
+                  ? currentItem.percentageValue
+                  : currentItem.discountValue,
+
+              //pass the max disocunt amount only on percentage
+              ...(currentItem.valueType === "PERCENTAGE" && {
+                max_discount_amount: currentItem.maximumDiscount?.toString(),
+              }),
+            },
+          ];
           break;
         default:
           break;
       }
 
       console.log({ payload });
-      dispatch(setDiscountAppliedProductList(payload))
-      handleAddProducts(payload)
+      dispatch(setDiscountAppliedProductList(payload));
+      handleAddProducts(payload);
     }
   };
 
@@ -423,8 +479,8 @@ const DiscountManager = () => {
           break;
       }
       setErrors({});
-      dispatch(clearTempProductList())
-      dispatch(clearRewardProductList())
+      dispatch(clearTempProductList());
+      dispatch(clearRewardProductList());
       setCurrentItem({
         discountType: "PERCENTAGE",
         valueType: "PERCENTAGE",
@@ -465,7 +521,12 @@ const DiscountManager = () => {
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           {/*Choose the discount type, based on this different fields will show up*/}
           <div className="space-y-4 mb-4 ">
-            <Label htmlFor="discountType" className="font-semibold text-base text-foreground/70">Discount Type</Label>
+            <Label
+              htmlFor="discountType"
+              className="font-semibold text-base text-foreground/70"
+            >
+              Discount Type
+            </Label>
             <Select
               value={currentItem.discountType}
               onValueChange={(value) =>
@@ -475,7 +536,7 @@ const DiscountManager = () => {
               <SelectTrigger id="discountType" className="w-full py-5">
                 <SelectValue placeholder="Select discount type" />
               </SelectTrigger>
-              <SelectContent  >
+              <SelectContent>
                 {discountTypeOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -490,7 +551,12 @@ const DiscountManager = () => {
 
           {/*Select targets type (products/brands)*/}
           <div className="space-y-2 ">
-            <Label htmlFor="targetType" className="font-semibold text-base text-foreground/70">Discount On</Label>
+            <Label
+              htmlFor="targetType"
+              className="font-semibold text-base text-foreground/70"
+            >
+              Discount On
+            </Label>
             <Tabs
               defaultValue="storeproduct"
               className="w-full  "

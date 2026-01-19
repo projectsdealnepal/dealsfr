@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   clearRowSelection,
   clearSelectedProductList,
+  setBundleProductList,
   setRewardProductList,
   setRowSelection,
   setSelectedProductList,
@@ -24,7 +25,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Package, ShoppingCart, TableProperties, Trash2 } from "lucide-react";
 
 interface AddedProductsDialogProp {
-  mode: "default" | "reward";
+  mode: "default" | "reward" | "bundle";
   open: boolean;
   onOpenChange: () => void;
   closeProdctListDialog: () => void;
@@ -59,6 +60,9 @@ const AddedProductsDialog = ({
     }
     if (mode == "reward") {
       dispatch(setRewardProductList());
+    }
+    if (mode == "bundle") {
+      dispatch(setBundleProductList());
     }
     onOpenChange();
     closeProdctListDialog();
@@ -159,11 +163,14 @@ const AddedProductsDialog = ({
               <Button variant="outline" onClick={onOpenChange}>
                 Cancel
               </Button>
+
               <Button
                 onClick={handleAddToTempProductList}
                 disabled={addedDisountProducts.length === 0}
               >
-                Add to Discount
+                {mode === "default" && "Add to Discount"}
+                {mode === "reward" && "Add to Reward"}
+                {mode === "bundle" && "Add to Bundle"}
               </Button>
             </div>
           </div>
