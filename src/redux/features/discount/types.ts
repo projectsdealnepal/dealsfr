@@ -41,7 +41,7 @@ export interface DiscountUpdatePayload {
   layout?: number;
   applicable_branches?: number[];
 }
-
+export type ScopeType = "CATELOG" | "STORE";
 //to add the products on the discount
 export interface AddProductOnDiscountPayload {
   discount_type: DiscountType;
@@ -50,6 +50,7 @@ export interface AddProductOnDiscountPayload {
   buy_quantity?: number;
   min_spend_amount?: string;
   max_discount_amount?: string;
+  scope: ScopeType;
   brand?: number;
   category?: number;
   store_product?: number;

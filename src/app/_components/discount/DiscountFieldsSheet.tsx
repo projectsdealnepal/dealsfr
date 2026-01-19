@@ -44,7 +44,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { BrandSelector } from "../BrandSelector";
 import { CategorySelectorSheet } from "../CategoriesSheet";
-import { MultipleCategorySelector } from "../MultipleCategorySelector";
 import { DiscountFieldRender } from "./DiscountFieldRender";
 
 // Validation schemas
@@ -111,6 +110,7 @@ interface DiscountFieldsSheetProps {
   targetType: TargetType;
   open: boolean;
   onClose: () => void;
+  is_Edit?: boolean;
 }
 
 const DiscountFieldsSheet = ({
@@ -118,6 +118,7 @@ const DiscountFieldsSheet = ({
   targetType,
   open,
   onClose,
+  is_Edit = false,
 }: DiscountFieldsSheetProps) => {
   const [currentItem, setCurrentItem] = useState<PartialDiscountItem>({
     discountType: discountType,
@@ -368,6 +369,7 @@ const DiscountFieldsSheet = ({
             discount_type: currentItem.discountType,
             value: currentItem.percentageValue,
             value_type: "PERCENTAGE",
+            scope: "CATELOG",
             max_discount_amount: currentItem.maximumDiscount?.toString(),
             store_product: item.id,
           }));
@@ -378,6 +380,7 @@ const DiscountFieldsSheet = ({
               discount_type: currentItem.discountType,
               value: currentItem.percentageValue,
               value_type: "PERCENTAGE",
+              scope: "CATELOG",
               max_discount_amount: currentItem.maximumDiscount?.toString(),
               brand: brandValue?.id,
             },
@@ -389,6 +392,7 @@ const DiscountFieldsSheet = ({
               discount_type: currentItem.discountType,
               value: currentItem.percentageValue,
               value_type: "PERCENTAGE",
+              scope: "CATELOG",
               max_discount_amount: currentItem.maximumDiscount?.toString(),
               category: categoryValue?.id,
             },
@@ -399,6 +403,7 @@ const DiscountFieldsSheet = ({
             {
               discount_type: currentItem.discountType,
               value: currentItem.percentageValue,
+              scope: "STORE",
               value_type: "PERCENTAGE",
               max_discount_amount: currentItem.maximumDiscount?.toString(),
             },
@@ -422,6 +427,7 @@ const DiscountFieldsSheet = ({
             discount_type: currentItem.discountType,
             value: currentItem.amountValue,
             value_type: "FIXED_AMOUNT",
+            scope: "CATELOG",
             [currentItem.targetType === "storeproduct"
               ? "store_product"
               : "brand"]:
@@ -437,6 +443,7 @@ const DiscountFieldsSheet = ({
               discount_type: currentItem.discountType,
               value: currentItem.amountValue,
               value_type: "FIXED_AMOUNT",
+              scope: "CATELOG",
               brand: brandValue?.id,
             },
           ];
@@ -447,6 +454,7 @@ const DiscountFieldsSheet = ({
               discount_type: currentItem.discountType,
               value: currentItem.amountValue,
               value_type: "FIXED_AMOUNT",
+              scope: "CATELOG",
               category: categoryValue?.id,
             },
           ];
@@ -457,6 +465,7 @@ const DiscountFieldsSheet = ({
               discount_type: currentItem.discountType,
               value: currentItem.amountValue,
               value_type: "FIXED_AMOUNT",
+              scope: "STORE",
             },
           ];
           break;
@@ -487,6 +496,7 @@ const DiscountFieldsSheet = ({
               value_type: currentItem.valueType as ValueType,
             }),
             buy_quantity: currentItem.buyQuantity,
+            scope: "CATELOG",
             reward_products: rewardProducts,
             value:
               currentItem.valueType == "PERCENTAGE"
@@ -508,6 +518,7 @@ const DiscountFieldsSheet = ({
               }),
               buy_quantity: currentItem.buyQuantity,
               reward_products: rewardProducts,
+              scope: "CATELOG",
               value:
                 currentItem.valueType == "PERCENTAGE"
                   ? currentItem.percentageValue
@@ -534,6 +545,7 @@ const DiscountFieldsSheet = ({
                   ? currentItem.percentageValue
                   : currentItem.discountValue,
               category: categoryValue?.id,
+              scope: "CATELOG",
               ...(currentItem.valueType === "PERCENTAGE" && {
                 max_discount_amount: currentItem.maximumDiscount?.toString(),
               }),
@@ -548,6 +560,7 @@ const DiscountFieldsSheet = ({
               ...(rewardProducts.length == 0 && {
                 value_type: currentItem.valueType as ValueType,
               }),
+              scope: "STORE",
               buy_quantity: currentItem.buyQuantity,
               reward_products: rewardProducts,
               value:
@@ -588,6 +601,7 @@ const DiscountFieldsSheet = ({
             }),
             max_discount_amount: currentItem.maximumDiscount?.toString(),
             store_product: item.id,
+            scope: "CATELOG",
             min_spend_amount: currentItem.spendAmount?.toString(),
             reward_products: rewardProducts,
             value:
@@ -609,6 +623,7 @@ const DiscountFieldsSheet = ({
                 value_type: currentItem.valueType as ValueType,
               }),
               brand: brandValue?.id,
+              scope: "CATELOG",
               min_spend_amount: currentItem.spendAmount?.toString(),
               reward_products: rewardProducts,
               value:
@@ -632,6 +647,7 @@ const DiscountFieldsSheet = ({
               }),
               category: categoryValue?.id,
               min_spend_amount: currentItem.spendAmount?.toString(),
+              scope: "CATELOG",
               reward_products: rewardProducts,
               value:
                 currentItem.valueType == "PERCENTAGE"
@@ -654,6 +670,7 @@ const DiscountFieldsSheet = ({
               }),
               min_spend_amount: currentItem.spendAmount?.toString(),
               reward_products: rewardProducts,
+              scope: "STORE",
               value:
                 currentItem.valueType == "PERCENTAGE"
                   ? currentItem.percentageValue
