@@ -1,0 +1,64 @@
+        {
+            "id": 5517,
+            "name": "First Combo Product",
+            "description": "First Combo product description",
+            "product_type": "COMBO",
+            "category": null,
+            "brand": null,
+            "price": "3000.00",
+            "image": "https://api.thedealsfr.com/media/store_products/android-icon-foreground_6X530jH.png",
+            "is_available": true,
+            "delivery_available": true,
+            "store": "BigMart",
+            "store_id": 1,
+            "active_discount": null,
+            "store_product_images": [
+                {
+                    "id": 5617,
+                    "image": "/media/generic_product_images/android-icon-foreground_Cj6sbq7.png",
+                    "cloud_image_url": null
+                },
+                {
+                    "id": 5618,
+                    "image": "/media/generic_product_images/VIROM_ACCOUNTING_6QUqBnR.png",
+                    "cloud_image_url": null
+                }
+            ],
+            "created_at": "2026-01-19T08:22:33.515086Z",
+            "updated_at": "2026-01-19T08:22:33.534384Z",
+            "combo_items": [
+                {
+                    "id": 1,
+                    "combo_product_id": 5517,
+                    "store_product_id": 189,
+                    "name": "HIT CHALK",
+                    "category": "HOUSEHOLD",
+                    "brand": "HIT",
+                    "image": "/media/store_products/hit-chalk.jpg",
+                    "price": "32.00",
+                    "quantity": 1
+                },
+                {
+                    "id": 2,
+                    "combo_product_id": 5517,
+                    "store_product_id": 190,
+                    "name": "SAJINA MASALA POTATO CHIPS 260G",
+                    "category": "FOOD",
+                    "brand": "SAJINA",
+                    "image": "/media/store_products/sajina-masala-potato-chips-260g.jpg",
+                    "price": "235.00",
+                    "quantity": 4
+                },
+                {
+                    "id": 3,
+                    "combo_product_id": 5517,
+                    "store_product_id": 191,
+                    "name": "LEMONZAA NIMBU PANI 250ML",
+                    "category": "CSD",
+                    "brand": "LEMONZAA",
+                    "image": "/media/store_products/lemonzaa-nimbu-pani-250ml.jpg",
+                    "price": "50.00",
+                    "quantity": 1
+                }
+            ]
+        },

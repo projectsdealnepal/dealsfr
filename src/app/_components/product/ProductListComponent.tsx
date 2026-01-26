@@ -15,13 +15,11 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 
 interface ProductListTableProps {
   products: ProductItem[] | GenericProductItem[];
-  onView: (product: ProductItem | GenericProductItem) => void;
   onEdit: (product: ProductItem | GenericProductItem) => void;
 }
 
 const ProductListTable: React.FC<ProductListTableProps> = ({
   products,
-  onView,
   onEdit,
 }) => {
   const { storeDetailData } = useAppSelector((s) => s.store);

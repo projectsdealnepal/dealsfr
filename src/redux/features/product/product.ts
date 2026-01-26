@@ -1,7 +1,11 @@
 import api from "@/lib/interceptor";
-import { ApiResponse, BrandItem, GenericProductsApiResponse, ProductItem } from "@/redux/features/product/types";
+import {
+  ApiResponse,
+  BrandItem,
+  GenericProductsApiResponse,
+  ProductItem
+} from "@/redux/features/product/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { AxiosResponse } from "axios";
 
 // https://api.thedealsfr.com/api/v1/admin/products/{store_pk}/products/
 export const getProducts = createAsyncThunk<
@@ -36,11 +40,28 @@ export const getAllProducts = createAsyncThunk<
   }
 });
 
+//
 export const filterProducts = createAsyncThunk<
   ApiResponse,
   { s_id: number, filter: string },
   { rejectValue: string }
 >("product/filter/get", async ({ s_id, filter }, thunkAPI) => {
+  try {
+    const response = await api.get(`/products/${s_id}/products/?${filter}`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || error.message || "Failed to ge the the products"
+    );
+  }
+});
+
+//fetch combo products for a store with optional filter
+export const getComboProductList = createAsyncThunk<
+  ApiResponse,
+  { s_id: number, filter: string },
+  { rejectValue: string }
+>("comboproduct/filter/get", async ({ s_id, filter }, thunkAPI) => {
   try {
     const response = await api.get(`/products/${s_id}/products/?${filter}`);
     return response.data;

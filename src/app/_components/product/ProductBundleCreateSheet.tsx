@@ -1,8 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,11 +14,10 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { ProductItem } from "@/redux/features/product/types";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ChevronDown, Loader2, Plus, Trash2, Upload, X } from "lucide-react";
+import { useAppSelector } from "@/redux/hooks";
+import { ChevronDown, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { BrandSelector } from "../BrandSelector";
 import { CategorySelectorSheet } from "../CategoriesSheet";
@@ -69,10 +66,6 @@ export function ProductBundleCreateSheet({
     product_type: "BUNDLE",
     combo_items: [],
   });
-
-  const [catSheetOpen, setCatSheetOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<any>(null);
-  const [selectedBrand, setSelectedBrand] = useState<any>(null);
   const [newImages, setNewImages] = useState<File[]>([]);
 
   const handleInputChange = (
@@ -177,45 +170,45 @@ export function ProductBundleCreateSheet({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-1.5">
-                  <Label className="text-muted-foreground">Category *</Label>
-                  {categoryData && (
-                    <CategorySelectorSheet
-                      open={catSheetOpen}
-                      onClose={() => setCatSheetOpen(false)}
-                      categories={categoryData}
-                      onSelect={(item) => {
-                        setSelectedCategory(item);
-                        setFormData((prev) => ({ ...prev, category: item.id }));
-                      }}
-                    />
-                  )}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full justify-between"
-                    onClick={() => setCatSheetOpen(true)}
-                  >
-                    <span>{selectedCategory?.name || "Select Category"}</span>
-                    <ChevronDown className="h-4 w-4 opacity-50" />
-                  </Button>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-muted-foreground">Brand *</Label>
-                  <BrandSelector
-                    value={selectedBrand}
-                    onSelect={(brand) => {
-                      setSelectedBrand(brand);
-                      setFormData((prev) => ({
-                        ...prev,
-                        brand: brand?.id ?? 0,
-                      }));
-                    }}
-                  />
-                </div>
-              </div>
+              {/* <div className="grid grid-cols-2 gap-4 text-sm"> */}
+              {/*   <div className="space-y-1.5"> */}
+              {/*     <Label className="text-muted-foreground">Category *</Label> */}
+              {/*     {categoryData && ( */}
+              {/*       <CategorySelectorSheet */}
+              {/*         open={catSheetOpen} */}
+              {/*         onClose={() => setCatSheetOpen(false)} */}
+              {/*         categories={categoryData} */}
+              {/*         onSelect={(item) => { */}
+              {/*           setSelectedCategory(item); */}
+              {/*           setFormData((prev) => ({ ...prev, category: item.id })); */}
+              {/*         }} */}
+              {/*       /> */}
+              {/*     )} */}
+              {/*     <Button */}
+              {/*       type="button" */}
+              {/*       variant="outline" */}
+              {/*       className="w-full justify-between" */}
+              {/*       onClick={() => setCatSheetOpen(true)} */}
+              {/*     > */}
+              {/*       <span>{selectedCategory?.name || "Select Category"}</span> */}
+              {/*       <ChevronDown className="h-4 w-4 opacity-50" /> */}
+              {/*     </Button> */}
+              {/*   </div> */}
+              {/**/}
+              {/*   <div className="space-y-1.5"> */}
+              {/*     <Label className="text-muted-foreground">Brand *</Label> */}
+              {/*     <BrandSelector */}
+              {/*       value={selectedBrand} */}
+              {/*       onSelect={(brand) => { */}
+              {/*         setSelectedBrand(brand); */}
+              {/*         setFormData((prev) => ({ */}
+              {/*           ...prev, */}
+              {/*           brand: brand?.id ?? 0, */}
+              {/*         })); */}
+              {/*       }} */}
+              {/*     /> */}
+              {/*   </div> */}
+              {/* </div> */}
             </div>
 
             {/* Images Section */}

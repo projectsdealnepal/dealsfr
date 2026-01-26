@@ -1,5 +1,6 @@
 "use client";
 
+import ComboProductsList from "@/app/_components/product/ComboProductList";
 import {
   BundleCreateFormData,
   ProductBundleCreateSheet,
@@ -9,13 +10,12 @@ import {
   ProductEditSheet,
 } from "@/app/_components/product/ProductEditSheet";
 import ProductListTable from "@/app/_components/product/ProductListComponent";
-import { ProductViewSheet } from "@/app/_components/product/ProductViewSheet";
-import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   createProduct,
   filterProducts,
+  getComboProductList,
   updateBulkProducts,
 } from "@/redux/features/product/product";
 import { ProductItem } from "@/redux/features/product/types";
@@ -23,19 +23,16 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Group, Search } from "lucide-react";
 import Link from "next/link";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { JSX } from "react/jsx-runtime";
-import { toast } from "sonner";
 
-export default function ProductsPage(): JSX.Element {
+export default function ProductsPage() {
   const dispatch = useAppDispatch();
-  const { productList, bundleProductList } = useAppSelector((s) => s.product);
+  const { productList, bundleProductList, comboProductList } = useAppSelector((s) => s.product);
   const { storeDetailData } = useAppSelector((s) => s.store);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isBundleSheetOpen, setIsBundleSheetOpen] = useState(false);
-  const [isViewSheetOpen, setIsViewSheetOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(
     null
   );
@@ -58,6 +55,14 @@ export default function ProductsPage(): JSX.Element {
     queryParams.append("page_size", pageSize.toString());
 
     if (storeDetailData) {
+      //get the combo products
+      dispatch(
+        getComboProductList({
+          s_id: storeDetailData?.id,
+          filter: "product_type=COMBO",
+        })
+      );
+      //fetch the all store products 
       dispatch(
         filterProducts({
           s_id: storeDetailData?.id,
@@ -146,8 +151,8 @@ export default function ProductsPage(): JSX.Element {
   return (
     <div className="container mx-auto p-4">
       <div className="max-w-7xl space-y-8">
-        {/* Header */}
 
+        {/* Header */}
         <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center  text-foreground mb-4">
           <div>
             <h1 className="text-lg md:text-xl font-bold mb-2">Products</h1>
@@ -197,11 +202,6 @@ export default function ProductsPage(): JSX.Element {
             <>
               <ProductListTable
                 products={productList}
-                onView={(product) => {
-                  console.log("View product:", product);
-                  setSelectedProduct(product as ProductItem);
-                  setIsViewSheetOpen(true);
-                }}
                 onEdit={(product) => {
                   console.log("Edit product:", product);
                   setIsEditSheetOpen(true);
@@ -210,10 +210,24 @@ export default function ProductsPage(): JSX.Element {
               />
             </>
           )}
-          {productList?.length === 0 && (
-            <p className="text-center text-muted-foreground">
-              No products available.
-            </p>
+        </div>
+
+        {/* Combo Products List */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4">Combo Products</h2>
+        </div>
+        <div className="">
+          {comboProductList && (
+            <>
+              <ComboProductsList
+                products={comboProductList}
+                onEdit={(product) => {
+                  console.log("Edit product:", product);
+                  setIsBundleSheetOpen(true)
+                  setSelectedProduct(product as ProductItem);
+                }}
+              />
+            </>
           )}
         </div>
 
@@ -229,15 +243,6 @@ export default function ProductsPage(): JSX.Element {
             console.timeLog("formData", formData);
           }}
         />
-
-        <ProductViewSheet
-          product={selectedProduct}
-          open={isViewSheetOpen}
-          onClose={() => setIsViewSheetOpen(false)}
-          title="Product Details"
-          description="View complete information about this product."
-        />
-
         <ProductBundleCreateSheet
           open={isBundleSheetOpen}
           onClose={() => setIsBundleSheetOpen(false)}

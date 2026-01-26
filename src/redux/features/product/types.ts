@@ -34,6 +34,7 @@ export interface GenericProductItem {
   store_id?: number;
   is_available?: boolean;
   created_at: string;
+  combo_items: ComboProductItem[];
 }
 
 export interface ProductItem {
@@ -49,8 +50,21 @@ export interface ProductItem {
   store: string;
   store_id: number;
   active_discount: ActiveDiscount | null;
+  combo_items: ComboProductItem[];
   created_at: string;
   updated_at: string;
+}
+
+export interface ComboProductItem {
+  id: number,
+  combo_product_id: number,
+  store_product_id: number,
+  name: string,
+  category: string,
+  brand: string,
+  image: string,
+  price: string,
+  quantity: number,
 }
 
 export interface Category {

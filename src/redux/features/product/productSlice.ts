@@ -4,6 +4,7 @@ import {
   filterProducts,
   getAllProducts,
   getBrandsList,
+  getComboProductList,
   getProducts,
   updateBulkProducts,
 } from "@/redux/features/product/product";
@@ -34,6 +35,9 @@ interface ProductState {
   productData: ApiResponse | null;
   productLoading: boolean;
   productError: string | null;
+
+  //combo product list
+  comboProductList: ProductItem[] | null;
 
   //for listing all brands
   brandListData: BrandItem[] | null;
@@ -84,6 +88,9 @@ const initialState: ProductState = {
   productData: null,
   productLoading: false,
   productError: null,
+
+  //combo product list
+  comboProductList: null,
 
   //for listing all brands
   brandListData: null,
@@ -264,9 +271,9 @@ const productSlice = createSlice({
       state.tempAddedProductList = state.tempAddedProductList.map((item) =>
         item.id === action.payload.id
           ? {
-              ...item,
-              ...action.payload,
-            }
+            ...item,
+            ...action.payload,
+          }
           : item
       );
     },
@@ -379,6 +386,16 @@ const productSlice = createSlice({
           state.addProductToStoreLoading = false;
         }
       )
+
+
+      //for combo product list 
+      .addCase(getComboProductList.pending, (state) => {
+        state.productLoading = true;
+      })
+      .addCase(getComboProductList.fulfilled, (state, action) => {
+        state.comboProductList = action.payload.results;
+        state.productLoading = false;
+      })
 
       //for creating product on store( adding product to store)
       .addCase(createProduct.pending, (state) => {
