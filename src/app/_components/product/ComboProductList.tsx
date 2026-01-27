@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import {
   Table,
   TableBody,
@@ -57,8 +57,8 @@ const ComboProductsList: React.FC<ComboProductsListProps> = ({
           )}
 
           {products.map((product, id) => (
-            <>
-              <TableRow key={id.toString()} className="hover:bg-muted/50">
+            <Fragment key={id.toString()}>
+              <TableRow className="hover:bg-muted/50">
                 <TableCell>
                   <img
                     src={product.image}
@@ -161,7 +161,7 @@ const ComboProductsList: React.FC<ComboProductsListProps> = ({
                   </TableCell>
                 </TableRow>
               )}
-            </>
+            </Fragment>
           ))}
         </TableBody>
       </Table>

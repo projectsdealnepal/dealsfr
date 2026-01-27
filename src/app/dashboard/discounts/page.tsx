@@ -55,12 +55,6 @@ const StoreManager = () => {
                 >
                   Campaign Discount
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => console.log("Create Bundle")}>
-                  Bundle Discount
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => console.log("Card Discount")}>
-                  Card Discount
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => console.log("Store Discount")}>
                   Store Discount
                 </DropdownMenuItem>
